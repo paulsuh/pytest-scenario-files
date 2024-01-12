@@ -41,44 +41,44 @@ To use this plugin you need to make only two changes to your test code:
 1. Create the data file(s) with the proper names and formats
 2. Add the fixture `paramfiledata` to your test function
 
-You can then access the data from the files via the `paramfiledata` fixture. 
+You can then access the data from the files via the `paramfiledata` fixture.
 A common use case is to manage multiple test case inputs and outputs. This allows
-the developer to change and add test cases without making changes to the test code. 
+the developer to change and add test cases without making changes to the test code.
 
 ## Data File Structure
 Each data file may contain one or more sets of test data. This plugin supports
 yaml, json, and toml files. The top level is a dict that contains a key with
-the test id, followed by a data structure that contains the test data. The 
+the test id, followed by a data structure that contains the test data. The
 actual content of the test data is left up to the developer, but a suggested
-convention is that it consists of a dict with two keys, `input` and 
-`result`. An example input file might be: 
+convention is that it consists of a dict with two keys, `input` and
+`result`. An example input file might be:
 
 ```yaml
 test1:
-  input: 
+  input:
     x: 17
     y: 3
   result: 51
 
-test2: 
+test2:
   input:
     x: 7
     y: 7
   result: 49
 ```
 
-This would parameterize into two test cases labeled `test1` and `test2`. 
+This would parameterize into two test cases labeled `test1` and `test2`.
 
 ## File Matching
-Data files will be loaded if they match both of the following criteria: 
-1. They are named for the test with or without the `test_` prefix (although they 
-may be suffixed by any value). 
-2. They are contained in a folder at or below the file that contains the test. 
+Data files will be loaded if they match both of the following criteria:
+1. They are named for the test with or without the `test_` prefix (although they
+may be suffixed by any value).
+2. They are contained in a folder at or below the file that contains the test.
 
-Be careful of tests with extended names. If you have two tests, `test_foo()` and 
-`test_foo_bar()` in the same file, a data file with the name `test_foo_bar.yaml` 
-will be parameterized for *both* tests. To prevent this, split the two test 
-functions into two separate files in two different directories. 
+Be careful of tests with extended names. If you have two tests, `test_foo()` and
+`test_foo_bar()` in the same file, a data file with the name `test_foo_bar.yaml`
+will be parameterized for *both* tests. To prevent this, split the two test
+functions into two separate files in two different directories.
 
 ## Contributing
 Contributions are very welcome. Tests can be run with `tox`_, please ensure
