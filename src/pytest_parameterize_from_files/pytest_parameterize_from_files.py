@@ -1,21 +1,22 @@
-# -*- coding: utf-8 -*-
-
 import os
 from json import load
 from os.path import join
 
-from pytest import fixture
 from yaml import safe_load
 
 
 def pytest_addoption(parser):
-    group = parser.getgroup('parameterize-from-files')
+    """Called by Pytest to load this plug-in
+
+    :param parser: parser used by Pytest
+    """
+    group = parser.getgroup("parameterize-from-files")
     group.addoption(
-        '--param-files',
-        action='store',
-        dest='dest_parameterize_from_files',
-        default='True',
-        help='Parameterize unit tests with values loaded from files.'
+        "--param-files",
+        action="store",
+        dest="dest_parameterize_from_files",
+        default="True",
+        help="Parameterize unit tests with values loaded from files.",
     )
 
 
@@ -30,6 +31,14 @@ def _load_test_data_from_file(filepath: str) -> tuple[any, any]:
 
 
 def pytest_generate_tests(metafunc):
+    """Hook called by Pytest for each test.
+
+    This is where the heavy lifting is done. This walks the directory tree
+    looking for files that match the name of the test. Any data are loaded
+    and used to parameterize the test.
+
+    :param metafunc: Pytest fixture used to create the parameterization
+    """
     # load up files in test_data dir
     # check file names against test names
     # parameterize against list of names if match
@@ -43,21 +52,11 @@ def pytest_generate_tests(metafunc):
                 dirs.remove(one_dir)
 
         if root.endswith("test_data"):
-            test_data_filenames = [
-                one_filename
-                for one_filename in files
-                if one_filename.startswith(test_name)
-            ]
+            test_data_filenames = [one_filename for one_filename in files if one_filename.startswith(test_name)]
 
             for one_data_file in test_data_filenames:
-                input, expected_result = _load_test_data_from_file(
-                    join(root, one_data_file)
-                )
+                input, expected_result = _load_test_data_from_file(join(root, one_data_file))
                 fixture_data_list.append([input, expected_result])
 
     if len(fixture_data_list) > 0:
-        metafunc.parametrize(
-            ("input", "expected_result"),
-            fixture_data_list,
-            scope="function"
-        )
+        metafunc.parametrize(("input", "expected_result"), fixture_data_list, scope="function")
