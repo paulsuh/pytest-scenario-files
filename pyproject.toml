@@ -1,0 +1,116 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pytest-parameterize-from-files"
+description = 'A pytest plugin that parameterizes tests from data files using the hook pytest_generate_tests.'
+readme = 'README.md'
+authors = [
+    { name = "Paul Suh", email = "paul@mspex.net" }
+]
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    'Framework :: Pytest',
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    'Topic :: Software Development :: Testing',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: Implementation :: CPython',
+    'Programming Language :: Python :: Implementation :: PyPy',
+    'Operating System :: OS Independent',
+]
+dependencies = [
+    "pytest>=7.4.0"
+]
+requires-python = ">=3.8"
+dynamic = ["version"]
+
+[project.optional-dependencies]
+precommit = [
+    "ruff"
+]
+unittest = [
+    "pytest",
+    "pytest-cov"
+]
+
+[project.urls]
+"Source code" = "https://github.com/paulsuh/githubwikipageindex"
+
+[project.entry-points.pytest11]
+parameterize-from-files = "pytest_parameterize_from_files"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/docs",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pytest_parameterize_from_files"]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "coverage[toml]>=6.5",
+    "pytest",
+    "ruff"
+]
+python="3.11"
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/foobar tests}"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "_version.py"
+
+[tool.coverage.run]
+source_pkgs = ["src"]
+branch = true
+parallel = true
+omit = [
+  "src/github_wiki_page_index/__about__.py",
+]
+
+[tool.coverage.paths]
+src = ["src"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "def _setup():"
+]
+
+[tool.ruff.per-file-ignores]
+# Ignore `E402` (import violations) and `F401` (unused imports) in all
+# `__init__.py` files
+"__init__.py" = ["E402", "F401"]
