@@ -1,0 +1,3 @@
+test_goo:
+  input_data: "goo"
+  expected_result: "goo"
