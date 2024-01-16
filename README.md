@@ -45,11 +45,11 @@ You can then access the data from the files via the `paramfiledata` fixture.
 A common use case is to manage multiple test case inputs and outputs. This allows
 the developer to change and add test cases without making changes to the test code.
 
-## Data File Structure
+### Data File Structure
 Each data file may contain one or more sets of test data. This plugin supports
 yaml, json, and toml files. The top level is a dict that contains a key with
 the test id, followed by a data structure that contains the test data. The
-actual content of the test data is left up to the developer, but a suggested
+actual content of the test data is left up to the developer, but the suggested
 convention is that it consists of a dict with two keys, `input_data` and
 `expected_result`. An example input file might be:
 
@@ -69,16 +69,20 @@ test2:
 
 This would parameterize into two test cases labeled `test1` and `test2`.
 
-## File Matching
+### File Matching
 Data files will be loaded if they match both of the following criteria:
-1. They are named for the test with or without the `test_` prefix (although they
-may be suffixed by any value).
+1. They are named for the test function, but swapping the prefix `test_`
+    for the prefix `data_` (although the file names may be suffixed by any value).
 2. They are contained in a folder at or below the file that contains the test.
 
+For example, for a test function `test_foo(paramfiledata)`, the files
+`data_foo_part_1.json` and `data_foo_part_2.yaml` would both be loaded.
+
 Be careful of tests with extended names. If you have two tests, `test_foo()` and
-`test_foo_bar()` in the same file, a data file with the name `test_foo_bar.yaml`
+`test_foo_bar()` in the same file, a data file with the name `data_foo_bar.yaml`
 will be parameterized for *both* tests. To prevent this, split the two test
-functions into two separate files in two different directories.
+functions into two separate files in two different directories or change the name of one of the test
+functions.
 
 ## Contributing
 Contributions are very welcome. Tests can be run with `tox`_, please ensure
