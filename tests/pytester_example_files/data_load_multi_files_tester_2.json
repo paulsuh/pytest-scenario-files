@@ -1,0 +1,10 @@
+{
+  "blah_test": {
+    "input_data": "meep",
+    "expected_result": "meep"
+  },
+  "rah_test": {
+    "input_data": 1717,
+    "expected_result": 1717
+  }
+}
