@@ -10,12 +10,12 @@ def pytest_addoption(parser):
 
     :param parser: parser used by Pytest
     """
-    group = parser.getgroup("parameterize-from-files")
+    group = parser.getgroup("Parameterize from files plug-in")
     group.addoption(
-        "--param-files",
-        action="store",
-        dest="dest_parameterize_from_files",
-        default="True",
+        "--param-from-files",
+        action="store_true",
+        dest="parameterize_from_files",
+        default=False,
         help="Parameterize unit tests with values loaded from files.",
     )
 
@@ -39,6 +39,8 @@ def pytest_generate_tests(metafunc):
 
     :param metafunc: Pytest fixture used to create the parameterization
     """
+    if not metafunc.config.option.parameterize_from_files:
+        return
     # load up files in test_data dir
     # check file names against test names
     # parameterize against list of names if match
