@@ -41,6 +41,7 @@ def pytest_generate_tests(metafunc):
     """
     if not metafunc.config.option.parameterize_from_files:
         return
+
     # load up files in test_data dir
     # check file names against test names
     # parameterize against list of names if match
