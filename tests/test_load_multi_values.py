@@ -6,6 +6,6 @@ def test_load_multi_values(pytester):
     # create the data file
     pytester.copy_example("data_load_multi_values_tester.yaml")
 
-    result = pytester.runpytest("-k", "test_load_multi_values_tester", "--param-from-files")
+    result = pytester.runpytest("-k", "test_load_multi_values_tester", "--param-from-files", "-v")
 
     result.assert_outcomes(passed=2)

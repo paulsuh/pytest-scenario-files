@@ -1,4 +1,6 @@
 def test_help_message(pytester):
+    # not so important in and of itself, but this test serves as a check that the
+    # plugin loaded correctly
     result = pytester.runpytest(
         "--help",
     )
