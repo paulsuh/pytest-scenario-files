@@ -1,17 +1,10 @@
-from json import dumps
-
-
 def test_load_one_file(pytester):
     # create the test code file
-    pytester.makepyfile(
-        test_load_one_file_tester="""
-        def test_load_one_file_tester(paramfiledata):
-            assert paramfiledata['input_data'] == paramfiledata['expected_result']
-        """
-    )
+    test_file_path = pytester.copy_example("example_test_load_one_file_tester.py")
+    test_file_path.rename("test_load_one_file_tester.py")
 
     # create the data file
-    pytester.makefile(".json", data_load_one_file_tester=dumps({"test_one": {"input_data": 17, "expected_result": 17}}))
+    pytester.copy_example("data_load_one_file_tester.json")
 
     result = pytester.runpytest("-k", "test_load_one_file_tester", "--param-from-files")
 
