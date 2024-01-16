@@ -47,7 +47,7 @@ unittest = [
 "Source code" = "https://github.com/paulsuh/githubwikipageindex"
 
 [project.entry-points.pytest11]
-parameterize-from-files = "pytest_parameterize_from_files.pytest_parameterize_from_files"
+parameterize-from-files = "pytest_parameterize_from_files"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -91,6 +91,9 @@ source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "_version.py"
+
+[tool.pytest.ini_options]
+pytester_example_dir = "tests/pytester_example_files"
 
 [tool.coverage.run]
 source_pkgs = ["src"]
