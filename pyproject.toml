@@ -28,7 +28,8 @@ classifiers = [
     'Operating System :: OS Independent',
 ]
 dependencies = [
-    "pytest>=7.4.0"
+    "pytest>=7.4.0",
+    "pyyaml",
 ]
 requires-python = ">=3.8"
 dynamic = ["version"]
@@ -46,7 +47,7 @@ unittest = [
 "Source code" = "https://github.com/paulsuh/githubwikipageindex"
 
 [project.entry-points.pytest11]
-parameterize-from-files = "pytest_parameterize_from_files"
+parameterize-from-files = "pytest_parameterize_from_files.pytest_parameterize_from_files"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
