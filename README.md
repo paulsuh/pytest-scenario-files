@@ -50,21 +50,21 @@ Each data file may contain one or more sets of test data. This plugin supports
 yaml, json, and toml files. The top level is a dict that contains a key with
 the test id, followed by a data structure that contains the test data. The
 actual content of the test data is left up to the developer, but a suggested
-convention is that it consists of a dict with two keys, `input` and
-`result`. An example input file might be:
+convention is that it consists of a dict with two keys, `input_data` and
+`expected_result`. An example input file might be:
 
 ```yaml
 test1:
-  input:
+  input_data:
     x: 17
     y: 3
-  result: 51
+  expected_result: 51
 
 test2:
-  input:
+  input_data:
     x: 7
     y: 7
-  result: 49
+  expected_result: 49
 ```
 
 This would parameterize into two test cases labeled `test1` and `test2`.
