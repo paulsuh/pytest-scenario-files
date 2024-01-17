@@ -96,15 +96,12 @@ version-file = "_version.py"
 pytester_example_dir = "tests/pytester_example_files"
 
 [tool.coverage.run]
-source_pkgs = ["src"]
+source = ["src/pytest_parameterize_from_files"]
 branch = true
-parallel = true
+#parallel = true
 omit = [
-  "src/github_wiki_page_index/__about__.py",
+  "tests/*",
 ]
-
-[tool.coverage.paths]
-src = ["src"]
 
 [tool.coverage.report]
 exclude_lines = [
