@@ -17,7 +17,6 @@ classifiers = [
     'Topic :: Software Development :: Testing',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
@@ -85,6 +84,15 @@ dependencies = [
 
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/foobar tests}"
+
+[tool.hatch.envs.test]
+dependencies = [
+    "coverage[toml]>=6.5",
+    "pytest",
+]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
 
 [tool.hatch.version]
 source = "vcs"
