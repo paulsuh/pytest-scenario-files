@@ -52,9 +52,6 @@ parameterize-from-files = "pytest_parameterize_from_files"
 exclude = [
     ".github",
     ".idea",
-    ".gitignore",
-    ".pre-commit-config.yaml",
-    "_version.py"
 ]
 
 [tool.hatch.build.targets.wheel]
