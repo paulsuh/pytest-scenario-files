@@ -83,7 +83,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/foobar tests}"
+check = "mypy --install-types --non-interactive {args:src/pytest_parameterize_from_files tests}"
 
 [tool.hatch.envs.test]
 dependencies = [
