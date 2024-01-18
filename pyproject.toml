@@ -4,15 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytest-parameterize-from-files"
-description = 'A pytest plugin that parameterizes tests from data files using the hook pytest_generate_tests.'
+description = 'A pytest plugin that parameterizes tests from data files.'
 readme = 'README.md'
 authors = [
     { name = "Paul Suh", email = "paul@mspex.net" }
 ]
 classifiers = [
-    "License :: OSI Approved :: BSD License",
+    "License :: OSI Approved :: MIT License",
     'Framework :: Pytest',
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     'Topic :: Software Development :: Testing',
     'Programming Language :: Python',
@@ -43,7 +43,7 @@ unittest = [
 ]
 
 [project.urls]
-"Source code" = "https://github.com/paulsuh/githubwikipageindex"
+"Repository" = "https://github.com/paulsuh/pytest-parameterize-from-files"
 
 [project.entry-points.pytest11]
 parameterize-from-files = "pytest_parameterize_from_files"
@@ -51,7 +51,6 @@ parameterize-from-files = "pytest_parameterize_from_files"
 [tool.hatch.build.targets.sdist]
 exclude = [
   "/.github",
-  "/docs",
 ]
 
 [tool.hatch.build.targets.wheel]
