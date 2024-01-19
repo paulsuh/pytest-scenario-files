@@ -7,10 +7,7 @@ from yaml import safe_load
 
 
 class BadTestCaseData(Exception):
-    """A custom exception class for representing bad test case data.
-
-    This class is used to indicate an error in the provided test case data. It is typically raised when the data provided for a test case is invalid or inconsistent.
-    """
+    """A custom exception class for representing bad test case data."""
 
     pass
 
