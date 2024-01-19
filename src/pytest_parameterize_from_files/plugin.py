@@ -6,6 +6,15 @@ from typing import Any
 from yaml import safe_load
 
 
+class BadTestCaseData(Exception):
+    """A custom exception class for representing bad test case data.
+
+    This class is used to indicate an error in the provided test case data. It is typically raised when the data provided for a test case is invalid or inconsistent.
+    """
+
+    pass
+
+
 def pytest_addoption(parser):
     """Called by Pytest to load this plug-in
 
@@ -29,7 +38,11 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
             test_data = safe_load(fp)
 
         if not isinstance(test_data, dict):
-            raise RuntimeError(f"{filepath} did not produce a dictionary when loaded.")
+            raise BadTestCaseData(f"{filepath} did not produce a dictionary when loaded.")
+
+        for case_name, case_data in test_data.values():
+            if not isinstance(case_data, dict):
+                raise BadTestCaseData(f"From {filepath}: data for case {case_name} is not a dict. ")
 
         return test_data
 
@@ -52,7 +65,7 @@ def pytest_generate_tests(metafunc):
     # parameterize against list of names if match
     test_name = metafunc.definition.name.removeprefix("test_")
 
-    fixture_data_dict = {}
+    fixture_raw_data_dict = {}
     for root, dirs, files in os.walk(os.getcwd()):
         # remove dirs that start with .
         for one_dir in dirs:
@@ -63,9 +76,30 @@ def pytest_generate_tests(metafunc):
 
         for one_data_file in test_data_filenames:
             test_data = _load_test_data_from_file(join(root, one_data_file))
-            fixture_data_dict |= test_data
+            fixture_raw_data_dict |= test_data
 
-    if len(fixture_data_dict) > 0:
-        metafunc.parametrize(
-            "paramfiledata", fixture_data_dict.values(), ids=fixture_data_dict.keys(), scope="function"
-        )
+    # check that all of the test cases have the same sets of keys
+    all_fixture_keys = {
+        one_fixture_name for test_case in fixture_raw_data_dict.values() for one_fixture_name in test_case.values()
+    }
+
+    bad_test_cases = {
+        test_case_id: problem_keys
+        for test_case_id, test_case_data in fixture_raw_data_dict
+        if len(problem_keys := all_fixture_keys ^ set(test_case_data.keys())) > 0
+    }
+
+    if len(bad_test_cases) > 0:
+        raise BadTestCaseData(f"Mismatched fixture keys {bad_test_cases}")
+
+    fixture_names = sorted(all_fixture_keys)
+
+    fixture_cases_dict = {
+        test_case_id: {key: test_case_data[key] for key in sorted(fixture_raw_data_dict[test_case_id])}
+        for test_case_id, test_case_data in fixture_raw_data_dict.items()
+    }
+
+    fixture_data_list = [test_case_values for test_case_values in fixture_cases_dict.values()]
+
+    if len(fixture_raw_data_dict) > 0:
+        metafunc.parametrize(fixture_names, fixture_data_list, ids=fixture_cases_dict.keys(), scope="function")
