@@ -16,22 +16,44 @@ A plugin that parameterizes tests from data files using the hook pytest_generate
 
 ----
 
-This `pytest` plugin was generated with `Cookiecutter` along with `@hackebrot`'s `cookiecutter-pytest-plugin` template.
 
+## Introduction
+
+When you are using `pytest` you may have multiple inputs that you need to test against a particular
+test function. Pytest has a feature called parameterization, where fixtures can
+can take on a series of values in order to run the same test function repeatedly
+under different test cases. However, sometimes the input data is very large or there are
+many cases, so that it is impractical to put all of the data into the source code
+of the test.
+
+This plug-in loads the data for the test parameterization from separate
+data files that are automatically matched up against the test functions. Each
+function can have one or more data files associated with it, and each file can
+contain multiple test cases. The data files can be in JSON or YAML format.
+
+An additional issue with the basic pytest parameterization API is the way the user must
+provide the parameters. First all of the test case fixture names in a list,
+followed by a list of lists with the
+values the fixtures will take on, and then an optional list of test case id's. Since the labels,
+values, and id's are in separate lists it can be difficult to keep track of which
+fixture corresponds to which value if you have many of them, and also which
+group of values corresponds to which test id. The file structure uses a dict to keep
+the test id and the data values together.
 
 ## Features
 
-* TODO
-
+- Loads data for tests from files
+- Multiple data sets may be in one file
+- There may be multiple data files for each test
 
 ## Requirements
 
-* TODO
-
+- Tested with `pytest` version 7.4.x
+- Tested with CPython 3.8 - 3.12 and PyPy 3.9
 
 ## Installation
 
-You can install "pytest-parameterize-from-files" via `pip`_ from `PyPI`_::
+You can install `pytest-parameterize-from-files` via `pip` from PyPI:
 
     $ pip install pytest-parameterize-from-files
 
@@ -97,15 +119,16 @@ Distributed under the terms of the `MIT` license, "pytest-parameterize-from-file
 
 If you encounter any problems, please `file an issue`_ along with a detailed description.
 
-.. _`Cookiecutter`: https://github.com/audreyr/cookiecutter
-.. _`@hackebrot`: https://github.com/hackebrot
-.. _`MIT`: http://opensource.org/licenses/MIT
-.. _`BSD-3`: http://opensource.org/licenses/BSD-3-Clause
-.. _`GNU GPL v3.0`: http://www.gnu.org/licenses/gpl-3.0.txt
-.. _`Apache Software License 2.0`: http://www.apache.org/licenses/LICENSE-2.0
-.. _`cookiecutter-pytest-plugin`: https://github.com/pytest-dev/cookiecutter-pytest-plugin
-.. _`file an issue`: https://github.com/paulsuh/pytest-parameterize-from-files/issues
-.. _`pytest`: https://github.com/pytest-dev/pytest
-.. _`tox`: https://tox.readthedocs.io/en/latest/
-.. _`pip`: https://pypi.org/project/pip/
-.. _`PyPI`: https://pypi.org/project
+## Colophon
+
+Inspired by pytest-datadirs, pytest-datafixtures, and pytest-xattr. This `pytest` plugin
+was generated with `Cookiecutter` along with `@hackebrot`'s `cookiecutter-pytest-plugin`
+template, then extensively modified to bring it up to modern standards.
+
+
+
+- [Cookiecutter](https://github.com/audreyr/cookiecutter)
+- [MIT License](http://opensource.org/licenses/MIT)
+- [cookiecutter-pytest-plugin](https://github.com/pytest-dev/cookiecutter-pytest-plugin)
+- [file an issue](https://github.com/paulsuh/pytest-parameterize-from-files/issues)
+- [pytest](https://github.com/pytest-dev/pytest)
