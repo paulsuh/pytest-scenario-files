@@ -1,10 +1,12 @@
 {
   "blah_test": {
-    "input_data": "meep",
-    "expected_result": "meep"
+    "input_1": "meep",
+    "input_2": "morp",
+    "expected_result": "meepmorp"
   },
   "rah_test": {
-    "input_data": 1717,
-    "expected_result": 1717
+    "input_1": 1.7,
+    "input_2": 1.8,
+    "expected_result": 3.5
   }
 }
