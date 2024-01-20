@@ -37,11 +37,40 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
         if not isinstance(test_data, dict):
             raise BadTestCaseData(f"{filepath} did not produce a dictionary when loaded.")
 
-        for case_name, case_data in test_data.values():
+        for case_name, case_data in test_data.items():
             if not isinstance(case_data, dict):
                 raise BadTestCaseData(f"From {filepath}: data for case {case_name} is not a dict. ")
 
         return test_data
+
+
+def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]:
+    """Check fixture names for consistency between test cases
+
+    If all of the fixture names are consistent, return a sorted list of fixture names
+
+    :param fixture_dict: Dict of dicts containing test case data.
+    :return: A list of fixture names sorted alphabetically.
+    """
+    # check that all of the test cases have the same sets of keys
+    # get all of the keys from all of the test cases
+    all_fixture_keys = {
+        one_fixture_name for test_case in fixture_dict.values() for one_fixture_name in test_case.keys()
+    }
+
+    # find test cases where there are keys in one set but not the other
+    bad_test_cases = {
+        test_case_id: problem_keys
+        for test_case_id, test_case_data in fixture_dict.items()
+        if len(problem_keys := all_fixture_keys ^ set(test_case_data.keys())) > 0
+    }
+
+    # raise an exception if there are bad test cases
+    if len(bad_test_cases) > 0:
+        raise BadTestCaseData(f"Mismatched fixture keys {bad_test_cases}")
+
+    # return the list of fixture names sorted alphabetically
+    return sorted(all_fixture_keys)
 
 
 def pytest_generate_tests(metafunc):
@@ -75,28 +104,24 @@ def pytest_generate_tests(metafunc):
             test_data = _load_test_data_from_file(join(root, one_data_file))
             fixture_raw_data_dict |= test_data
 
-    # check that all of the test cases have the same sets of keys
-    all_fixture_keys = {
-        one_fixture_name for test_case in fixture_raw_data_dict.values() for one_fixture_name in test_case.values()
-    }
-
-    bad_test_cases = {
-        test_case_id: problem_keys
-        for test_case_id, test_case_data in fixture_raw_data_dict
-        if len(problem_keys := all_fixture_keys ^ set(test_case_data.keys())) > 0
-    }
-
-    if len(bad_test_cases) > 0:
-        raise BadTestCaseData(f"Mismatched fixture keys {bad_test_cases}")
-
-    fixture_names = sorted(all_fixture_keys)
-
-    fixture_cases_dict = {
-        test_case_id: {key: test_case_data[key] for key in sorted(fixture_raw_data_dict[test_case_id])}
-        for test_case_id, test_case_data in fixture_raw_data_dict.items()
-    }
-
-    fixture_data_list = [test_case_values for test_case_values in fixture_cases_dict.values()]
-
     if len(fixture_raw_data_dict) > 0:
+        # do processing only if the search found cases
+
+        # get the list of fixture names sorted alphabetically
+        # will raise an exception if the fixture names are inconsistent
+        fixture_names = _extract_fixture_names(fixture_raw_data_dict)
+
+        # this sets up a dict of dicts by case id, with the keys of each sub-dict being the
+        # fixture names in alphabetical order
+        fixture_cases_dict = {
+            test_case_id: {key: test_case_data[key] for key in sorted(fixture_raw_data_dict[test_case_id])}
+            for test_case_id, test_case_data in fixture_raw_data_dict.items()
+        }
+
+        # derive a list of lists from the dict of dicts. It's important to do this
+        # so that the lists are in the same order as the case id's
+        fixture_data_list = [
+            [test_case_values for test_case_values in test_case.values()] for test_case in fixture_cases_dict.values()
+        ]
+
         metafunc.parametrize(fixture_names, fixture_data_list, ids=fixture_cases_dict.keys(), scope="function")
