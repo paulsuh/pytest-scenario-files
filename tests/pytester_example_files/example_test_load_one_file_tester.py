@@ -1,3 +1,4 @@
-def test_load_one_file_tester(paramfiledata):
-    print(paramfiledata["input_data"])
-    assert paramfiledata["input_data"] == paramfiledata["expected_result"]
+def test_load_one_file_tester(input_data, expected_result):
+    print(input_data)
+    print(expected_result)
+    assert input_data == expected_result
