@@ -1,0 +1,5 @@
+test_one:
+  expected_result: "blahmeep"
+
+test_two:
+  expected_result: 105

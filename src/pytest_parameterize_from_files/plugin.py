@@ -3,6 +3,7 @@ from json import load
 from os.path import join
 from typing import Any
 
+from deepmerge import always_merger
 from yaml import safe_load
 
 
@@ -69,7 +70,7 @@ def _locate_and_load_test_data(test_name: str) -> dict[str, dict[str, Any]]:
 
         for one_data_file in test_data_filenames:
             test_data = _load_test_data_from_file(join(root, one_data_file))
-            result |= test_data
+            always_merger.merge(result, test_data)
 
     return result
 
