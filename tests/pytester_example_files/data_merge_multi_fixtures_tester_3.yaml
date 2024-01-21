@@ -3,3 +3,18 @@ test_one:
 
 test_two:
   expected_result: 105
+
+test_three:
+  input_data_1:
+    - "abc"
+    - "def"
+  input_data_2:
+    - "ghi"
+    - "jkl"
+    - "mno"
+  expected_result:
+    - "abc"
+    - "def"
+    - "ghi"
+    - "jkl"
+    - "mno"
