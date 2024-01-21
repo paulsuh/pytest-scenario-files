@@ -10,4 +10,4 @@ def test_merge_multi_fixtures(pytester):
 
     result = pytester.runpytest("-k", "test_merge_multi_fixtures_tester", "--param-from-files", "-v")
 
-    result.assert_outcomes(passed=2)
+    result.assert_outcomes(passed=3)
