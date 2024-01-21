@@ -29,6 +29,7 @@ classifiers = [
 dependencies = [
     "pytest>=7.4.0",
     "pyyaml",
+    "deepmerge"
 ]
 requires-python = ">=3.8"
 dynamic = ["version"]
@@ -100,9 +101,19 @@ source = "vcs"
 [tool.hatch.build.hooks.vcs]
 version-file = "_version.py"
 
+##############################
+#                            #
+# Pytest config              #
+#                            #
+##############################
 [tool.pytest.ini_options]
 pytester_example_dir = "tests/pytester_example_files"
 
+##############################
+#                            #
+# Coverage config            #
+#                            #
+##############################
 [tool.coverage.run]
 source = ["src/pytest_parameterize_from_files"]
 branch = true
