@@ -50,7 +50,25 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
             if not isinstance(case_data, dict):
                 raise BadTestCaseData(f"From {filepath}: data for case {case_name} is not a dict. ")
 
+        _load_referenced_data(test_data)
+
         return test_data
+
+
+def _load_referenced_data(base_data_dict: dict[str, dict[str, Any]]) -> None:
+    """Load data for fixtures that refer to fixtures in other files.
+
+    :param base_data_dict: A dictionary containing test cases and their fixtures.
+    :return: None
+    """
+    for one_test_case in base_data_dict.values():
+        for one_fixture_name, one_fixture_value in one_test_case.items():
+            if isinstance(one_fixture_value, str):
+                if one_fixture_value.startswith("__"):
+                    data_file_path = one_fixture_value.removeprefix("__")
+                    ref_data_file_name, ref_test_case, ref_fixture = data_file_path.split(":")
+                    referenced_data_file_contents = _load_test_data_from_file(ref_data_file_name)
+                    one_test_case[one_fixture_name] = referenced_data_file_contents[ref_test_case][ref_fixture]
 
 
 def _locate_and_load_test_data(test_name: str) -> dict[str, dict[str, Any]]:
@@ -59,6 +77,15 @@ def _locate_and_load_test_data(test_name: str) -> dict[str, dict[str, Any]]:
     :param test_name: The name of the test.
     :return: A dictionary containing the loaded test data.
     """
+    return _locate_and_load_data_files("data_" + test_name)
+
+
+def _locate_and_load_data_files(filename_base: str) -> dict[str, dict[str, Any]]:
+    """Locates and loads data for the given file name.
+
+    :param filename_base: The root name of the files to be loaded.
+    :return: A dictionary containing the loaded data.
+    """
     result = {}
     for root, dirs, files in os.walk(os.getcwd()):
         # remove dirs that start with .
@@ -66,7 +93,7 @@ def _locate_and_load_test_data(test_name: str) -> dict[str, dict[str, Any]]:
             if one_dir.startswith("."):
                 dirs.remove(one_dir)
 
-        test_data_filenames = [one_filename for one_filename in files if one_filename.startswith("data_" + test_name)]
+        test_data_filenames = [one_filename for one_filename in files if one_filename.startswith(filename_base)]
 
         for one_data_file in test_data_filenames:
             test_data = _load_test_data_from_file(join(root, one_data_file))
