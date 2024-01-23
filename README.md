@@ -2,8 +2,9 @@
 
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg)](https://pypi.python.org/pypi/pytest-parameterize-from-files/)
 
-A [`pytest`](https://github.com/pytest-dev/pytest/) plugin that parameterizes tests from data files using the
-hook [`pytest_generate_tests()`](https://docs.pytest.org/en/stable/reference/reference.html#collection-hooks).
+A [`pytest`](https://github.com/pytest-dev/pytest/) plugin that parameterizes
+tests using data loaded from data files using the hook
+[`pytest_generate_tests()`](https://docs.pytest.org/en/stable/reference/reference.html#collection-hooks).
 
 ----
 
@@ -42,9 +43,10 @@ the data values together for human readability.
 
 ## Requirements
 
-- Tested with `pytest` version 7.4.x
-- Tested with CPython 3.8 - 3.12 and PyPy 3.9
-- deepmerge
+This package is a plug-in for `pytest` and works with Python 3.8 and up.
+- Tested with `pytest` version 7.4.x, should work with any version
+  6.2.5 or higher
+- Tested with CPython 3.8 - 3.12 and PyPy 3.9-3.10
 
 ## Installation
 
@@ -113,10 +115,10 @@ the files
 
 would both be loaded.
 
-Be careful of tests with extended names. If you have two tests
-named `test_foo()` and `test_foo_bar()`, a data file
-with the name `data_foo_bar.yaml` will be parameterized for *both*
-tests. To prevent this, split the two test functions into two separate
+Be careful of tests with names where the name of one is an extended version
+of the other. If you have two tests named `test_foo()` and `test_foo_bar()`,
+a data file with the name `data_foo_bar.yaml` will be parameterized for
+*both* tests. To prevent this, split the two test functions into two separate
 files in two different directories or change the name of one of the test
 functions.
 
