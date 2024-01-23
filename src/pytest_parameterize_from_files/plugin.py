@@ -86,7 +86,7 @@ def _locate_and_load_data_files(filename_base: str) -> dict[str, dict[str, Any]]
     :param filename_base: The root name of the files to be loaded.
     :return: A dictionary containing the loaded data.
     """
-    result = {}
+    result: dict[str, dict[str, Any]] = {}
     for root, dirs, files in os.walk(os.getcwd()):
         # remove dirs that start with .
         for one_dir in dirs:
