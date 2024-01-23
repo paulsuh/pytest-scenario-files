@@ -1,35 +1,21 @@
 # pytest-parameterize-from-files
 
-..
-image:: https://img.shields.io/pypi/v/pytest-parameterize-from-files.svg
-:target: https://pypi.org/project/pytest-parameterize-from-files
-:alt: PyPI version
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg)](https://pypi.python.org/pypi/pytest-parameterize-from-files/)
 
-..
-image:: https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg
-:target: https://pypi.org/project/pytest-parameterize-from-files
-:alt: Python versions
-
-..
-image:: https://ci.appveyor.com/api/projects/status/github/paulsuh/pytest-parameterize-from-files?branch=master
-:
-target: https://ci.appveyor.com/project/paulsuh/pytest-parameterize-from-files/branch/master
-:alt: See Build Status on AppVeyor
-
-A `pytest` plugin that parameterizes tests from data files using the
-hook `pytest_generate_tests`
+A [`pytest`](https://github.com/pytest-dev/pytest/) plugin that parameterizes tests from data files using the
+hook [`pytest_generate_tests()`](https://docs.pytest.org/en/stable/reference/reference.html#collection-hooks).
 
 ----
 
 ## Introduction
 
 When you are using `pytest` you may have multiple inputs that you need
-to test against a particular test function. Pytest has a feature called
+to test against a particular test function. `pytest` has a feature called
 parameterization, where fixtures can take on a series of values in order
-to run the same testfunction repeatedly under different test cases.
-However, sometimes the input data is very large or there are many test
-cases, so that it is impractical to put all of the data into the source
-code of the test.
+to run the same test function repeatedly using different inputs to test
+mulitple cases. However, sometimes the input data is very large or there
+are many test cases, so that it is impractical to put all of the data into
+the source code of the test.
 
 This plug-in loads the data for the test parameterization from separate
 data files that are automatically matched up against the test functions.
@@ -45,19 +31,20 @@ Since the labels, values, and id's are in separate lists it can be
 difficult to keep track of which fixture corresponds to which value if
 you have many of them, and also which group of values corresponds to
 which test id. The file structure uses a dict to keep the test id and
-the data values together.
+the data values together for human readability.
 
 ## Features
 
 - Loads data for tests from files
-- Multiple data sets may be in one file
+- Multiple test data sets may be in one file
 - There may be multiple data files for each test
-- Data files may load fixtures from other files
+- Data files may load data from fixtures in other files
 
 ## Requirements
 
 - Tested with `pytest` version 7.4.x
 - Tested with CPython 3.8 - 3.12 and PyPy 3.9
+- deepmerge
 
 ## Installation
 
@@ -67,7 +54,7 @@ You can install `pytest-parameterize-from-files` via `pip` from PyPI:
 
 ## Usage
 
-To use this plugin you need to make only two changes to your test code:
+To use this plugin you need to make only two changes to your tests:
 
 1. Create the data file(s) with the proper names and formats
 2. Call `pytest` with the flag `--param-from-files`.
@@ -77,12 +64,17 @@ those files. A common use case is to manage multiple test case inputs
 and outputs. This allows the developer to change and add test cases
 without making changes to the test code.
 
+The unit tests for this package are actually good examples of possible
+ways to use this package. Look in the files in the `tests/` directory
+and the corresponding files in the `tests/pytester_example_files`
+directory.
+
 ### Data File Structure
 
-Each data file may contain one or more sets of test data. This plugin
-supports yaml and json files. The top level is a dict whose keys are the
-test ids. Each test id is a dict whose keys are fixture names and whose
-values are the test data. An example input file might be:
+Each data file may contain one or more sets of test data, in either yaml
+or json format. The top level is a dict whose keys are the test ids.
+Each test id is a dict whose keys are fixture names and whose values are
+the test data. An example input file might be:
 
 ```yaml
 test1:
@@ -110,8 +102,16 @@ Data files will be loaded if they match both of the following criteria:
 2. They are contained in a folder at or below the file that contains the
    test.
 
-For example, for a test function `test_foo(paramfiledata)`, the files
-`data_foo_part_1.json` and `data_foo_part_2.yaml` would both be loaded.
+For example, for a test function
+
+    test_foo(...)
+
+the files
+
+    data_foo_part_1.json
+    data_foo_part_2.yaml
+
+would both be loaded.
 
 Be careful of tests with extended names. If you have two tests
 named `test_foo()` and `test_foo_bar()`, a data file
