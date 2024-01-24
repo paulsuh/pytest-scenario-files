@@ -1,0 +1,6 @@
+{
+  "test_three": {
+    "input_data": 42,
+    "expected_result": 42
+  }
+}
