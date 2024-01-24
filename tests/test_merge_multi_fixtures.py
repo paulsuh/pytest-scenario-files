@@ -1,3 +1,10 @@
+"""Merge fixtures from multiple files
+
+If the same test case is defined in two or more files, the fixtures will
+be merged together as long as there is no conflict.
+"""
+
+
 def test_merge_multi_fixtures(pytester):
     # create the test code file
     test_file_path = pytester.copy_example("example_test_merge_multi_fixtures_tester.py")
