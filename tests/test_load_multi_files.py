@@ -1,3 +1,10 @@
+"""Load multiple test cases from multiple files.
+
+The files can be both JSON and YAML format and may contain more than one
+test case each.
+"""
+
+
 def test_load_multi_files(pytester):
     # create the test code file
     test_file_path = pytester.copy_example("example_test_load_multi_files_tester.py")
