@@ -1,3 +1,10 @@
+"""The second most basic test.
+
+Load one test case from one file. If this doesn't work then nothing
+more advanced is likely to work either.
+"""
+
+
 def test_load_one_file(pytester):
     # create the test code file
     test_file_path = pytester.copy_example("example_test_load_one_file_tester.py")
