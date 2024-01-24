@@ -71,23 +71,25 @@ def _load_referenced_data(base_data_dict: dict[str, dict[str, Any]]) -> None:
                     one_test_case[one_fixture_name] = referenced_data_file_contents[ref_test_case][ref_fixture]
 
 
-def _locate_and_load_test_data(test_name: str) -> dict[str, dict[str, Any]]:
+def _locate_and_load_test_data(test_name: str, dir_name: str) -> dict[str, dict[str, Any]]:
     """Locates and loads test data for the given test name.
 
     :param test_name: The name of the test.
     :return: A dictionary containing the loaded test data.
     """
-    return _locate_and_load_data_files("data_" + test_name)
+    return _locate_and_load_data_files("data_" + test_name, start_dir_path=dir_name)
 
 
-def _locate_and_load_data_files(filename_base: str) -> dict[str, dict[str, Any]]:
+def _locate_and_load_data_files(filename_base: str, start_dir_path=None) -> dict[str, dict[str, Any]]:
     """Locates and loads data for the given file name.
 
     :param filename_base: The root name of the files to be loaded.
     :return: A dictionary containing the loaded data.
     """
+    if start_dir_path is None:
+        start_dir_path = os.getcwd()
     result: dict[str, dict[str, Any]] = {}
-    for root, dirs, files in os.walk(os.getcwd()):
+    for root, dirs, files in os.walk(start_dir_path):
         # remove dirs that start with .
         for one_dir in dirs:
             if one_dir.startswith("."):
@@ -174,8 +176,9 @@ def pytest_generate_tests(metafunc):
     # E.g.,
     # parameterize against list of names if match
     test_name = metafunc.definition.name.removeprefix("test_")
+    test_file_dir = metafunc.definition.path.parent
 
-    fixture_raw_data_dict = _locate_and_load_test_data(test_name)
+    fixture_raw_data_dict = _locate_and_load_test_data(test_name, test_file_dir)
 
     if len(fixture_raw_data_dict) > 0:
         # do processing only if the search found cases
