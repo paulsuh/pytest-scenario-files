@@ -77,6 +77,10 @@ those files. A common use case is to manage test case inputs and expected
 results. This allows the developer to change and add test cases without
 making changes to the test code.
 
+Just as with pytest's basic parameterization, the test function must
+have all of the fixtures in its parameter list. Otherwise, an exception
+will be raised.
+
 The unit tests for this package are good examples of possible
 ways to use this package. Look in the files in the `tests/` directory
 and the corresponding files in the `tests/pytester_example_files`
@@ -135,6 +139,26 @@ test2:
 This would parameterize into two test cases labeled `test1` and `test2`,
 each with three fixtures, `input_data_1`, `input_data_2`, and
 `expected_result`.
+
+### Test Case Merging
+
+If the same test case id is present in two different files, the fixtures
+from the two files will be merged as long as a fixture with the same name
+is not defined more than once for any particular test case id. For
+example, for a test function named `test_foo()` with the two data files:
+
+File `data_foo_1.yaml`;
+```yaml
+test_case_one:
+  fixture_one: 17
+```
+File `data_foo_2.yaml`;
+```yaml
+test_case_one:
+  fixture_two: 170
+```
+The function will be passed two fixtures `fixture_one=17` and `fixture_two=170`
+for a test case with `id=test_case_one`.
 
 ### Loading Fixtures by Reference
 
