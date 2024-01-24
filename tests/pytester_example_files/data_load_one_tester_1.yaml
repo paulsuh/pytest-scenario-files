@@ -1,7 +1,7 @@
 test_one:
-  input_data: "blah"
-  expected_result: "blah"
-
-test_two:
   input_data: 51
   expected_result: 51
+
+test_two:
+  input_data: "blah"
+  expected_result: "blah"

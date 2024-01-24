@@ -1,3 +1,10 @@
+"""Check that data files that don't match are ignored.
+
+This will only load and run the test cases from the first file, since the other two
+data files don't have a name that matches the test.
+"""
+
+
 def test_ignore_multi_files(pytester):
     # create the test code file
     test_file_path = pytester.copy_example("example_test_ignore_multi_files_tester.py")
