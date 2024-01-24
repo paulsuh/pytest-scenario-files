@@ -140,7 +140,7 @@ This would parameterize into two test cases labeled `test1` and `test2`,
 each with three fixtures, `input_data_1`, `input_data_2`, and
 `expected_result`.
 
-### Test Case Merging
+### Test Case Merging and Conflicts
 
 If the same test case id is present in two different files, the fixtures
 from the two files will be merged as long as a fixture with the same name
@@ -159,6 +159,9 @@ test_case_one:
 ```
 The function will be passed two fixtures `fixture_one=17` and `fixture_two=170`
 for a test case with `id=test_case_one`.
+
+*However*, if the fixture names are the same there will be a conflict
+and the code that merges the test cases will raise an exception.
 
 ### Loading Fixtures by Reference
 
@@ -180,9 +183,11 @@ check_functionality:
 
 This would result in two fixture values being sent into the test function,
 `input_data_1 = 42` and `other_data = 7`, for a test case with
-`id = check_functionality`.
+`id = check_functionality`. Note that there is nothing preventing an
+infinite self-referential loop (although that is something that
+should be avoided).
 
-## Issues
+## Reporting Issues
 
 If you encounter any problems, please [file an issue](https://github.com/paulsuh/pytest-parameterize-from-files/issues)
 including a detailed description and (if possible) an example of
