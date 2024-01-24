@@ -1,6 +1,13 @@
 # pytest-parameterize-from-files
 
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg)](https://pypi.python.org/pypi/pytest-parameterize-from-files/)
+[![Pytest](https://img.shields.io/badge/Pytest-Plug--in-orange?logo=pytest)]()
+
+![PyPaHatch](https://img.shields.io/badge/PyPa-Hatch-green)
+![Ruff Formatter](https://img.shields.io/badge/Ruff-Formatter-green)
+![Ruff Linter](https://img.shields.io/badge/Ruff-Linter-green)
+![Pre-Commit](https://img.shields.io/badge/Pre--Commit-passed-green?logo=precommit)
+
 
 A [`pytest`](https://github.com/pytest-dev/pytest/) plugin that parameterizes
 tests using data loaded from data files using the hook
@@ -8,13 +15,12 @@ tests using data loaded from data files using the hook
 
 ----
 
-## Introduction
+## Making Parameterization Easy and Scalable
 
-When you are using `pytest` you may have multiple inputs that you need
-to test against a particular test function. `pytest` has a feature called
-parameterization, where fixtures can take on a series of values in order
-to run the same test function repeatedly using different inputs to test
-mulitple cases. However, sometimes the input data is very large or there
+`pytest` has a feature called parameterization that allows you to run
+the same test function repeatedly using different inputs to test
+multiple cases. However, managing the test data for parameterization can
+be a problem. Sometimes the input data is very large or there
 are many test cases, so that it is impractical to put all of the data into
 the source code of the test.
 
@@ -34,19 +40,20 @@ you have many of them, and also which group of values corresponds to
 which test id. The file structure uses a dict to keep the test id and
 the data values together for human readability.
 
-## Features
+### Features
 
 - Loads data for tests from files
 - Multiple test data sets may be in one file
 - There may be multiple data files for each test
 - Data files may load data from fixtures in other files
+- Intuitive and sane data file structure
 
-## Requirements
+### Compatibility
 
-This package is a plug-in for `pytest` and works with Python 3.8 and up.
+This package is a plug-in for `pytest` and works with Python 3.9 and up.
 - Tested with `pytest` version 7.4.x, should work with any version
   6.2.5 or higher
-- Tested with CPython 3.8 - 3.12 and PyPy 3.9-3.10
+- Tested with CPython 3.9-3.12 and PyPy 3.9-3.10
 
 ## Installation
 
@@ -59,42 +66,23 @@ You can install `pytest-parameterize-from-files` via `pip` from PyPI:
 To use this plugin you need to make only two changes to your tests:
 
 1. Create the data file(s) with the proper names and formats
-2. Call `pytest` with the flag `--param-from-files`.
+2. Call `pytest` with the flag `--param-from-files`
+
+An example command line would be:
+
+    $ pytest --param-from-files
 
 You can then access the data from the files via the fixtures defined in
-those files. A common use case is to manage multiple test case inputs
-and outputs. This allows the developer to change and add test cases
-without making changes to the test code.
+those files. A common use case is to manage test case inputs and expected
+results. This allows the developer to change and add test cases without
+making changes to the test code.
 
-The unit tests for this package are actually good examples of possible
+The unit tests for this package are good examples of possible
 ways to use this package. Look in the files in the `tests/` directory
 and the corresponding files in the `tests/pytester_example_files`
 directory.
 
-### Data File Structure
-
-Each data file may contain one or more sets of test data, in either yaml
-or json format. The top level is a dict whose keys are the test ids.
-Each test id is a dict whose keys are fixture names and whose values are
-the test data. An example input file might be:
-
-```yaml
-test1:
-  input_data_1: 17
-  input_data_2: 3
-  expected_result: 51
-
-test2:
-  input_data_1: 7
-  input_data_2: 7
-  expected_result: 49
-```
-
-This would parameterize into two test cases labeled `test1` and `test2`,
-each with three fixtures, `input_data_1`, `input_data_2`, and
-`expected_result`.
-
-### File Matching
+### Data File Matching
 
 Data files will be loaded if they match both of the following criteria:
 
@@ -112,15 +100,69 @@ the files
 
     data_foo_part_1.json
     data_foo_part_2.yaml
+    subfolder/data_foo.yaml
 
-would both be loaded.
+would all be loaded.
 
 Be careful of tests with names where the name of one is an extended version
 of the other. If you have two tests named `test_foo()` and `test_foo_bar()`,
 a data file with the name `data_foo_bar.yaml` will be parameterized for
 *both* tests. To prevent this, split the two test functions into two separate
 files in two different directories or change the name of one of the test
-functions.
+functions. See `test_load_file_extended_name.py` and
+`test_load_separate_subdirs.py` in the unit test files for this package for
+concrete examples of what might happen and how to avoid it.
+
+### Data File Structure
+
+Each data file may contain one or more sets of test data, in either yaml
+or json format. The top level is a dict whose keys are the test ids.
+Each test id is a dict whose keys are fixture names and whose values are
+the test data. An example input file `data_foo_bar.yaml` might contain:
+
+```yaml
+test1:
+  input_data_1: 17
+  input_data_2: 3
+  expected_result: 51
+
+test2:
+  input_data_1: 7
+  input_data_2: 7
+  expected_result: 49
+```
+
+This would parameterize into two test cases labeled `test1` and `test2`,
+each with three fixtures, `input_data_1`, `input_data_2`, and
+`expected_result`.
+
+### Loading Fixtures by Reference
+
+An additional powerful feature is the ability to load a data for a fixture
+from another data file. You can have fixture data loaded from another file
+by setting the fixture value to a special string value. It must be prefixed
+with two underscores and be of the format:
+
+    __<Filename including extension>:<test name>:<fixture name>
+
+For instance a data file `data_other_check_3.yaml` might reference a data
+file from the previous section:
+
+```yaml
+check_functionality:
+  input_data_1: 42
+  other_data: "__data_foo_bar.yaml:test2:input_data_1"
+```
+
+This would result in two fixture values being sent into the test function,
+`input_data_1 = 42` and `other_data = 7`, for a test case with
+`id = check_functionality`.
+
+## Issues
+
+If you encounter any problems, please [file an issue](https://github.com/paulsuh/pytest-parameterize-from-files/issues)
+including a detailed description and (if possible) an example of
+the problem.
 
 ## Contributing
 
@@ -130,36 +172,32 @@ first create a test case that demonstrates what your new code is supposed
 to do. Note that you need to set things up using the `pytester` fixture,
 rather than testing directly.
 
-This project uses hatch for its environments and build system. You can
-run tests using the command `hatch run test`, and `hatch run cov` to
-get test coverage.
+This project uses [hatch](https://github.com/pypa/hatch) for its
+environments and build system, as well as [pre-commit](https://pre-commit.com)
+and [ruff](https://github.com/astral-sh/ruff) for formatting and linting.
+Before you send in a pull request, please:
+- Run `ruff` with the settings in the `pyproject.toml` file
+- Run tests using the command `hatch --env test run test`, which will run
+  all of the tests against CPython 3.9-3.12 and PyPy 3.9-3.10
+- Check test coverage with `hatch run cov`
 
 ## License
 
 Distributed under the terms of the `MIT` license,
 `pytest-parameterize-from-files` is free and open source software.
 
-## Issues
-
-If you encounter any problems, please `file an issue`_ along with a
-detailed description.
-
 ## Colophon
 
-Inspired by `pytest-datadir`, `pytest-datafixtures`, and
-`pytest-xpara`.
+Inspired by the pytest plug-ins `pytest-datadir`, `pytest-datafixtures`,
+and `pytest-xpara`.
 - I wanted to load data from files, but `pytest-datadir` and
   `pytest-datafixtures` required that I read in the file manually.
 - I liked the way that `pytest-xpara` loaded data into a fixture,
   but didn't like that it would only work with one file and that
   I had to specify the file on the command line.
 
-This `pytest` plugin was generated with `Cookiecutter` along wit
-`@hackebrot`'s `cookiecutter-pytest-plugin`template, then
-extensively modified to bring it up to modern standards.
-
-- [Cookiecutter](https://github.com/audreyr/cookiecutter)
-- [MIT License](http://opensource.org/licenses/MIT)
-- [cookiecutter-pytest-plugin](https://github.com/pytest-dev/cookiecutter-pytest-plugin)
-- [file an issue](https://github.com/paulsuh/pytest-parameterize-from-files/issues)
-- [pytest](https://github.com/pytest-dev/pytest)
+This `pytest` plugin was developed using a skeleton generated by
+[`cookiecutter`](https://pypi.org/project/cookiecutter/) along with
+the [`cookiecutter-pytest-plugin`](https://github.com/pytest-dev/cookiecutter-pytest-plugin)
+template, then extensively modified to bring it up to modern
+standards.
