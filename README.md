@@ -221,7 +221,9 @@ This project uses [hatch][hatch home] for its environments and build
 system, as well as [pre-commit][pre-commit home] and [ruff][ruff home]
 for formatting and linting. Before you send in a pull request, please:
 
-- Run `ruff` with the settings in the `pyproject.toml` file
+- Set up `pre-commit` and use it to run `ruff` and `mdformat` with the
+  settings included in the `pyproject.toml` and
+  `.pre-commit-config.yaml` files
 - Run tests using the command `hatch run test:test`, which will run all
   of the tests against CPython 3.9-3.12 and PyPy 3.9-3.10
 - Check test coverage with `hatch run cov`
