@@ -21,7 +21,7 @@ repos:
     rev: 0.7.17  # Use the ref you want to point at
     hooks:
       - id: mdformat
-        args: [ --wrap, "72" ]
+        args: [ --wrap, "72", --number ]
         # Optionally add plugins
         additional_dependencies:
           - mdformat-gfm
