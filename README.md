@@ -1,18 +1,20 @@
 # pytest-parameterize-from-files
 
+***Making Pytest Parameterization Easy and Scalable***
+
 ![PyPI pyversions][pypi versions] ![Pytest][pytest shield]
 
 ![PyPaHatch][pypa hatch shield] ![Ruff Formatter][ruff formatter shield]
 ![Ruff Linter][ruff linter shield] ![Pre-Commit][pre-commit shield]
 
-A [`pytest-parameterize-from-files`][project home] is a
+[`pytest-parameterize-from-files`][project home] is a
 [`pytest`][pytest docs] plugin that parameterizes tests using data
-loaded from data files using the hook
+loaded from files using the hook
 [`pytest_generate_tests()`][pytest generate tests].
 
 ______________________________________________________________________
 
-## Making Test Parameterization Easy and Scalable
+## Introduction
 
 `pytest` has a feature called parameterization that allows you to run
 the same test function repeatedly using different inputs to test
@@ -27,22 +29,23 @@ Each function can have one or more data files associated with it, and
 each file can contain multiple test cases. The data files can be in JSON
 or YAML format.
 
-An additional issue with the basic pytest parameterization API is the
-way the user must provide the parameters. First all of the test case
-fixture names in a list, followed by a list of lists with the values the
+An additional issue with the basic pytest parameterization API is how
+the user must provide the parameters. First all of the test case fixture
+names in a list, followed by a list of lists with the values the
 fixtures will take on, and then an optional list of test case id's.
-Since the labels, values, and id's are in separate lists it can be
-difficult to keep track of which fixture corresponds to which value if
-you have many of them, and also which group of values corresponds to
-which test id. The file structure uses a dict to keep the test id and
-the data values together for human readability.
+Since the labels, values, and test case id's are in separate lists it
+can be difficult to keep track of which fixture corresponds to which
+value if you have many of them, and also which group of values
+corresponds to which test id. The file structure uses a dict to keep the
+test case id's, fixture names, and data values together in a way that is
+easier on the human brain.
 
 ### Features
 
-- Loads data for tests from files
+- Loads data for tests from files into fixtures
 - Multiple test data sets may be in one file
 - There may be multiple data files for each test
-- Data files may load data from fixtures in other files
+- Fixtures may refer to fixtures in other files
 - Intuitive and sane data file structure
 
 ### Compatibility
@@ -53,11 +56,17 @@ This package is a plug-in for `pytest` and works with Python 3.9 and up.
   or higher
 - Tested with CPython 3.9-3.12 and PyPy 3.9-3.10
 
+While this code currently has a classifier of "Development Status :: 4 -
+Beta", it is solid and well-tested. I will likely promote it to
+"Development Status :: 5 - Production/Stable" after a little more
+real-world usage.
+
 ______________________________________________________________________
 
 ## Installation
 
-You can install `pytest-parameterize-from-files` via `pip` from PyPI:
+You can install `pytest-parameterize-from-files` from PyPI by using
+`pip` :
 
 ```
 $ pip install pytest-parameterize-from-files
@@ -77,7 +86,7 @@ $ pytest --param-from-files
 ```
 
 You can then access the data from the files via the fixtures defined in
-those files. A common use case is to manage test case inputs and
+those files. The most common usage is to manage test case inputs and
 expected results. This allows the developer to change and add test cases
 without making changes to the test code.
 
@@ -91,13 +100,15 @@ corresponding files in the `tests/pytester_example_files` directory.
 
 ### Data File Matching
 
-Data files will be loaded if they match both of the following criteria:
+A data file will be loaded if it matches all of the following criteria:
 
-1. They are named for the test function, but swapping the prefix `test_`
-   for the prefix `data_` (although the file names may be suffixed by
-   any value).
-2. They are contained in a folder at or below the file that contains the
-   test.
+1. The filename starts with `data_`, followed by the name of the test
+   function with the prefix `test_` removed. The remainder of the
+   filename may be any value, and is usually used to identify the tests
+   contained in the file.
+2. The filename must end in `.json`, `.yaml`, or `.yml`.
+3. The file is contained in a folder at or below the file that contains
+   the test.
 
 For example, for a test function
 
@@ -115,12 +126,12 @@ subfolder/data_foo.yaml
 
 would all be loaded.
 
-Be careful of tests with names where the name of one is an extended
-version of the other. If you have two tests named `test_foo()` and
-`test_foo_bar()`, a data file with the name `data_foo_bar.yaml` will be
-parameterized for *both* tests. To prevent this, split the two test
-functions into two separate files in two different directories or change
-the name of one of the test functions. See
+*Caution*: Beware of situations where the name of one test is an
+extended version of another. E.g., if you have two tests named
+`test_foo()` and `test_foo_bar()`, a data file with the name
+`data_foo_bar.yaml` will be loaded for *both* tests. To prevent this,
+split the two test functions into two separate files in two different
+directories or change the name of one of the test functions. See
 `test_load_file_extended_name.py` and `test_load_separate_subdirs.py` in
 the unit test files for this package for concrete examples of what might
 happen and how to avoid it.
@@ -128,9 +139,11 @@ happen and how to avoid it.
 ### Data File Structure
 
 Each data file may contain one or more sets of test data, in either yaml
-or json format. The top level is a dict whose keys are the test ids.
+or json format. The top level is a dict whose keys are the test id's.
 Each test id is a dict whose keys are fixture names and whose values are
-the test data. An example input file `data_foo_bar.yaml` might contain:
+the test data. The test data may be anything, including container types
+such as lists or dicts. An example input file `data_foo_bar.yaml` might
+contain:
 
 ```yaml
 test1:
@@ -139,9 +152,13 @@ test1:
   expected_result: 51
 
 test2:
-  input_data_1: 7
-  input_data_2: 7
-  expected_result: 49
+  input_data_1:
+    - abc
+  input_data_2: 3
+  expected_result:
+    - abc
+    - abc
+    - abc
 ```
 
 This would parameterize into two test cases labeled `test1` and `test2`,
@@ -153,7 +170,7 @@ each with three fixtures, `input_data_1`, `input_data_2`, and
 If the same test case id is present in two different files, the fixtures
 from the two files will be merged as long as a fixture with the same
 name is not defined more than once for any particular test case id. For
-example, for a test function named `test_foo()` with the two data files:
+example, for a test function named `test_foo()` with two data files:
 
 File `data_foo_1.yaml`;
 
@@ -177,28 +194,28 @@ and the code that merges the test cases will raise an exception.
 
 ### Loading Fixtures by Reference
 
-An additional powerful feature is the ability to load a data for a
+An additional powerful feature is the ability to load the value for a
 fixture from another data file. You can have fixture data loaded from
-another file by setting the fixture value to a special string value. It
-must be prefixed with two underscores and be of the format:
+another file by setting the fixture value to a specially formatted
+string. It must be prefixed with two underscores and be of the format:
 
 ```
-__<Filename including extension>:<test name>:<fixture name>
+__<Filename>:<test case id>:<fixture name>
 ```
 
-For instance a data file `data_other_check_3.yaml` might reference a
-data file from the previous section:
+For instance a data file `data_other_check_3.yaml` might reference the
+data file `data_foo_2.yaml` from the previous section:
 
 ```yaml
 check_functionality:
   input_data_1: 42
-  other_data: __data_foo_bar.yaml:test2:input_data_1
+  other_data: __data_foo_2.yaml:test_case_one:fixture_two
 ```
 
 This would result in two fixture values being sent into the test
-function, `input_data_1 = 42` and `other_data = 7`, for a test case with
-`id = check_functionality`. Note that there is nothing preventing an
-infinite self-referential loop (although that is something that should
+function, `input_data_1 = 42` and `other_data = 170`, for a test case
+with `id = check_functionality`. (Note that there is nothing preventing
+an infinite self-referential loop although that is something that should
 be avoided).
 
 ______________________________________________________________________
@@ -239,7 +256,8 @@ Inspired by the pytest plug-ins `pytest-datadir`, `pytest-datafixtures`,
 and `pytest-xpara`.
 
 - I wanted to load data from files, but `pytest-datadir` and
-  `pytest-datafixtures` required that I read in the file manually.
+  `pytest-datafixtures` required code in the test specifically to read
+  in the file.
 - I liked the way that `pytest-xpara` loaded data into a fixture, but
   didn't like that it would only work with one file and that I had to
   specify the file on the command line.
