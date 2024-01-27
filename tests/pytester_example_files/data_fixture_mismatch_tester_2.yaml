@@ -1,0 +1,4 @@
+test_three:
+  input_data: "blah"
+  expected_result: "blahblahblah"
+  other_data: moof
