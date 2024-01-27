@@ -1,0 +1,18 @@
+test_one:
+  input_data_2: "meep"
+  expected_result: "blahmeep"
+
+test_two:
+  input_data_1:
+    - "abc"
+    - "def"
+  input_data_2:
+    - "ghi"
+    - "jkl"
+    - "mno"
+  expected_result:
+    - "abc"
+    - "def"
+    - "ghi"
+    - "jkl"
+    - "mno"
