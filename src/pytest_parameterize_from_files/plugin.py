@@ -41,6 +41,8 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
             test_data = load(fp)
         elif filepath.endswith((".yaml", ".yml")):
             test_data = safe_load(fp)
+        else:
+            raise BadTestCaseDataException(f"{filepath} does not have an extension of .json, .yaml, or .yml.")
 
         if not isinstance(test_data, dict):
             raise BadTestCaseDataException(f"{filepath} did not produce a dictionary when loaded.")
