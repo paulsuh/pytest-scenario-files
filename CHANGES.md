@@ -1,5 +1,12 @@
 # Change Log
 
+#### 0.10 - 2024-01-27
+
+- Change to using internal merge for data files
+- Remove undocumented feature that directories that start with "." would
+  not be searched for test data files
+- Add expected fail test cases to 100% test coverage
+
 #### 0.9.5 - 2024-01-25
 
 Updates to documentation and formatting
