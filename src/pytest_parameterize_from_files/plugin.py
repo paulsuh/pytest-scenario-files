@@ -93,11 +93,6 @@ def _locate_and_load_data_files(filename_base: str, start_dir_path: str) -> dict
     """
     result: dict[str, dict[str, Any]] = {}
     for root, dirs, files in os.walk(start_dir_path):
-        # remove dirs that start with .
-        for one_dir in dirs:
-            if one_dir.startswith("."):
-                dirs.remove(one_dir)
-
         test_data_filenames = [one_filename for one_filename in files if one_filename.startswith(filename_base)]
 
         for one_data_file in test_data_filenames:
