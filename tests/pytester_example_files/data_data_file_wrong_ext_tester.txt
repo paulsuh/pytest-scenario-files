@@ -1,0 +1,9 @@
+test_one:
+  input_1: "blah"
+  input_2: "blob"
+  expected_result: "blahblob"
+
+test_two:
+  input_1: 1700
+  input_2: 17
+  expected_result: 1717
