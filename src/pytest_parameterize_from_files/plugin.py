@@ -81,7 +81,7 @@ def _locate_and_load_test_data(test_name: str, dir_name: str) -> dict[str, dict[
     return _locate_and_load_data_files("data_" + test_name, start_dir_path=dir_name)
 
 
-def _locate_and_load_data_files(filename_base: str, start_dir_path: str = None) -> dict[str, dict[str, Any]]:
+def _locate_and_load_data_files(filename_base: str, start_dir_path: str) -> dict[str, dict[str, Any]]:
     """Locates and loads data for the given file name.
 
     :param filename_base: The root name of the files to be loaded.
@@ -91,8 +91,6 @@ def _locate_and_load_data_files(filename_base: str, start_dir_path: str = None) 
     :return: A dictionary containing the loaded data.
     :rtype: dict
     """
-    if start_dir_path is None:
-        start_dir_path = os.getcwd()
     result: dict[str, dict[str, Any]] = {}
     for root, dirs, files in os.walk(start_dir_path):
         # remove dirs that start with .
