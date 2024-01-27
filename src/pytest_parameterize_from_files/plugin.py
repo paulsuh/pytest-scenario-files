@@ -3,11 +3,10 @@ from json import load
 from os.path import join
 from typing import Any
 
-from deepmerge import merge_or_raise
 from yaml import safe_load
 
 
-class BadTestCaseData(Exception):
+class BadTestCaseDataException(Exception):
     """An exception class used to mark bad test case data."""
 
     pass
@@ -35,7 +34,7 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
     :type filepath: str
     :return: The loaded test data as a dictionary.
     :rtype: dict[str, Any]
-    :raises BadTestCaseData: If the loaded test case data are of the incorrect format.
+    :raises BadTestCaseDataException: If the loaded test case data are of the incorrect format.
     """
     with open(filepath) as fp:
         if filepath.endswith(".json"):
@@ -44,11 +43,11 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
             test_data = safe_load(fp)
 
         if not isinstance(test_data, dict):
-            raise BadTestCaseData(f"{filepath} did not produce a dictionary when loaded.")
+            raise BadTestCaseDataException(f"{filepath} did not produce a dictionary when loaded.")
 
         for case_name, case_data in test_data.items():
             if not isinstance(case_data, dict):
-                raise BadTestCaseData(f"From {filepath}: data for test case {case_name} is not a dict. ")
+                raise BadTestCaseDataException(f"From {filepath}: data for test case {case_name} is not a dict. ")
 
         _load_referenced_data(test_data)
 
@@ -80,11 +79,15 @@ def _locate_and_load_test_data(test_name: str, dir_name: str) -> dict[str, dict[
     return _locate_and_load_data_files("data_" + test_name, start_dir_path=dir_name)
 
 
-def _locate_and_load_data_files(filename_base: str, start_dir_path=None) -> dict[str, dict[str, Any]]:
+def _locate_and_load_data_files(filename_base: str, start_dir_path: str = None) -> dict[str, dict[str, Any]]:
     """Locates and loads data for the given file name.
 
     :param filename_base: The root name of the files to be loaded.
+    :type filename_base: str
+    :param start_dir_path: path where to start the search for the data files
+    :type start_dir_path: str
     :return: A dictionary containing the loaded data.
+    :rtype: dict
     """
     if start_dir_path is None:
         start_dir_path = os.getcwd()
@@ -99,9 +102,38 @@ def _locate_and_load_data_files(filename_base: str, start_dir_path=None) -> dict
 
         for one_data_file in test_data_filenames:
             test_data = _load_test_data_from_file(join(root, one_data_file))
-            merge_or_raise.merge(result, test_data)
+            _merge_new_test_data(result, test_data, one_data_file)
 
     return result
+
+
+def _merge_new_test_data(
+    result: dict[str, dict[str, Any]], new_test_data: dict[str, dict[str, Any]], new_data_file: str
+) -> None:
+    """Merge test case data from a new file into the existing set of test cases.
+
+    :param result: A dictionary representing the result of merging the test data.
+    :param new_test_data: A dictionary containing new test data to be merged.
+    :param new_data_file: A string representing the file from which the new test data is loaded.
+    :return: None
+    :raises BadTestCaseDataException: raised if there is a conflict between data files for a given test case id and fixture
+    """
+    for new_test_case in new_test_data.keys():
+        if result.get(new_test_case) is None:
+            # No existing test case with that id, just add it
+            result[new_test_case] = new_test_data[new_test_case]
+        else:
+            # There is an existing test case with that id, try to merge
+            existing_test_case = result[new_test_case]
+            for new_fixture in new_test_data[new_test_case].keys():
+                if existing_test_case.get(new_fixture) is None:
+                    # No existing fixture, just merge
+                    existing_test_case[new_fixture] = new_test_data[new_test_case][new_fixture]
+                else:
+                    # Fixture already defined, raise an exception
+                    raise BadTestCaseDataException(
+                        f"In file {new_data_file} for test case {new_test_case}, fixture {new_fixture} already loaded."
+                    )
 
 
 def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]:
@@ -128,7 +160,7 @@ def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]
 
     # raise an exception if there are bad test cases
     if len(bad_test_cases) > 0:
-        raise BadTestCaseData(f"Mismatched fixture keys {bad_test_cases}")
+        raise BadTestCaseDataException(f"Mismatched fixture keys {bad_test_cases}")
 
     # return the list of fixture names sorted alphabetically
     return sorted(all_fixture_keys)
