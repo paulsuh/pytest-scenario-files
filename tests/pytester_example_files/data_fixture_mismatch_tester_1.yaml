@@ -1,0 +1,7 @@
+test_one:
+  input_data: "blah"
+  expected_result: "blahblahblah"
+
+test_two:
+  input_data: 17
+  expected_result: 51
