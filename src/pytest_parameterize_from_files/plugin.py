@@ -8,7 +8,7 @@ from yaml import safe_load
 
 
 class BadTestCaseData(Exception):
-    """A custom exception class for representing bad test case data."""
+    """An exception class used to mark bad test case data."""
 
     pass
 
@@ -35,7 +35,7 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
     :type filepath: str
     :return: The loaded test data as a dictionary.
     :rtype: dict[str, Any]
-    :raises BadTestCaseData: If the loaded test data is not a dictionary or any of the case data is not a dictionary.
+    :raises BadTestCaseData: If the loaded test case data are of the incorrect format.
     """
     with open(filepath) as fp:
         if filepath.endswith(".json"):
@@ -48,7 +48,7 @@ def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
 
         for case_name, case_data in test_data.items():
             if not isinstance(case_data, dict):
-                raise BadTestCaseData(f"From {filepath}: data for case {case_name} is not a dict. ")
+                raise BadTestCaseData(f"From {filepath}: data for test case {case_name} is not a dict. ")
 
         _load_referenced_data(test_data)
 
@@ -111,6 +111,7 @@ def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]
 
     :param fixture_dict: Dict of dicts containing test case data.
     :return: A list of fixture names sorted alphabetically.
+    :raises BadTestCaseData: If the fixture keys are mismatched between the test cases.
     """
     # check that all of the test cases have the same sets of keys
     # get all of the keys from all of the test cases
