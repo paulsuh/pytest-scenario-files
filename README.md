@@ -4,8 +4,8 @@
 
 ![PyPI pyversions][pypi versions] ![Pytest][pytest shield]
 
-![PyPaHatch][pypa hatch shield] ![Ruff Formatter][ruff formatter shield]
-![Ruff Linter][ruff linter shield] ![Pre-Commit][pre-commit shield]
+![Hatch project][hatch shield] ![Ruff][ruff shield]
+![Pre-Commit][pre-commit shield]
 
 [`pytest-parameterize-from-files`][project home] is a
 [`pytest`][pytest docs] plugin that parameterizes tests using data
@@ -272,15 +272,14 @@ ______________________________________________________________________
 [cookiecutter home]: https://pypi.org/project/cookiecutter/
 [cookiecutter-pytest-plugin home]: https://github.com/pytest-dev/cookiecutter-pytest-plugin
 [hatch home]: https://github.com/pypa/hatch
+[hatch shield]: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
 [pre-commit home]: https://pre-commit.com
-[pre-commit shield]: https://img.shields.io/badge/Pre--Commit-passed-green?logo=precommit
+[pre-commit shield]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
 [project home]: https://github.com/paulsuh/pytest-parameterize-from-files
 [project issues]: https://github.com/paulsuh/pytest-parameterize-from-files/issues
-[pypa hatch shield]: https://img.shields.io/badge/PyPa-Hatch-green
 [pypi versions]: https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg
 [pytest docs]: https://docs.pytest.org/en/stable/index.html
 [pytest generate tests]: https://docs.pytest.org/en/stable/reference/reference.html#collection-hooks
 [pytest shield]: https://img.shields.io/badge/Pytest-Plug--in-orange?logo=pytest
-[ruff formatter shield]: https://img.shields.io/badge/Ruff-Formatter-green
 [ruff home]: https://github.com/astral-sh/ruff
-[ruff linter shield]: https://img.shields.io/badge/Ruff-Linter-green
+[ruff shield]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
