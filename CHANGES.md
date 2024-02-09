@@ -1,5 +1,10 @@
 # Change Log
 
+#### 0.10.1 - 2024-02-08
+
+Search the entire space for files that load data by reference instead of
+assuming that the file will be found in the same subdirectory
+
 #### 0.10 - 2024-01-27
 
 - Change to using internal merge for data files
