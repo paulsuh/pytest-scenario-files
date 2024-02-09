@@ -1,5 +1,9 @@
 # Change Log
 
+#### 0.10.2 - 2024-02-09
+
+Add additional test case for finding files by reference
+
 #### 0.10.1 - 2024-02-08
 
 Search the entire space for files that load data by reference instead of
