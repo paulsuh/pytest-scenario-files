@@ -68,7 +68,7 @@ def _load_referenced_data(base_data_dict: dict[str, dict[str, Any]]) -> None:
                 if one_fixture_value.startswith("__"):
                     data_file_path = one_fixture_value.removeprefix("__")
                     ref_data_file_name, ref_test_case, ref_fixture = data_file_path.split(":")
-                    referenced_data_file_contents = _load_test_data_from_file(ref_data_file_name)
+                    referenced_data_file_contents = _locate_and_load_data_files(ref_data_file_name, os.getcwd())
                     one_test_case[one_fixture_name] = referenced_data_file_contents[ref_test_case][ref_fixture]
 
 
