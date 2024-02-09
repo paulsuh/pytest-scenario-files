@@ -59,7 +59,7 @@ packages = ["src/pytest_parameterize_from_files"]
 
 [tool.hatch.envs.default]
 dependencies = [
-    "coverage[toml]>=6.5",
+    "coverage[toml]",
     "pytest",
     "ruff"
 ]
