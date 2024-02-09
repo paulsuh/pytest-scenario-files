@@ -44,6 +44,8 @@ unittest = [
 
 [project.urls]
 "Repository" = "https://github.com/paulsuh/pytest-parameterize-from-files"
+"Issues" = "https://github.com/paulsuh/pytest-parameterize-from-files/issues"
+"Changelog" = "https://github.com/paulsuh/pytest-parameterize-from-files/blob/main/CHANGES.md"
 
 [project.entry-points.pytest11]
 parameterize-from-files = "pytest_parameterize_from_files"
