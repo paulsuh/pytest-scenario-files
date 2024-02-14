@@ -161,6 +161,32 @@ def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]
     return sorted(all_fixture_keys)
 
 
+def _extract_indirect_fixtures(fixture_data_dict: dict[str, dict[str, Any]]) -> list[str] | bool:
+    """
+    Extracts indirect fixtures
+
+    Look for fixtures whose names end with "_indirect", remove the suffix and
+    add the name of the fixture to the list of indirect fixtures
+
+    :param fixture_data_dict: A dictionary containing the fixture data for each test case.
+    :param all_fixture_names: A list of all fixture names.
+    :return: A list of indirect fixture names or None
+    """
+    indirect_fixtures = []
+    for one_test_case_data in fixture_data_dict.values():
+        for one_fixture_name in one_test_case_data.keys():
+            if one_fixture_name.endswith("_indirect"):
+                trimmed_fixture_name = one_fixture_name.removesuffix()
+                fixture_data = one_test_case_data.pop(one_fixture_name)
+                one_test_case_data[trimmed_fixture_name] = fixture_data
+                indirect_fixtures.append(trimmed_fixture_name)
+
+    if len(indirect_fixtures) > 0:
+        return indirect_fixtures
+    else:
+        return False
+
+
 def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> tuple[list[str], list[list[Any]]]:
     """Extracts fixture data into a format ready for the parameterize call.
 
@@ -215,8 +241,14 @@ def pytest_generate_tests(metafunc):
         # will raise an exception if the fixture names are inconsistent
         fixture_names = _extract_fixture_names(fixture_raw_data_dict)
 
+        # pull out indirect fixtures and remove suffix from fixture names
+        # could be False if there are no indirect fixtures
+        indirect_fixture_names = _extract_indirect_fixtures(fixture_raw_data_dict)
+
         # reformat the case ids and fixture data into list and list of lists respectively
         case_ids, fixture_data_list = _extract_fixture_data(fixture_raw_data_dict)
 
         # do the parameterization
-        metafunc.parametrize(fixture_names, fixture_data_list, ids=case_ids, scope="function")
+        metafunc.parametrize(
+            fixture_names, fixture_data_list, ids=case_ids, indirect=indirect_fixture_names, scope="function"
+        )
