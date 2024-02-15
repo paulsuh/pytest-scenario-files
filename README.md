@@ -2,15 +2,13 @@
 
 ***Making Pytest Parameterization Easy and Scalable***
 
-![PyPI pyversions][pypi versions] ![Pytest][pytest shield]
+![PyPI pyversions][link01] ![Pytest][link02]
 
-![Hatch project][hatch shield] ![Ruff][ruff shield]
-![Pre-Commit][pre-commit shield]
+![Hatch project][link03] ![Ruff][link04] !\[Pre-Commit\]\[link 0\]
 
-[`pytest-parameterize-from-files`][project home] is a
-[`pytest`][pytest docs] plugin that parameterizes tests using data
-loaded from files using the hook
-[`pytest_generate_tests()`][pytest generate tests].
+[`pytest-parameterize-from-files`][link06] is a [`pytest`][link07]
+plugin that parameterizes tests using data loaded from files using the
+hook [`pytest_generate_tests()`][link08].
 
 ______________________________________________________________________
 
@@ -46,6 +44,7 @@ easier on the human brain.
 - Multiple test data sets may be in one file
 - There may be multiple data files for each test
 - Fixtures may refer to fixtures in other files
+- Can specify indirect parameterization
 - Intuitive and sane data file structure
 
 ### Compatibility
@@ -83,6 +82,17 @@ An example command line would be:
 
 ```
 $ pytest --param-from-files
+```
+
+This parameter can be specified in a config file if you are running
+under a CI/CD system that doesn't allow additional parameters easily.
+For instance:
+
+```toml
+# pyproject.toml:
+
+[tool.pytest.ini_options]
+addopts = "--param-from-files"
 ```
 
 You can then access the data from the files via the fixtures defined in
@@ -218,13 +228,48 @@ with `id = check_functionality`. (Note that there is nothing preventing
 an infinite self-referential loop although that is something that should
 be avoided).
 
+### Indirect Parameterization
+
+Pytest has a feature called [indirect parameterization][link09], where
+the parameter value is passed to a fixture function, and the return
+value of the fixture function is then passed downstream. You can specify
+that a fixture should be marked for indirect parameterization by
+appending the suffix `_indirect` to the fixture name in the data file.
+If the data file contains:
+
+```yaml
+test_case_1:
+  variable_A: 51
+  variable_B_indirect: 3
+
+test_case_2:
+  variable_A: 85
+  variable_B_indirect: 5
+```
+
+the corresponding test code would be:
+
+```python
+@pytest.fixture
+def variable_B(request):
+    return request.param * 17
+
+
+def test_func(variable_A, variable_B):
+    assert variable_A == variable_B
+```
+
+The values for fixture `variable_A` would be passed directly to
+`test_func()`, but the values for `variable_B_indirect` would be passed
+to the `variable_B()` function and the return value would be passed in
+as the `variable_B` parameter to `test_func()`.
+
 ______________________________________________________________________
 
 ## Reporting Issues
 
-If you encounter any problems, please [file an issue][project issues]
-including a detailed description and (if possible) an example of the
-problem.
+If you encounter any problems, please [file an issue][link10] including
+a detailed description and (if possible) an example of the problem.
 
 ## Contributing
 
@@ -234,9 +279,9 @@ feature, please first create a test case that demonstrates what your new
 code is supposed to do. Note that you need to set things up using the
 `pytester` fixture, rather than testing directly.
 
-This project uses [hatch][hatch home] for its environments and build
-system, as well as [pre-commit][pre-commit home] and [ruff][ruff home]
-for formatting and linting. Before you send in a pull request, please:
+This project uses [hatch][link11] for its environments and build system,
+as well as [pre-commit][link12] and [ruff][link13] for formatting and
+linting. Before you send in a pull request, please:
 
 - Set up `pre-commit` and use it to run `ruff` and `mdformat` with the
   settings included in the `pyproject.toml` and
@@ -253,7 +298,8 @@ Distributed under the terms of the `MIT` license,
 ## Colophon
 
 Inspired by the pytest plug-ins `pytest-datadir`, `pytest-datafixtures`,
-and `pytest-xpara`.
+and `pytest-xpara`. I also looked at the package
+`parameterize-from-file`.
 
 - I wanted to load data from files, but `pytest-datadir` and
   `pytest-datafixtures` required code in the test specifically to read
@@ -262,24 +308,33 @@ and `pytest-xpara`.
   didn't like that it would only work with one file and that I had to
   specify the file on the command line.
 
+After I wrote much of this project I found the package
+`parameterize-from-files` which has a similar name. It's not to my taste
+as I think it's trying too hard. Placing code snippets into the data
+files would be a maintenance problem down the road and the process to
+specify mulitple data files is clunky. Having to import the package in
+every test file and decorate each function increases the complexity of
+the test code. Even so, I will be renaming this project shortly so that
+there will be less of a chance for confusion between them.
+
 This `pytest` plugin was developed using a skeleton generated by
-[`cookiecutter`][cookiecutter home] along with the
-[`cookiecutter-pytest-plugin`][cookiecutter-pytest-plugin home]
-template, then extensively modified to bring it up to modern standards.
+[`cookiecutter`][link14] along with the
+[`cookiecutter-pytest-plugin`][link15] template, then extensively
+modified to bring it up to modern standards.
 
 ______________________________________________________________________
 
-[cookiecutter home]: https://pypi.org/project/cookiecutter/
-[cookiecutter-pytest-plugin home]: https://github.com/pytest-dev/cookiecutter-pytest-plugin
-[hatch home]: https://github.com/pypa/hatch
-[hatch shield]: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
-[pre-commit home]: https://pre-commit.com
-[pre-commit shield]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
-[project home]: https://github.com/paulsuh/pytest-parameterize-from-files
-[project issues]: https://github.com/paulsuh/pytest-parameterize-from-files/issues
-[pypi versions]: https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg
-[pytest docs]: https://docs.pytest.org/en/stable/index.html
-[pytest generate tests]: https://docs.pytest.org/en/stable/reference/reference.html#collection-hooks
-[pytest shield]: https://img.shields.io/badge/Pytest-Plug--in-orange?logo=pytest
-[ruff home]: https://github.com/astral-sh/ruff
-[ruff shield]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+[link01]: https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg
+[link02]: https://img.shields.io/badge/Pytest-Plug--in-orange?logo=pytest
+[link03]: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
+[link04]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
+[link06]: https://github.com/paulsuh/pytest-parameterize-from-files
+[link07]: https://docs.pytest.org/en/stable/index.html
+[link08]: https://docs.pytest.org/en/stable/reference/reference.html#collection-hooks
+[link09]: https://docs.pytest.org/en/stable/example/parametrize.html#indirect-parametrization
+[link10]: https://github.com/paulsuh/pytest-parameterize-from-files/issues
+[link11]: https://github.com/pypa/hatch
+[link12]: https://pre-commit.com
+[link13]: https://github.com/astral-sh/ruff
+[link14]: https://pypi.org/project/cookiecutter/
+[link15]: https://github.com/pytest-dev/cookiecutter-pytest-plugin

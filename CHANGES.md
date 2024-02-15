@@ -1,5 +1,9 @@
 # Change Log
 
+#### 0.11 - 2024-02-14
+
+Add ability to specify indirect parameterization
+
 #### 0.10.2 - 2024-02-09
 
 Add additional test case for finding files by reference
@@ -15,6 +19,7 @@ assuming that the file will be found in the same subdirectory
 - Remove undocumented feature that directories that start with "." would
   not be searched for test data files
 - Add expected fail test cases to 100% test coverage
+- Remove dependency on `deepmerge`
 
 #### 0.9.5 - 2024-01-25
 
