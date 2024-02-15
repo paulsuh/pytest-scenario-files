@@ -1,0 +1,7 @@
+test_one:
+  indirect_fixture_test_indirect: 5
+  expected_result: 25
+
+test_two:
+  indirect_fixture_test_indirect: "abc"
+  expected_result: "abcabcabcabcabc"
