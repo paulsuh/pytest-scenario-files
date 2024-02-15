@@ -161,30 +161,26 @@ def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]
     return sorted(all_fixture_keys)
 
 
-def _extract_indirect_fixtures(fixture_data_dict: dict[str, dict[str, Any]]) -> list[str] | bool:
-    """
-    Extracts indirect fixtures
-
-    Look for fixtures whose names end with "_indirect", remove the suffix and
-    add the name of the fixture to the list of indirect fixtures
-
-    :param fixture_data_dict: A dictionary containing the fixture data for each test case.
-    :param all_fixture_names: A list of all fixture names.
-    :return: A list of indirect fixture names or None
-    """
+def _extract_indirect_fixtures(
+    fixture_data_dict: dict[str, dict[str, Any]], all_fixture_names: list[str]
+) -> tuple[list[str], list[str] | bool]:
     indirect_fixtures = []
-    for one_test_case_data in fixture_data_dict.values():
-        for one_fixture_name in one_test_case_data.keys():
-            if one_fixture_name.endswith("_indirect"):
-                trimmed_fixture_name = one_fixture_name.removesuffix()
-                fixture_data = one_test_case_data.pop(one_fixture_name)
-                one_test_case_data[trimmed_fixture_name] = fixture_data
-                indirect_fixtures.append(trimmed_fixture_name)
+    all_fixtures_trimmed = []
+    for fixture_name in all_fixture_names:
+        if fixture_name.endswith("_indirect"):
+            fixture_name = fixture_name.removesuffix("_indirect")
+            indirect_fixtures.append(fixture_name)
+        all_fixtures_trimmed.append(fixture_name)
 
     if len(indirect_fixtures) > 0:
-        return indirect_fixtures
+        for one_test_case_data in fixture_data_dict.values():
+            for one_fixture_name in indirect_fixtures:
+                fixture_data = one_test_case_data.pop(one_fixture_name + "_indirect")
+                one_test_case_data[one_fixture_name] = fixture_data
+
+        return all_fixtures_trimmed, indirect_fixtures
     else:
-        return False
+        return all_fixtures_trimmed, False
 
 
 def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> tuple[list[str], list[list[Any]]]:
@@ -243,7 +239,7 @@ def pytest_generate_tests(metafunc):
 
         # pull out indirect fixtures and remove suffix from fixture names
         # could be False if there are no indirect fixtures
-        indirect_fixture_names = _extract_indirect_fixtures(fixture_raw_data_dict)
+        fixture_names, indirect_fixture_names = _extract_indirect_fixtures(fixture_raw_data_dict, fixture_names)
 
         # reformat the case ids and fixture data into list and list of lists respectively
         case_ids, fixture_data_list = _extract_fixture_data(fixture_raw_data_dict)
