@@ -1,7 +1,7 @@
 import os
 from json import load
 from os.path import join
-from typing import Any
+from typing import Any, Union
 
 from yaml import safe_load
 
@@ -163,7 +163,7 @@ def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]
 
 def _extract_indirect_fixtures(
     fixture_data_dict: dict[str, dict[str, Any]], all_fixture_names: list[str]
-) -> tuple[list[str], list[str] | bool]:
+) -> tuple[list[str], Union[list[str], bool]]:  # noqa UP007    Allow old style Union for Python 3.9
     indirect_fixtures = []
     all_fixtures_trimmed = []
     for fixture_name in all_fixture_names:
