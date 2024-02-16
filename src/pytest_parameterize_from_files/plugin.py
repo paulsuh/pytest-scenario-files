@@ -164,6 +164,14 @@ def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]
 def _extract_indirect_fixtures(
     fixture_data_dict: dict[str, dict[str, Any]], all_fixture_names: list[str]
 ) -> tuple[list[str], Union[list[str], bool]]:  # noqa UP007    Allow old style Union for Python 3.9
+    """Extracts indirect fixtures
+
+    :param fixture_data_dict: A dictionary of fixture data after loading referenced fixtures.
+    :param all_fixture_names: A list of all fixture names.
+    :return: A tuple containing the list of all fixture names with any _indirect suffixes removed and either
+             a list of indirect fixture names or False if there are no indirect fixtures (so that this
+             value can be fed directly into metafunc.parameterize().
+    """
     indirect_fixtures = []
     all_fixtures_trimmed = []
     for fixture_name in all_fixture_names:
