@@ -111,7 +111,8 @@ def _merge_new_test_data(
     :param new_test_data: A dictionary containing new test data to be merged.
     :param new_data_file: A string representing the file from which the new test data is loaded.
     :return: None
-    :raises BadTestCaseDataException: raised if there is a conflict between data files for a given test case id and fixture
+    :raises BadTestCaseDataException: raised if there is a conflict between data files for a given
+            test case id and fixture
     """
     for new_test_case in new_test_data.keys():
         if result.get(new_test_case) is None:
@@ -170,7 +171,7 @@ def _extract_indirect_fixtures(
     :param all_fixture_names: A list of all fixture names.
     :return: A tuple containing the list of all fixture names with any _indirect suffixes removed and either
              a list of indirect fixture names or False if there are no indirect fixtures (so that this
-             value can be fed directly into metafunc.parameterize().
+             value can be fed directly into metafunc.parameterize()).
     """
     indirect_fixtures = []
     all_fixtures_trimmed = []
