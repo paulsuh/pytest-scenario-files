@@ -33,7 +33,7 @@ def test_load_file_extended_name_conflict(pytester):
     pytester.copy_example("data_load_one_tester_1.yaml")
     pytester.copy_example("data_load_one_file_tester.json")
 
-    result = pytester.runpytest("-k", "test_load_one_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_load_one_tester", "-v")
 
     result.assert_outcomes(errors=1)
 
@@ -47,6 +47,6 @@ def test_load_file_extended_name_no_conflict(pytester):
     pytester.copy_example("data_load_one_tester_1.json")
     pytester.copy_example("data_load_one_file_tester.json")
 
-    result = pytester.runpytest("-k", "test_load_one_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_load_one_tester", "-v")
 
     result.assert_outcomes(passed=2)

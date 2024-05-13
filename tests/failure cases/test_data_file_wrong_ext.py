@@ -5,6 +5,6 @@ def test_data_file_wrong_ext(pytester):
     # create the data files
     pytester.copy_example("data_data_file_wrong_ext_tester.txt")
 
-    result = pytester.runpytest("-k", "test_data_file_wrong_ext_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_data_file_wrong_ext_tester", "-v")
 
     result.assert_outcomes(errors=1)

@@ -10,6 +10,6 @@ def test_load_indirect_fixture(pytester):
     # create the data file
     pytester.copy_example("data_load_indirect_fixture_tester_1.yaml")
 
-    result = pytester.runpytest("-k", "test_load_indirect_fixture_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_load_indirect_fixture_tester", "-v")
 
     result.assert_outcomes(passed=2)

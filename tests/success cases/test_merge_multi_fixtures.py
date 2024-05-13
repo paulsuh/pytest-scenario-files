@@ -15,6 +15,6 @@ def test_merge_multi_fixtures(pytester):
     pytester.copy_example("data_merge_multi_fixtures_tester_2.json")
     pytester.copy_example("data_merge_multi_fixtures_tester_3.yaml")
 
-    result = pytester.runpytest("-k", "test_merge_multi_fixtures_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_merge_multi_fixtures_tester", "-v")
 
     result.assert_outcomes(passed=3)

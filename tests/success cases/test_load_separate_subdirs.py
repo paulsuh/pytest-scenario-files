@@ -16,8 +16,8 @@ def test_separate_subdirs(pytester):
     datafile2_path = pytester.copy_example("data_load_one_tester_1.yaml")
     datafile2_path.rename(datafile2_path.parent / "subdir2" / datafile2_path.name)
 
-    result1 = pytester.runpytest("-k", "test_load_one_file_tester", "--param-from-files", "-v", "-rA")
+    result1 = pytester.runpytest("-k", "test_load_one_file_tester", "-v", "-rA")
     result1.assert_outcomes(passed=1)
 
-    result2 = pytester.runpytest("-k", "test_load_one_tester", "--param-from-files", "-v", "-rA")
+    result2 = pytester.runpytest("-k", "test_load_one_tester", "-v", "-rA")
     result2.assert_outcomes(passed=2)

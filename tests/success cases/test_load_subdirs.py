@@ -11,6 +11,6 @@ def test_load_subdirs(pytester):
     subdir_path.mkdir()
     datafile2_path.rename(subdir_path / datafile2_path.name)
 
-    result = pytester.runpytest("-k", "test_load_subdirs_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_load_subdirs_tester", "-v")
 
     result.assert_outcomes(passed=4)

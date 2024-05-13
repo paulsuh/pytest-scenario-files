@@ -1,14 +1,13 @@
-# pytest-parameterize-from-files
+# pytest-scenario-files
 
-***Making Pytest Parameterization Easy and Scalable***
+***Making Pytest Scenarios Easy and Scalable***
 
 ![PyPI pyversions][link01] ![Pytest][link02]
 
 ![Hatch project][link03] ![Ruff][link04] ![Pre-Commit][link05]
 
-[`pytest-parameterize-from-files`][link06] is a [`pytest`][link07]
-plugin that parameterizes tests using data loaded from files using the
-hook [`pytest_generate_tests()`][link08].
+[`pytest-scenario-files`][link06] is a [`pytest`][link07] plugin that
+runs unit test scenarios using data loaded from files.
 
 ______________________________________________________________________
 
@@ -16,16 +15,16 @@ ______________________________________________________________________
 
 `pytest` has a feature called parameterization that allows you to run
 the same test function repeatedly using different inputs to test
-multiple cases. However, managing the test data for parameterization can
-be a problem. Sometimes the input data is very large or there are many
-test cases, so that it is impractical to put all of the data into the
-source code of the test.
+multiple scenarios. However, managing the test data for parameterization
+can be a problem. Sometimes the input data is very large or there are
+many test cases, so that it is impractical to put all of the data into
+the source code of the test.
 
-This plug-in loads the data for the test parameterization from separate
-data files that are automatically matched up against the test functions.
-Each function can have one or more data files associated with it, and
-each file can contain multiple test cases. The data files can be in JSON
-or YAML format.
+This plug-in loads the data for the test scenarios from separate data
+files that are automatically matched up against the test functions. Each
+function can have one or more data files associated with it, and each
+file can contain multiple scenarios. The data files can be in JSON or
+YAML format.
 
 An additional issue with the basic pytest parameterization API is how
 the user must provide the parameters. First all of the test case fixture
@@ -40,8 +39,8 @@ easier on the human brain.
 
 ### Features
 
-- Loads data for tests from files into fixtures
-- Multiple test data sets may be in one file
+- Loads data for scenarios from files into fixtures
+- Multiple scenario data sets may be in one file
 - There may be multiple data files for each test
 - Fixtures may refer to fixtures in other files
 - Can specify indirect parameterization
@@ -64,36 +63,18 @@ ______________________________________________________________________
 
 ## Installation
 
-You can install `pytest-parameterize-from-files` from PyPI by using
-`pip` :
+You can install `pytest-scenario-files` from PyPI by using `pip` :
 
 ```
-$ pip install pytest-parameterize-from-files
+$ pip install pytest-scenario-files
 ```
 
 ## Usage
 
-To use this plugin you need to make only two changes to your tests:
+To use this plugin you need to make only two changes to your project:
 
-1. Create the data file(s) with the proper names and formats
-2. Call `pytest` with the flag `--param-from-files`
-
-An example command line would be:
-
-```
-$ pytest --param-from-files
-```
-
-This parameter can be specified in a config file if you are running
-under a CI/CD system that doesn't allow additional parameters easily.
-For instance:
-
-```toml
-# pyproject.toml:
-
-[tool.pytest.ini_options]
-addopts = "--param-from-files"
-```
+1. Install the plug-in
+2. Create the data file(s) with the proper names and formats
 
 You can then access the data from the files via the fixtures defined in
 those files. The most common usage is to manage test case inputs and
@@ -109,9 +90,9 @@ use this package. Look in the files in the `tests/` directory and the
 corresponding files in the `tests/pytester_example_files` directory.
 
 This package is also designed to be transparent for non-parametric
-usage. If there are no data files associated with a particular test it
-will not be parameterized and everything will work as though the plug-in
-was not present.
+usage. If there are no data files associated with a particular test the
+fixtures will not be parameterized and everything will work as though
+the plug-in was not present.
 
 ### Data File Matching
 
@@ -298,7 +279,7 @@ linting. Before you send in a pull request, please:
 ## License
 
 Distributed under the terms of the `MIT` license,
-`pytest-parameterize-from-files` is free and open source software.
+`pytest-scenario-files` is free and open source software.
 
 ## Colophon
 
@@ -318,9 +299,10 @@ and `pytest-xpara`. I also looked at the package
   data files would be a maintenance problem down the road and the
   process to specify multiple data files is clunky. Having to import the
   package in every test file and decorate each function increases the
-  complexity of the test code. Even so, I will be renaming this project
-  shortly so that there will be less of a chance for confusion between
-  them.
+  complexity of the test code.
+
+To avoid confusion and provide a more descriptive title, I renamed this
+project to `pytest-scenario-files`.
 
 This `pytest` plugin was developed using a skeleton generated by
 [`cookiecutter`][link14] along with the
@@ -336,7 +318,6 @@ ______________________________________________________________________
 [link05]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
 [link06]: https://github.com/paulsuh/pytest-parameterize-from-files
 [link07]: https://docs.pytest.org/en/stable/index.html
-[link08]: https://docs.pytest.org/en/stable/reference/reference.html#collection-hooks
 [link09]: https://docs.pytest.org/en/stable/example/parametrize.html#indirect-parametrization
 [link10]: https://github.com/paulsuh/pytest-parameterize-from-files/issues
 [link11]: https://github.com/pypa/hatch
