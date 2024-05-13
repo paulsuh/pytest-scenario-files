@@ -13,6 +13,6 @@ def test_load_one_file(pytester):
     # create the data file
     pytester.copy_example("data_load_one_file_tester.json")
 
-    result = pytester.runpytest("-k", "test_load_one_file_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_load_one_file_tester", "-v")
 
     result.assert_outcomes(passed=1)

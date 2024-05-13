@@ -5,6 +5,6 @@ def test_test_case_not_dict(pytester):
     # create the data files
     pytester.copy_example("data_test_case_not_dict_tester.yaml")
 
-    result = pytester.runpytest("-k", "test_test_case_not_dict_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_test_case_not_dict_tester", "-v")
 
     result.assert_outcomes(errors=1)

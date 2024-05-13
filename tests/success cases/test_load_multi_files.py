@@ -15,6 +15,6 @@ def test_load_multi_files(pytester):
     pytester.copy_example("data_load_multi_files_tester_2.json")
     pytester.copy_example("data_load_multi_files_tester_3.yaml")
 
-    result = pytester.runpytest("-k", "test_load_multi_files_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_load_multi_files_tester", "-v")
 
     result.assert_outcomes(passed=5)

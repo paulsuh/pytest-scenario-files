@@ -3,8 +3,8 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pytest-parameterize-from-files"
-description = 'A pytest plugin that parameterizes tests from data files.'
+name = "pytest-scenario-files"
+description = 'A pytest plugin that generates unit test scenarios from data files.'
 readme = 'README.md'
 authors = [
     { name = "Paul Suh", email = "paul@mspex.net" }
@@ -43,12 +43,12 @@ unittest = [
 ]
 
 [project.urls]
-"Repository" = "https://github.com/paulsuh/pytest-parameterize-from-files"
-"Issues" = "https://github.com/paulsuh/pytest-parameterize-from-files/issues"
-"Changelog" = "https://github.com/paulsuh/pytest-parameterize-from-files/blob/main/CHANGES.md"
+"Repository" = "https://github.com/paulsuh/pytest-scenario-files"
+"Issues" = "https://github.com/paulsuh/pytest-scenario-files/issues"
+"Changelog" = "https://github.com/paulsuh/pytest-scenario-files/blob/main/CHANGES.md"
 
 [project.entry-points.pytest11]
-parameterize-from-files = "pytest_parameterize_from_files"
+pytest_scenario_files = "pytest_scenario_files"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -57,7 +57,7 @@ exclude = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/pytest_parameterize_from_files"]
+packages = ["src/pytest_scenario_files"]
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -85,7 +85,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/pytest_parameterize_from_files tests}"
+check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files tests}"
 
 [tool.hatch.envs.test]
 dependencies = [
@@ -116,7 +116,7 @@ pytester_example_dir = "tests/pytester_example_files"
 #                            #
 ##############################
 [tool.coverage.run]
-source = ["src/pytest_parameterize_from_files"]
+source = ["src/pytest_scenario_files"]
 branch = true
 #parallel = true
 omit = [

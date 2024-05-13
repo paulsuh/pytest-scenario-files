@@ -4,6 +4,6 @@ def test_no_data_files_found(pytester):
 
     # no data files!
 
-    result = pytester.runpytest("-k", "test_no_data_files_found_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_no_data_files_found_tester", "-v")
 
     result.assert_outcomes(errors=1)

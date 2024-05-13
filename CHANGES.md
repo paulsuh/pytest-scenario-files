@@ -1,5 +1,9 @@
 # Change Log
 
+#### 0.12 - 2024-05-12
+
+Rename to pytest_scenario_files
+
 #### 0.11 - 2024-02-14
 
 Add ability to specify indirect parameterization

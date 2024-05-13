@@ -14,6 +14,6 @@ def test_other_dir_load_by_reference(pytester):
     subdir2_path.mkdir()
     data_file2_path.rename("subdir2/data_merge_multi_fixtures_tester_2.json")
 
-    result = pytester.runpytest("-k", "test_load_by_reference_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_load_by_reference_tester", "-v")
 
     result.assert_outcomes(passed=2)

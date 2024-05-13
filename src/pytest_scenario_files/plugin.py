@@ -12,21 +12,6 @@ class BadTestCaseDataException(Exception):
     pass
 
 
-def pytest_addoption(parser):
-    """Called by Pytest to load this plug-in
-
-    :param parser: parser used by Pytest
-    """
-    group = parser.getgroup("Parameterize from files plug-in")
-    group.addoption(
-        "--param-from-files",
-        action="store_true",
-        dest="parameterize_from_files",
-        default=False,
-        help="Parameterize unit tests with values loaded from files.",
-    )
-
-
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
     """Load test data from a file and return it as a dictionary.
 
@@ -223,13 +208,10 @@ def pytest_generate_tests(metafunc):
 
     This is where the heavy lifting is done. This walks the directory tree
     looking for files that match the name of the test. Any data are loaded
-    and used to parameterize the test.
+    and used to parameterize the test for scenarios.
 
     :param metafunc: Pytest fixture used to create the parameterization
     """
-    if not metafunc.config.option.parameterize_from_files:
-        return
-
     # load up files in same or lower dirs that start with the same
     # name as the test function prefixed by data_
     # E.g.,

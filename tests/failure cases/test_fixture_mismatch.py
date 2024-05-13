@@ -6,6 +6,6 @@ def test_fixture_mismatch(pytester):
     pytester.copy_example("data_fixture_mismatch_tester_1.yaml")
     pytester.copy_example("data_fixture_mismatch_tester_2.yaml")
 
-    result = pytester.runpytest("-k", "test_fixture_mismatch_tester", "--param-from-files", "-v")
+    result = pytester.runpytest("-k", "test_fixture_mismatch_tester", "-v")
 
     result.assert_outcomes(errors=1)
