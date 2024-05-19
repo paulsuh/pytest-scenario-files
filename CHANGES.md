@@ -1,5 +1,10 @@
 # Change Log
 
+#### 1.0 - 2024-05-19
+
+Bump version to 1.0 and set Development Status to `5 - 
+Production/Stable`
+
 #### 0.12 - 2024-05-12
 
 Rename to pytest_scenario_files
