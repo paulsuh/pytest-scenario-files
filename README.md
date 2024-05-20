@@ -251,17 +251,19 @@ to the `variable_B()` function and the return value would be passed in
 as the `variable_B` parameter to `test_func()`.
 
 > #### Note: Indirect Parameterization and Autouse Fixtures
-> If a fixture is set up for indirect parameterization *and* it is 
-marked as `autouse=True` then every scenario for every test **must** 
-include a 
-value for that fixture, even if it is a null value. The reason is 
-that the fixture will be automatically instantiated, and in the 
-process pytest will call the indirect function with a fixture 
-`request` that should have an attribute `param` for the input value. 
-If that attribute does not exist, the test will raise an exception before the test starts. Alternatively, you can check for the existence of the `request.
-param` in the fixture function. If it does not exist, you can then 
-either return a default value or handle the missing value some other 
-way. 
+>
+> If a fixture is set up for indirect parameterization *and* it is
+> marked as `autouse=True` then every scenario for every test **must**
+> include a value for that fixture, even if it is a null value. The
+> reason is that the fixture will be automatically instantiated, and in
+> the process pytest will call the indirect function with a fixture
+> `request` that should have an attribute `param` for the input value.
+> If that attribute does not exist, the test will raise an exception
+> before the test starts. Alternatively, you can check for the existence
+> of the `request. param` in the fixture function. If it does not exist,
+> you can then either return a default value or handle the missing value
+> some other way.
+
 ______________________________________________________________________
 
 ## Reporting Issues
