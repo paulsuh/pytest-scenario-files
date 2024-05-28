@@ -66,7 +66,8 @@ packages = ["src/pytest_scenario_files"]
 dependencies = [
     "coverage[toml]",
     "pytest",
-    "ruff"
+    "ruff",
+    "sphinx"
 ]
 python="3.11"
 
@@ -98,7 +99,8 @@ dependencies = [
 
 [tool.hatch.envs.docs]
 dependencies = [
-    "sphinx"
+    "sphinx",
+    "furo"
 ]
 
 [[tool.hatch.envs.test.matrix]]
