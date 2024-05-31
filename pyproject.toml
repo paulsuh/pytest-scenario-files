@@ -41,9 +41,6 @@ unittest = [
     "pytest",
     "pytest-cov"
 ]
-docs = [
-    "sphinx-doc"
-]
 
 [project.urls]
 "Repository" = "https://github.com/paulsuh/pytest-scenario-files"
