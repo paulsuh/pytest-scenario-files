@@ -260,7 +260,7 @@ as the `variable_B` parameter to `test_func()`.
 > `request` that should have an attribute `param` for the input value.
 > If that attribute does not exist, the test will raise an exception
 > before the test starts. Alternatively, you can check for the existence
-> of the `request. param` in the fixture function. If it does not exist,
+> of the `request.param` in the fixture function. If it does not exist,
 > you can then either return a default value or handle the missing value
 > some other way.
 
