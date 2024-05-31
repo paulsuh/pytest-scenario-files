@@ -41,6 +41,9 @@ unittest = [
     "pytest",
     "pytest-cov"
 ]
+docs = [
+    "sphinx-doc"
+]
 
 [project.urls]
 "Repository" = "https://github.com/paulsuh/pytest-scenario-files"
@@ -63,7 +66,8 @@ packages = ["src/pytest_scenario_files"]
 dependencies = [
     "coverage[toml]",
     "pytest",
-    "ruff"
+    "ruff",
+    "sphinx"
 ]
 python="3.11"
 
@@ -93,6 +97,12 @@ dependencies = [
     "pytest",
 ]
 
+[tool.hatch.envs.docs]
+dependencies = [
+    "sphinx",
+    "furo"
+]
+
 [[tool.hatch.envs.test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
 
@@ -101,6 +111,7 @@ source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "_version.py"
+
 
 ##############################
 #                            #
