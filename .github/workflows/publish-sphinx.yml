@@ -20,3 +20,4 @@ jobs:
       with:
         documentation_path: ./docs/source
         requirements_path: ./docs/source/requirements.txt
+        pyproject_extras: ""
