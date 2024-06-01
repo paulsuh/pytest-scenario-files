@@ -336,7 +336,7 @@ modified to bring it up to modern standards.
 
 ______________________________________________________________________
 
-[link01]: https://img.shields.io/pypi/pyversions/pytest-parameterize-from-files.svg
+[link01]: https://img.shields.io/pypi/pyversions/pytest-scenario-files.svg
 [link02]: https://img.shields.io/badge/Pytest-Plug--in-orange?logo=pytest
 [link03]: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
 [link04]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
