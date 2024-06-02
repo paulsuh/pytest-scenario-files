@@ -2,76 +2,74 @@ About Pytest-Scenario-Files
 ===========================
 
 Reporting Issues
-~~~~~~~~~~~~~~~~
+----------------
 
-If you encounter any problems, please `file an
-issue <https://github.com/paulsuh/pytest-scenario-files/issues>`__
-including a detailed description and (if possible) an example of the
-problem.
+If you encounter any problems, please `file an issue`_ including a detailed description
+and (if possible) an example of the problem.
 
 License
-~~~~~~~
+-------
 
-Distributed under the terms of the MIT license,
-``pytest-scenario-files`` is free and open source software.
+Distributed under the terms of the MIT license, ``pytest-scenario-files`` is free and
+open source software.
 
 Motivation
-~~~~~~~~~~
+----------
 
-``pytest`` has a feature called parameterization that allows you to run
-the same test function repeatedly using different inputs to test
-multiple scenarios. However, managing the test data for parameterization
-can be a problem. Sometimes the input data is very large or there are
-many test cases, so that it is impractical to put all of the data into
-the source code of the test. In general I wanted the data file handling
-to be scalable:
+``pytest`` has a feature called parameterization that allows you to run the same test
+function repeatedly using different inputs to test multiple scenarios. However, managing
+the test data for parameterization can be a problem. Sometimes the input data is very
+large or there are many test cases, so that it is impractical to put all of the data
+into the source code of the test. In general I wanted the data file handling to be
+scalable:
 
--  If you have 50 unit tests you shouldn’t have to individually specify
-   all 50 files to load, whether in code or on the command line.
--  You should be able to reference data from other files to reduce
-   duplication.
+- If you have 50 unit tests you shouldn’t have to individually specify all 50 files to
+  load, whether in code or on the command line.
+- You should be able to reference data from other files to reduce duplication.
 
-An additional issue with the basic pytest parameterization API is how
-the user must provide the parameters. First all of the test case fixture
-names in a list, followed by a list of lists with the values the
-fixtures will take on, and then an optional list of test case id’s.
-Since the labels, values, and test case id’s are in separate lists it
-can be difficult to keep track of which fixture corresponds to which
-value if you have many of them, and also which group of values
-corresponds to which test id. The file structure uses a dict to keep the
-test case id’s, fixture names, and data values together in a way that is
-easier on the human brain.
+An additional issue with the basic pytest parameterization API is how the user must
+provide the parameters. First all of the test case fixture names in a list, followed by
+a list of lists with the values the fixtures will take on, and then an optional list of
+test case id’s. Since the labels, values, and test case id’s are in separate lists it
+can be difficult to keep track of which fixture corresponds to which value if you have
+many of them, and also which group of values corresponds to which test id. The file
+structure uses a dict to keep the test case id’s, fixture names, and data values
+together in a way that is easier on the human brain.
 
-This plug-in was originally named ``pytest-parameterize-from-files``. It
-was inspired by the pytest plug-ins ``pytest-datadir``,
-``pytest-datafixtures``, and ``pytest-xpara``. I also later found the
-non-plug-in package ``parameterize-from-file``. To avoid confusion and
-provide a more descriptive title, I renamed this project to
+----
+
+This plug-in was originally named ``pytest-parameterize-from-files``. It was inspired by
+the pytest plug-ins ``pytest-datadir``, ``pytest-datafixtures``, and ``pytest-xpara``. I
+also later found the non-plug-in package ``parameterize-from-file``. To avoid confusion
+and provide a more descriptive title, I renamed this project to
 ``pytest-scenario-files``.
 
--  I wanted to load data from files without having to write any
-   additional code. However, ``pytest-datadir`` and
-   ``pytest-datafixtures`` required code in the test or fixtures
-   specifically to read in the file.
--  I liked the way that ``pytest-xpara`` loaded data into a fixture, but
-   didn’t like that it would only work with one file and that I had to
-   specify the file on the command line.
--  After I wrote much of this project I found the package
-   ``parameterize-from-files`` which has a similar name. It’s a powerful
-   and capable tool, but it’s not to my taste as I think it’s trying too
-   hard.
+- I wanted to load data from files without having to write any additional code. However,
+  ``pytest-datadir`` and ``pytest-datafixtures`` required code in the test or fixtures
+  specifically to read in the file.
+- I liked the way that ``pytest-xpara`` loaded data into a fixture, but didn’t like that
+  it would only work with one file and that I had to specify the file on the command
+  line.
+- After I wrote much of this project I found the package ``parameterize-from-files``
+  which has a similar name. It’s a powerful and capable tool, but it’s not to my taste
+  as I think it’s trying too hard.
 
-   -  It requires a decorator per test function, with potentially
-      complex syntax inside the decorator’s arguments.
-   -  It lets the user place code snippets into the data files which
-      will be a maintenance problem down the road. It’s cleaner to take
-      advantage of Pytest’s indirect parameterization feature instead.
-   -  Having to import the package in every test file and decorate each
-      function increases the complexity of the test code.
+  - It requires a decorator per test function, with potentially complex syntax inside
+    the decorator’s arguments.
+  - It lets the user place code snippets into the data files which will be a maintenance
+    problem down the road. It’s cleaner to take advantage of Pytest’s indirect
+    parameterization feature instead.
+  - Having to import the package in every test file and decorate each function increases
+    the complexity of the test code.
 
+----
 
-This ``pytest`` plugin was developed using a skeleton generated by
-`cookiecutter <https://pypi.org/project/cookiecutter/>`_ along with
-the
-`cookiecutter-pytest-plugin <https://github.com/pytest-dev/cookiecutter-pytest-plugin>`_
-template, then extensively modified to bring it up to modern standards.
+This ``pytest`` plugin was developed using a skeleton generated by cookiecutter_ along
+with the cookiecutter-pytest-plugin_ template, then extensively modified to bring it up
+to modern standards.
+
+.. _cookiecutter: https://pypi.org/project/cookiecutter/
+
+.. _cookiecutter-pytest-plugin: https://github.com/pytest-dev/cookiecutter-pytest-plugin
+
+.. _file an issue: https://github.com/paulsuh/pytest-scenario-files/issues
