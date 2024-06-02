@@ -27,9 +27,9 @@ repos:
           - mdformat-gfm
           - mdformat-black
           - mdformat-config
-  - repo: https://github.com/LilSpazJoekp/docstrfmt
-    rev: v1.6.1 # Replace by any tag/version: https://github.com/LilSpazJoekp/docstrfmt/tags
-    hooks:
-      - id: docstrfmt
-        language_version: python3
-        types_or: [python, rst] # only needed if you want to include txt files.
+#  - repo: https://github.com/LilSpazJoekp/docstrfmt
+#    rev: v1.6.1 # Replace by any tag/version: https://github.com/LilSpazJoekp/docstrfmt/tags
+#    hooks:
+#      - id: docstrfmt
+#        language_version: python3
+#        types_or: [python, rst] # only needed if you want to include txt files.
