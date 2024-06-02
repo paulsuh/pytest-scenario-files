@@ -3,7 +3,7 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
       # Ruff version.
-    rev: v0.1.14
+    rev: v0.4.6
     hooks:
       # Run the linter.
       - id: ruff
@@ -11,7 +11,7 @@ repos:
       # Run the formatter.
       - id: ruff-format
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -27,3 +27,9 @@ repos:
           - mdformat-gfm
           - mdformat-black
           - mdformat-config
+#  - repo: https://github.com/LilSpazJoekp/docstrfmt
+#    rev: v1.6.1 # Replace by any tag/version: https://github.com/LilSpazJoekp/docstrfmt/tags
+#    hooks:
+#      - id: docstrfmt
+#        language_version: python3
+#        types_or: [python, rst] # only needed if you want to include txt files.
