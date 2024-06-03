@@ -43,6 +43,7 @@ unittest = [
 ]
 
 [project.urls]
+"Documentation" = "https://pytest-scenario-files.mspex.net/"
 "Repository" = "https://github.com/paulsuh/pytest-scenario-files"
 "Issues" = "https://github.com/paulsuh/pytest-scenario-files/issues"
 "Changelog" = "https://github.com/paulsuh/pytest-scenario-files/blob/main/CHANGES.md"
@@ -102,6 +103,7 @@ dependencies = [
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
+pytest = ["8.1", "8.2"]
 
 [tool.hatch.version]
 source = "vcs"
