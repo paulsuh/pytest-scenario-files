@@ -39,8 +39,8 @@ YAML format.
 
 This package is a plug-in for `pytest` and works with Python 3.9 and up.
 
-- Tested with `pytest` version 7.4.x, should work with any version 6.2.5
-  or higher
+- Tested with `pytest` versions 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, and
+  8.2.
 - Tested with CPython 3.9-3.12 and PyPy 3.9-3.10
 
 ### Documentation
@@ -153,7 +153,7 @@ Distributed under the terms of the `MIT` license,
 [link03]: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
 [link04]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 [link05]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
-[link06]: https://github.com/paulsuh/pytest-scenario-files
+[link06]: https://pytest-scenario-files.mspex.net/basic_usage.html
 [link07]: https://docs.pytest.org/en/stable/index.html
 [link08]: https://paulsuh.github.io/pytest-scenario-files/
 [link09]: https://github.com/paulsuh/pytest-scenario-files/issues
