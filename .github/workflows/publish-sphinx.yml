@@ -3,7 +3,7 @@ name: Deploy Sphinx documentation to Pages
 on:
   push:
     tags:
-      - docs@*
+      - docs-*
     
 jobs:
   pages:
