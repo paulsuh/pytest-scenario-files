@@ -27,7 +27,7 @@ classifiers = [
     'Operating System :: OS Independent',
 ]
 dependencies = [
-    "pytest>=7.2.0",
+    "pytest>=7.0",
     "pyyaml"
 ]
 requires-python = ">=3.9"
@@ -43,6 +43,7 @@ unittest = [
 ]
 
 [project.urls]
+"Documentation" = "https://pytest-scenario-files.mspex.net/"
 "Repository" = "https://github.com/paulsuh/pytest-scenario-files"
 "Issues" = "https://github.com/paulsuh/pytest-scenario-files/issues"
 "Changelog" = "https://github.com/paulsuh/pytest-scenario-files/blob/main/CHANGES.md"
@@ -91,7 +92,7 @@ check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files 
 [tool.hatch.envs.test]
 dependencies = [
     "coverage[toml]>=6.5",
-    "pytest",
+    "pytest=={matrix:pytest}.*",
 ]
 
 [tool.hatch.envs.docs]
@@ -101,7 +102,17 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
+python = ["3.9", "3.10", "3.11", "pypy3.9", "pypy3.10"]
+pytest = ["7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.12"]
+pytest = ["7.3", "7.4", "8.0", "8.1", "8.2"]
+
+#[tool.hatch.envs.test.overrides]
+#matrix.pytest.dependencies = [
+#    { value = "pytest ~= {matrix:pytest}" },
+#]
 
 [tool.hatch.version]
 source = "vcs"
