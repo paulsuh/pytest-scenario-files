@@ -32,12 +32,13 @@ Compatibility
 
 This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
 
-- Tested with ``pytest`` version 7.4.x, should work with any version 6.2.5 or higher
+- Tested with ``pytest`` versions 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, and 8.2.
 - Tested with CPython 3.9-3.12 and PyPy 3.9-3.10
 
 .. toctree::
     :maxdepth: 2
     :caption: Contents:
+    :hidden:
 
     installation
     basic_usage
