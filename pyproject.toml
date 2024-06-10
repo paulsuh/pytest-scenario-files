@@ -23,7 +23,6 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3 :: Only',
     'Programming Language :: Python :: Implementation :: CPython',
-    'Programming Language :: Python :: Implementation :: PyPy',
     'Operating System :: OS Independent',
 ]
 dependencies = [
@@ -92,7 +91,7 @@ check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files 
 [tool.hatch.envs.test]
 dependencies = [
     "coverage[toml]>=6.5",
-    "pytest=={matrix:pytest}.*",
+    "pytest~={matrix:pytest}",
 ]
 
 [tool.hatch.envs.docs]
@@ -102,17 +101,8 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.9", "3.10", "3.11", "pypy3.9", "pypy3.10"]
-pytest = ["7.0", "7.1", "7.2", "7.3", "7.4", "8.0", "8.1", "8.2"]
-
-[[tool.hatch.envs.test.matrix]]
-python = ["3.12"]
-pytest = ["7.3", "7.4", "8.0", "8.1", "8.2"]
-
-#[tool.hatch.envs.test.overrides]
-#matrix.pytest.dependencies = [
-#    { value = "pytest ~= {matrix:pytest}" },
-#]
+python = ["3.9", "3.10", "3.11", "3.12"]
+pytest = ["7.4", "8.2"]
 
 [tool.hatch.version]
 source = "vcs"

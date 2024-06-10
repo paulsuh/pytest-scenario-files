@@ -16,6 +16,11 @@ request, please:
   against CPython 3.9-3.12 and PyPy 3.9-3.10
 - Check test coverage with ``hatch run cov``
 
+Within the Github repo, actions are set up so that:
+
+- Creating a tag that starts with "release-..." will trigger a release action.
+- Creating a tag that starts with "docs-..." will trigger a documentation update.
+
 .. _docstrfmt: https://github.com/LilSpazJoekp/docstrfmt
 
 .. _hatch: https://github.com/pypa/hatch
