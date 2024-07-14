@@ -40,6 +40,7 @@ This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
     :caption: Contents:
     :hidden:
 
+    Intro <index>
     installation
     basic_usage
     advanced_usage

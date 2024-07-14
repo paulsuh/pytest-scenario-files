@@ -21,10 +21,18 @@ parameterization would be a lot of work.
 The Example Code
 ----------------
 
-All of these files are available in the repository in the XXXXXX folder.
+All of these files are available in the repository in the ``docs/source/example_files``
+folder. You can run the example tests by ``cd``'ing into that folder and the
+running the command
+
+.. code-block:: sh
+
+    $ PYTHONPATH=. pytest -vv -rA
 
 .. toctree::
     :titlesonly:
+    :caption: Example docs
 
     real_world_example/oauth
     real_world_example/api
+    real_world_example/testing_oauth
