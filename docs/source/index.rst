@@ -36,7 +36,7 @@ This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
 - Tested with CPython 3.9-3.12.
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Contents:
     :hidden:
 
