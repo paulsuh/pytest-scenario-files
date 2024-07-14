@@ -1,0 +1,27 @@
+service_a_success:
+  auth_tokens_indirect:
+    - url: https://authserver.source-a.com/oauth2/token
+      method: POST
+      status: 200
+      json_params:
+        client_id: clientAId
+        client_secret: mockClientSecretA
+        grant_type: client_credentials
+      json:
+        access_token: mockClientSecretA
+  client_secret_indirect: __data_retrieve_secret.yaml:service_a_auth:client_secret_indirect
+  expected_oauth_token: mockClientSecretA
+
+service_b_success:
+  auth_tokens_indirect:
+    - url: https://authserver.source-b.com/oauth2/token
+      method: POST
+      status: 200
+      json_params:
+        client_id: clientBId
+        client_secret: mockClientSecretB
+        grant_type: client_credentials
+      json:
+        access_token: mockClientSecretB
+  client_secret_indirect: __data_retrieve_secret.yaml:service_b_auth:client_secret_indirect
+  expected_oauth_token: mockClientSecretB

@@ -43,6 +43,7 @@ This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
     installation
     basic_usage
     advanced_usage
+    real_world_example
     contributing
     About <about>
 
