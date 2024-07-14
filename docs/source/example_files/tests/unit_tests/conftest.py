@@ -5,7 +5,7 @@ from responses import RequestsMock, matchers
 
 
 @fixture
-def client_secret(request):
+def client_secret_responses(request):
     with RequestsMock() as rsps:
         rsps.assert_all_requests_are_fired = False
         for one_response in request.param:
@@ -20,9 +20,9 @@ def client_secret(request):
 
 
 @fixture
-def auth_tokens(request, client_secret: RequestsMock):
+def auth_tokens_responses(request, client_secret_responses: RequestsMock):
     for one_response in request.param:
-        client_secret.add(
+        client_secret_responses.add(
             url=one_response["url"],
             method=one_response["method"],
             status=one_response["status"],

@@ -16,7 +16,7 @@ that communicates on 127.0.0.1:8200 using http (not https!).
 We want to test successful and unsuccessful cases of each API call, and for a
 variety of reasons. There are many URLs to keep track of and parameterize
 into a prethora of scenarios. Trying to do this using standard pytest
-parameterization is would be a lot of work.
+parameterization would be a lot of work.
 
 The Example Code
 ----------------
