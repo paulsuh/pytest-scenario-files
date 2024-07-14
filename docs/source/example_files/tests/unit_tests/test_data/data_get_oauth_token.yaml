@@ -1,4 +1,4 @@
-service_a_success:
+service_a_auth_success:
   auth_tokens_responses_indirect:
     - url: https://authserver.source-a.com/oauth2/token
       method: POST
@@ -10,10 +10,24 @@ service_a_success:
       json:
         access_token: mockClientSecretA
   client_id: clientIdA
-  client_secret_responses_indirect: __data_retrieve_secret.yaml:service_a_auth_success:client_secret_responses_indirect
+  client_secret_responses_indirect: __data_retrieve_secret.yaml:service_a_secret_success:client_secret_responses_indirect
   expected_oauth_token: mockClientSecretA
 
-service_b_success:
+service_a_auth_failure:
+  auth_tokens_responses_indirect:
+    - url: https://authserver.source-a.com/oauth2/token
+      method: POST
+      status: 403
+      json_params:
+        client_id: clientIdA
+        client_secret: mockClientSecretA
+        grant_type: client_credentials
+      json: {}
+  client_id: clientIdA
+  client_secret_responses_indirect: __data_retrieve_secret.yaml:service_a_secret_success:client_secret_responses_indirect
+  expected_oauth_token: null
+
+service_b_auth_success:
   auth_tokens_responses_indirect:
     - url: https://authserver.source-b.com/oauth2/token
       method: POST
@@ -25,5 +39,19 @@ service_b_success:
       json:
         access_token: mockClientSecretB
   client_id: clientIdB
-  client_secret_responses_indirect: __data_retrieve_secret.yaml:service_b_auth_success:client_secret_responses_indirect
+  client_secret_responses_indirect: __data_retrieve_secret.yaml:service_b_secret_success:client_secret_responses_indirect
   expected_oauth_token: mockClientSecretB
+
+service_b_auth_failure:
+  auth_tokens_responses_indirect:
+    - url: https://authserver.source-b.com/oauth2/token
+      method: POST
+      status: 403
+      json_params:
+        client_id: clientIdB
+        client_secret: mockClientSecretB
+        grant_type: client_credentials
+      json: {}
+  client_id: clientIdB
+  client_secret_responses_indirect: __data_retrieve_secret.yaml:service_b_secret_success:client_secret_responses_indirect
+  expected_oauth_token: null
