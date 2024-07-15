@@ -46,7 +46,7 @@ There are three parts to this test, beyond the target function ``_retrieve_secre
 The test execution process is:
 
 1. Pytest generates four scenarios and sets up the three fixtures for each one.
-2. Each scenario is run and the a request is made to ``https://127.0.0.1:8200/v1/{lockbox_id}/{secret_id}``
+2. Each scenario is run and a request is made to ``https://127.0.0.1:8200/v1/{lockbox_id}/{secret_id}``
    which is then mocked out by the Responses library.
 3. Depending on the scenario, either a mock client secret is returned or an
    ``HTTPError`` is raised.
@@ -88,3 +88,15 @@ responses used from the previous tests.
 .. literalinclude:: ../example_files/tests/unit_tests/conftest.py
     :language: python
     :lines: 22-31
+
+The test execution process is:
+
+1. Pytest generates four scenarios and sets up the three fixtures for each one.
+   In detail, each scenario has a response set up for the call to retrieve the
+   client secret and a response set up for the call to get the OAuth2 token.
+2. Each scenario is run, and a request is made to ``https://127.0.0.1:8200/v1/{lockbox_id}/{secret_id}``,
+   followed by a request to the OAuth2 token endpoint, such as
+   ``https://authserver.source-b.com/oauth2/token``. Each of these is mocked
+   out by the Responses library.
+3. Depending on the scenario, either an OAuth2 token is returned or an
+   ``HTTPError`` is raised.
