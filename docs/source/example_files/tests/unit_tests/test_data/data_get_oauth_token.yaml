@@ -8,10 +8,10 @@ service_a_auth_success:
         client_secret: mockClientSecretA
         grant_type: client_credentials
       json:
-        access_token: mockClientSecretA
+        access_token: mockTokenA
   client_id: clientIdA
   client_secret_responses_indirect: __data_retrieve_secret.yaml:service_a_secret_success:client_secret_responses_indirect
-  expected_oauth_token: mockClientSecretA
+  expected_oauth_token: mockTokenA
 
 service_a_auth_failure:
   auth_tokens_responses_indirect:
@@ -37,10 +37,10 @@ service_b_auth_success:
         client_secret: mockClientSecretB
         grant_type: client_credentials
       json:
-        access_token: mockClientSecretB
+        access_token: mockTokenB
   client_id: clientIdB
   client_secret_responses_indirect: __data_retrieve_secret.yaml:service_b_secret_success:client_secret_responses_indirect
-  expected_oauth_token: mockClientSecretB
+  expected_oauth_token: mockTokenB
 
 service_b_auth_failure:
   auth_tokens_responses_indirect:

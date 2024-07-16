@@ -29,3 +29,16 @@ def auth_tokens_responses(request, client_secret_responses: RequestsMock):
             match=[matchers.json_params_matcher(one_response["json_params"])],
             json=one_response["json"],
         )
+    return client_secret_responses
+
+
+@fixture
+def api_1_responses(request, auth_tokens_responses: RequestsMock):
+    for one_response in request.param:
+        auth_tokens_responses.add(
+            url=one_response["url"],
+            method=one_response["method"],
+            status=one_response["status"],
+            json=one_response["json"],
+        )
+    return auth_tokens_responses

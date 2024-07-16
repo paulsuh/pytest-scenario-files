@@ -22,4 +22,4 @@ by the third API.
 
 .. literalinclude:: ../example_files/src/get_oauth_token.py
     :language: python
-    :lines: 12-
+    :lines: 12-35

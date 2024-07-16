@@ -2,8 +2,9 @@
 # apis.py
 from time import sleep
 
-from get_oauth_token import get_token_service_A, get_token_service_B
 from requests import get
+
+from .get_oauth_token import get_token_service_A, get_token_service_B
 
 
 def call_api_1():
