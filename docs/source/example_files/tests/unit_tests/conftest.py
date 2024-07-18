@@ -33,7 +33,7 @@ def auth_tokens_responses(request, client_secret_responses: RequestsMock):
 
 
 @fixture
-def api_1_responses(request, auth_tokens_responses: RequestsMock):
+def api_responses(request, auth_tokens_responses: RequestsMock):
     for one_response in request.param:
         auth_tokens_responses.add(
             url=one_response["url"],

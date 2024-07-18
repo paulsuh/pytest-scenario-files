@@ -1,27 +1,47 @@
 api_1_success_1:
-  api_1_responses_indirect:
+  api_responses_indirect:
     - url: https://api1endpoint.example.com/rest/foo
       method: GET
       status: 200
       headers:
         authorization: Bearer mockTokenA
       json:
-        api_1_result: 17
+        api_success: true
+        api_value: 17
   client_secret_responses_indirect: __data_retrieve_secret.yaml:service_a_secret_success:client_secret_responses_indirect
   auth_tokens_responses_indirect: __data_get_oauth_token.yaml:service_a_auth_success:auth_tokens_responses_indirect
-  api_1_expected_result:
-    api_1_result: 17
+  api_expected_result:
+    api_success: true
+    api_value: 17
 
 api_1_success_2:
-  api_1_responses_indirect:
+  api_responses_indirect:
     - url: https://api1endpoint.example.com/rest/foo
       method: GET
       status: 200
       headers:
         authorization: Bearer mockTokenA
       json:
-        api_1_result: 73
+        api_success: true
+        api_value: 73
   client_secret_responses_indirect: __data_retrieve_secret.yaml:service_a_secret_success:client_secret_responses_indirect
   auth_tokens_responses_indirect: __data_get_oauth_token.yaml:service_a_auth_success:auth_tokens_responses_indirect
-  api_1_expected_result:
-    api_1_result: 73
+  api_expected_result:
+    api_success: true
+    api_value: 73
+
+api_1_failure_1:
+  api_responses_indirect:
+    - url: https://api1endpoint.example.com/rest/foo
+      method: GET
+      status: 200
+      headers:
+        authorization: Bearer mockTokenA
+      json:
+        api_success: false
+        api_value: null
+  client_secret_responses_indirect: __data_retrieve_secret.yaml:service_a_secret_success:client_secret_responses_indirect
+  auth_tokens_responses_indirect: __data_get_oauth_token.yaml:service_a_auth_success:auth_tokens_responses_indirect
+  api_expected_result:
+    api_success: false
+    api_value: null
