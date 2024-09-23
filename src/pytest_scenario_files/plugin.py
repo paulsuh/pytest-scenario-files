@@ -1,8 +1,11 @@
 import os
+import sys
 from json import load
 from os.path import join
 from typing import Any, Union
 
+import pytest
+import responses
 from yaml import safe_load
 
 
@@ -10,6 +13,33 @@ class BadTestCaseDataException(Exception):
     """An exception class used to mark bad test case data."""
 
     pass
+
+
+def pytest_addoption(parser, pluginmanager):
+    """Command line option to automatically load responses."""
+    parser.addoption(
+        "--psf-load-responses",
+        action="store_true",
+        default=False,
+        dest="psf-load-responses",
+        help="Automatically load responses from scenario files",
+    )
+    # setattr(sys.modules["pytest_scenario_files"], "plugin_fixture_2",
+    #         pytest.fixture(plugin_fixture_2, name="fixture_2"))
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """
+    Pytest hook function.
+
+    Check to see if we need to expose the psd_responses fixture. If so, dynamically add it
+    to the list of symbols that are exposed in this package's __init__.py file.
+
+    :param config:
+    :return:
+    """
+    if config.getoption("psf-load-responses"):
+        setattr(sys.modules["pytest_scenario_files"], "psf_responses", psf_responses)
 
 
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
@@ -61,23 +91,32 @@ def _locate_and_load_test_data(test_name: str, dir_name: str) -> dict[str, dict[
     """Locates and loads test data for the given test name.
 
     :param test_name: The name of the test.
+    :type test_name: str
+    :param dir_name:
+    :type dir_name: str
     :return: A dictionary containing the loaded test data.
+    :rtype: dict
     """
-    return _locate_and_load_data_files("data_" + test_name, start_dir_path=dir_name)
+    return _locate_and_load_data_files("data_" + test_name, dir_name)
 
 
-def _locate_and_load_data_files(filename_base: str, start_dir_path: str) -> dict[str, dict[str, Any]]:
+def _locate_and_load_data_files(filename_base: str, dir_name: str) -> dict[str, dict[str, Any]]:
     """Locates and loads data for the given file name.
+
+    This function is used by both _locate_and_load_test_data() and _load_referenced_data().
 
     :param filename_base: The root name of the files to be loaded.
     :type filename_base: str
-    :param start_dir_path: path where to start the search for the data files
-    :type start_dir_path: str
+    :param dir_name: path where to start the search for the data files
+    :type dir_name: str
     :return: A dictionary containing the loaded data.
     :rtype: dict
     """
+    # This could be more efficiently cached, as referenced files may be loaded many times.
+    # However, the total time required seems to be relatively small even for a complex
+    # set of over 100 tests, so we'll add that when it becomes necessary.
     result: dict[str, dict[str, Any]] = {}
-    for root, dirs, files in os.walk(start_dir_path):
+    for root, dirs, files in os.walk(dir_name):
         test_data_filenames = [one_filename for one_filename in files if one_filename.startswith(filename_base)]
 
         for one_data_file in test_data_filenames:
@@ -203,6 +242,43 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
     return list(fixture_cases_dict.keys()), fixture_data_list
 
 
+@pytest.fixture(scope="function")
+def psf_responses(responses_list: list[dict[str, Any]]) -> None:
+    """Load fixture data into responses mock.
+
+    Each test scenario needs to have its own responses mack, as they will be testing
+    different aspects. We need to define a pytest fixture here and provide it to
+    any scenario that uses responses.
+    """
+    # Ultimately we need to wrap this up so that responses and httpx-responses
+    # are both supported.
+    with responses.RequestsMock() as rsps:
+        for one_response in responses_list:
+            rsps.upsert(**one_response)
+        yield rsps
+
+
+def _extract_responses(fixture_names: list[str], fixture_data_dict) -> dict[str, dict[str, Any]]:
+    """
+    Extract responses data into a single list for the mock.
+
+    This list will be added to the fixture data dict for a fixture with the name
+    "psf-responses", with indirect=True and autouse=True. The fixture will only be
+    exposed if the --psf-load-responses flag is used.
+
+    :param fixture_names:
+    :param fixture_data_dict:
+    :return:
+    """
+    result = []
+    for one_fixture_name in fixture_names:
+        if one_fixture_name.endswith("_responses"):
+            pass
+    #         if fixture_data_dict
+    # pass
+    return result
+
+
 def pytest_generate_tests(metafunc):
     """Hook called by Pytest for each test.
 
@@ -229,7 +305,10 @@ def pytest_generate_tests(metafunc):
         fixture_names = _extract_fixture_names(fixture_raw_data_dict)
 
         # pull out indirect fixtures and remove suffix from fixture names
-        # could be False if there are no indirect fixtures
+        # The returned value for indirect_fixture_names could be False
+        # if there are no indirect fixtures. (This comes from Metafunc.parameterize,
+        # which expects a list of indirect fixtures or False. Why not an empty
+        # list? I dunno?)
         fixture_names, indirect_fixture_names = _extract_indirect_fixtures(fixture_raw_data_dict, fixture_names)
 
         # reformat the case ids and fixture data into list and list of lists respectively
@@ -239,3 +318,7 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize(
             fixture_names, fixture_data_list, ids=case_ids, indirect=indirect_fixture_names, scope="function"
         )
+
+
+# pprint(sys.modules)
+# setattr(sys.modules["pytest_scenario_files"], "plugin_fixture_2", pytest.fixture(plugin_fixture_2, name="fixture_2"))
