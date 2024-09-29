@@ -16,7 +16,11 @@ class BadTestCaseDataException(Exception):
 
 
 def pytest_addoption(parser, pluginmanager):
-    """Command line option to automatically load responses."""
+    """
+    Pytest hook function.
+
+    Adds the command line option to automatically load responses.
+    """
     parser.addoption(
         "--psf-load-responses",
         action="store_true",
@@ -24,8 +28,6 @@ def pytest_addoption(parser, pluginmanager):
         dest="psf-load-responses",
         help="Automatically load responses from scenario files",
     )
-    # setattr(sys.modules["pytest_scenario_files"], "plugin_fixture_2",
-    #         pytest.fixture(plugin_fixture_2, name="fixture_2"))
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -33,10 +35,12 @@ def pytest_configure(config: pytest.Config) -> None:
     Pytest hook function.
 
     Check to see if we need to expose the psd_responses fixture. If so, dynamically add it
-    to the list of symbols that are exposed in this package's __init__.py file.
+    to the list of symbols that are exposed in this package's __init__.py file. This has
+    to happen early in the process so that the exposed fixture is found. If we wait until
+    the pytest_generate_tests hook it will be too late and the fixture will not be
+    found and loaded.
 
     :param config:
-    :return:
     """
     if config.getoption("psf-load-responses"):
         setattr(sys.modules["pytest_scenario_files"], "psf_responses", psf_responses)
@@ -242,7 +246,7 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
     return list(fixture_cases_dict.keys()), fixture_data_list
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
 def psf_responses(responses_list: list[dict[str, Any]]) -> None:
     """Load fixture data into responses mock.
 
@@ -258,29 +262,42 @@ def psf_responses(responses_list: list[dict[str, Any]]) -> None:
         yield rsps
 
 
-def _extract_responses(fixture_names: list[str], fixture_data_dict) -> dict[str, dict[str, Any]]:
+def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
     """
     Extract responses data into a single list for the mock.
 
     This list will be added to the fixture data dict for a fixture with the name
-    "psf-responses", with indirect=True and autouse=True. The fixture will only be
-    exposed if the --psf-load-responses flag is used.
+    "psf_responses", with indirect=True and autouse=True. The fixture will only be
+    exposed if the --psf-load-responses flag is used. The name in the fixture
+    data dict will be "psf_responses_indirect", which will then be processed
+    later on into an indirect fixture.
 
-    :param fixture_names:
     :param fixture_data_dict:
-    :return:
     """
-    result = []
-    for one_fixture_name in fixture_names:
-        if one_fixture_name.endswith("_responses"):
-            pass
-    #         if fixture_data_dict
-    # pass
-    return result
+    # for each scenario
+    #   for each fixture
+    #       check if fixture name ends with _responses or _response
+    #           remove it from the fixture_data_dict
+    #           add it to a list for the fixture psf_responses_indirect
+    for one_scenario in fixture_data_dict.values():
+        # if psf_responses is active, every scenario must have a fixture
+        # called psf_responses_indirect, even if it just contains an empty list
+        # as the fixture is autouse
+        one_scenario["psf_responses_indirect"] = []
+        for one_fixture_name in one_scenario.keys():
+            if one_fixture_name.endswith("_responses"):
+                current_fixture_data = one_scenario.pop(one_fixture_name)
+                if isinstance(current_fixture_data, list):
+                    one_scenario["psf_responses_indirect"].extend(current_fixture_data)
+                elif isinstance(current_fixture_data, dict):
+                    one_scenario["psf_responses_indirect"].append(current_fixture_data)
+
+    # at the end of this the fixture data dict has had all of the "_responses"
+    # entries popped out of it and each scenario has a "psf_responses_indirect" fixture
 
 
-def pytest_generate_tests(metafunc):
-    """Hook called by Pytest for each test.
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+    """Pytest hook function called for each test.
 
     This is where the heavy lifting is done. This walks the directory tree
     looking for files that match the name of the test. Any data are loaded
@@ -300,6 +317,12 @@ def pytest_generate_tests(metafunc):
     if len(fixture_raw_data_dict) > 0:
         # do processing only if the search found cases
 
+        # if the psf-load-responses flag is set, go through the raw data dict
+        # to find any fixtures that end with _response or _responses. If any are
+        # found, remove them and set up psf_responses_indirect as an indirect fixture
+        if metafunc.config.getoption("psf-load-responses"):
+            _extract_responses(fixture_raw_data_dict)
+
         # get the list of fixture names sorted alphabetically
         # will raise an exception if the fixture names are inconsistent
         fixture_names = _extract_fixture_names(fixture_raw_data_dict)
@@ -311,14 +334,11 @@ def pytest_generate_tests(metafunc):
         # list? I dunno?)
         fixture_names, indirect_fixture_names = _extract_indirect_fixtures(fixture_raw_data_dict, fixture_names)
 
-        # reformat the case ids and fixture data into list and list of lists respectively
+        # reformat the case ids and fixture data into list and list of
+        # lists respectively
         case_ids, fixture_data_list = _extract_fixture_data(fixture_raw_data_dict)
 
         # do the parameterization
         metafunc.parametrize(
             fixture_names, fixture_data_list, ids=case_ids, indirect=indirect_fixture_names, scope="function"
         )
-
-
-# pprint(sys.modules)
-# setattr(sys.modules["pytest_scenario_files"], "plugin_fixture_2", pytest.fixture(plugin_fixture_2, name="fixture_2"))
