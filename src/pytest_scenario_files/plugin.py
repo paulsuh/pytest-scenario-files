@@ -5,7 +5,6 @@ from os.path import join
 from typing import Any, Union
 
 import pytest
-import responses
 from yaml import safe_load
 
 
@@ -43,6 +42,9 @@ def pytest_configure(config: pytest.Config) -> None:
     :param config:
     """
     if config.getoption("psf-load-responses"):
+        # Ruff wants to remove this but the fixture will only be used if the flag is set
+        import responses  # noqa F821
+
         setattr(sys.modules["pytest_scenario_files"], "psf_responses", psf_responses)
 
 
@@ -256,7 +258,8 @@ def psf_responses(responses_list: list[dict[str, Any]]) -> None:
     """
     # Ultimately we need to wrap this up so that responses and httpx-responses
     # are both supported.
-    with responses.RequestsMock() as rsps:
+    # No qa flag as Ruff doesn't recognize the conditional import in pytest_configure()
+    with responses.RequestsMock() as rsps:  # noqa F821
         for one_response in responses_list:
             rsps.upsert(**one_response)
         yield rsps
