@@ -7,6 +7,11 @@ test_one:
 
   expected_result: This is a test.
 
-#test_two:
-#  indirect_fixture_test_indirect: "abc"
-#  expected_result: "abcabcabcabcabc"
+test_two:
+  example_responses:
+  - method: GET
+    url: https://www.example.com/
+    status: 404
+    body: Nobody here.
+
+  expected_result: Nobody here.

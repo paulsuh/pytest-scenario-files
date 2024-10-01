@@ -11,4 +11,4 @@ def test_load_responses_fixture(pytester):
 
     result = pytester.runpytest("-k", "test_load_responses_fixture_tester", "-v", "--psf-load-responses")
 
-    result.assert_outcomes(passed=1)
+    result.assert_outcomes(passed=2)
