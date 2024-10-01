@@ -1,0 +1,12 @@
+test_one:
+  example_response:
+    method: GET
+    url: https://www.example.com/
+    status: 200
+    body: This is a test.
+
+  expected_result: This is a test.
+
+#test_two:
+#  indirect_fixture_test_indirect: "abc"
+#  expected_result: "abcabcabcabcabc"

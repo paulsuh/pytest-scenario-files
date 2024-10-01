@@ -249,7 +249,7 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
 
 
 @pytest.fixture(scope="function", autouse=True)
-def psf_responses(responses_list: list[dict[str, Any]]) -> None:
+def psf_responses(request) -> None:
     """Load fixture data into responses mock.
 
     Each test scenario needs to have its own responses mack, as they will be testing
@@ -259,9 +259,11 @@ def psf_responses(responses_list: list[dict[str, Any]]) -> None:
     # Ultimately we need to wrap this up so that responses and httpx-responses
     # are both supported.
     # No qa flag as Ruff doesn't recognize the conditional import in pytest_configure()
+    import responses
+
     with responses.RequestsMock() as rsps:  # noqa F821
-        for one_response in responses_list:
-            rsps.upsert(**one_response)
+        for one_response in request.param:
+            rsps.add(**one_response)
         yield rsps
 
 
@@ -286,17 +288,23 @@ def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
         # if psf_responses is active, every scenario must have a fixture
         # called psf_responses_indirect, even if it just contains an empty list
         # as the fixture is autouse
-        one_scenario["psf_responses_indirect"] = []
-        for one_fixture_name in one_scenario.keys():
-            if one_fixture_name.endswith("_responses"):
-                current_fixture_data = one_scenario.pop(one_fixture_name)
-                if isinstance(current_fixture_data, list):
-                    one_scenario["psf_responses_indirect"].extend(current_fixture_data)
-                elif isinstance(current_fixture_data, dict):
-                    one_scenario["psf_responses_indirect"].append(current_fixture_data)
+        responses_fixture_names = [
+            one_fixture_name
+            for one_fixture_name in one_scenario.keys()
+            if one_fixture_name.endswith("_response") or one_fixture_name.endswith("_responses")
+        ]
+        psf_responses_data = []
+        for one_fixture_name in responses_fixture_names:
+            current_fixture_data = one_scenario.pop(one_fixture_name)
+            if isinstance(current_fixture_data, list):
+                psf_responses_data.extend(current_fixture_data)
+            elif isinstance(current_fixture_data, dict):
+                psf_responses_data.append(current_fixture_data)
+        one_scenario["psf_responses_indirect"] = psf_responses_data
 
     # at the end of this the fixture data dict has had all of the "_responses"
     # entries popped out of it and each scenario has a "psf_responses_indirect" fixture
+    return
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
@@ -313,7 +321,7 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     # E.g.,
     # parameterize against list of names if match
     test_name = metafunc.definition.name.removeprefix("test_")
-    test_file_dir = metafunc.definition.path.parent
+    test_file_dir = str(metafunc.definition.path.parent)
 
     fixture_raw_data_dict = _locate_and_load_test_data(test_name, test_file_dir)
 
