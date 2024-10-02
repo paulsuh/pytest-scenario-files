@@ -8,6 +8,10 @@ test_one:
     url: https://www.example.org/
     status: 200
     body: This is a test from example.org.
+  - method: GET
+    url: https://www.example.net/
+    status: 200
+    body: This is a test from example.net.
 
   expected_result:
     - url: https://www.example.com/

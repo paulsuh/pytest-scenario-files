@@ -28,6 +28,14 @@ def pytest_addoption(parser, pluginmanager):
         help="Automatically load responses from scenario files",
     )
 
+    parser.addoption(
+        "--psf-fire-all-responses",
+        action="store_true",
+        default=False,
+        dest="psf-fire-all-responses",
+        help="Are all responses required to be fired?",
+    )
+
 
 def pytest_configure(config: pytest.Config) -> None:
     """
@@ -261,7 +269,8 @@ def psf_responses(request) -> None:
     # No qa flag as Ruff doesn't recognize the conditional import in pytest_configure()
     import responses
 
-    with responses.RequestsMock() as rsps:  # noqa F821
+    psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
+    with responses.RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:  # noqa F821
         for one_response in request.param:
             rsps.add(**one_response)
         yield rsps
