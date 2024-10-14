@@ -9,7 +9,7 @@ def test_load_responses_fixture_single(pytester):
     # create the data file
     pytester.copy_example("data_load_responses_fixture_single_tester_1.yaml")
 
-    result = pytester.runpytest("-k", "test_load_responses_fixture_single_tester", "-v", "--psf-load-responses")
+    result = pytester.runpytest("-v", "--psf-load-responses")
 
     result.assert_outcomes(passed=2)
 
