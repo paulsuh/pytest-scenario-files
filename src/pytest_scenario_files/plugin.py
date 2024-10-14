@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import os
-import sys
+from collections.abc import Generator
 from json import load
 from os.path import join
-from typing import Any, Union
+from typing import TYPE_CHECKING, Any, Union
 
 import pytest
 from yaml import safe_load
+
+if TYPE_CHECKING:
+    from requests import Response
 
 
 class BadTestCaseDataException(Exception):
@@ -18,7 +23,8 @@ def pytest_addoption(parser, pluginmanager):
     """
     Pytest hook function.
 
-    Adds the command line option to automatically load responses.
+    Adds the command line option to automatically load responses and the
+    additional option whether to require all responses to be fired.
     """
     parser.addoption(
         "--psf-load-responses",
@@ -35,25 +41,6 @@ def pytest_addoption(parser, pluginmanager):
         dest="psf-fire-all-responses",
         help="Are all responses required to be fired?",
     )
-
-
-def pytest_configure(config: pytest.Config) -> None:
-    """
-    Pytest hook function.
-
-    Check to see if we need to expose the psd_responses fixture. If so, dynamically add it
-    to the list of symbols that are exposed in this package's __init__.py file. This has
-    to happen early in the process so that the exposed fixture is found. If we wait until
-    the pytest_generate_tests hook it will be too late and the fixture will not be
-    found and loaded.
-
-    :param config:
-    """
-    if config.getoption("psf-load-responses"):
-        # Ruff wants to remove this but the fixture will only be used if the flag is set
-        import responses  # noqa F821
-
-        setattr(sys.modules["pytest_scenario_files"], "psf_responses", psf_responses)
 
 
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
@@ -256,8 +243,8 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
     return list(fixture_cases_dict.keys()), fixture_data_list
 
 
-@pytest.fixture(scope="function", autouse=True)
-def psf_responses(request) -> None:
+@pytest.fixture(scope="function")
+def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, None]:
     """Load fixture data into responses mock.
 
     Each test scenario needs to have its own responses mack, as they will be testing
@@ -294,9 +281,6 @@ def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
     #           remove it from the fixture_data_dict
     #           add it to a list for the fixture psf_responses_indirect
     for one_scenario in fixture_data_dict.values():
-        # if psf_responses is active, every scenario must have a fixture
-        # called psf_responses_indirect, even if it just contains an empty list
-        # as the fixture is autouse
         responses_fixture_names = [
             one_fixture_name
             for one_fixture_name in one_scenario.keys()
@@ -309,10 +293,11 @@ def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
                 psf_responses_data.extend(current_fixture_data)
             elif isinstance(current_fixture_data, dict):
                 psf_responses_data.append(current_fixture_data)
-        one_scenario["psf_responses_indirect"] = psf_responses_data
+        if len(psf_responses_data) > 0:
+            one_scenario["psf_responses_indirect"] = psf_responses_data
 
     # at the end of this the fixture data dict has had all of the "_responses"
-    # entries popped out of it and each scenario has a "psf_responses_indirect" fixture
+    # entries popped out of it and each scenario that has a "psf_responses_indirect" fixture
     return
 
 
