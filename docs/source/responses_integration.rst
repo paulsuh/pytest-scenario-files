@@ -34,7 +34,7 @@ Responses integration:
   This turns on the integration. Since the fixtures intended for use
   with Responses integration are marked by a special suffix, the
   integration should be explicitly triggered to avoid accidentally
-  activationg it for a developer who used the suffix without realizing
+  activating it for a developer who used the suffix without realizing
   the special meaning.
 
 - ``--psf-fire-all-responses=[true|false]``
@@ -138,7 +138,7 @@ alter the responses for a test.
 
 .. code-block:: Python
 
-    @fixture
+    @pytest.fixture
     def error_response(psf_responses):
         psf_responses.replace(
             "GET",
@@ -184,6 +184,83 @@ call ``override_responses_real_send()`` as per the `moto FAQ`_.
 
 Detailed Example
 ----------------
+The easiest way to see how this works is to take an example. One system
+I work with requires that you make four calls when you connect to it.
+
+1. Make a call to authenticate and get an access token.
+2. Get the list of available tenants and their tenant IDs.
+3. Get the list of available domains and their domain IDs for the
+   specified tenant.
+4. Set the tenant and domain to use and get back a session.
+
+.. code-block:: Python
+    :caption: ``api_utils.py``
+
+    from requests import get, post
+
+    def connect_to_api(username, password, tenant_name, domain_name):
+
+        login_response = post(
+            "https://api.example.com/rest/authenticate",
+            data={
+                "username": username,
+                "password": password,
+            }
+        )
+        login_response.raise_for_status()
+        access_token = login_response["access_token"]
+
+        tenant_response = get(
+            "https://api.example.com/rest/tenants",
+            headers={"Access-Token": access_token}
+        )
+        tenant_response.raise_for_status()
+        tenant_id = tenant_response[tenant_name]["TenantId"]
+
+        domain_response = get(
+            "https://api.example.com/rest/domains",
+            params={"TenantId": tenant_id},
+            headers={"Access-Token": access_token}
+        )
+        domain_response.raise_for_status()
+        domain_id = domain_response[domain_name]["DomainId"]
+
+        session_response = post(
+            "https://api.example.com/rest/session",
+            headers={"Access-Token": access_token},
+            data={
+                "TenantId": tenant_id,
+                "DomainId": domain_id,
+            }
+        )
+        session_response.raise_for_status()
+        session_id = session_response["SessionId"]
+
+        return access_token, session_id
+
+The test function for this calls this function, then checks for either
+the correct return value or an exception, depending on the expected_value
+fixture.
+
+.. code-block:: Python
+
+    import pytest
+    from api_utils import connect_to_api
+
+    @pytest.fixture
+    def api_response_overrides(request, psf_responses):
+        if (override := getattr(request, param, None)) is not None:
+            if not isinstance(override, list)
+                override = [override]
+            for one_override in
+
+    def test_connect_to_api(psf_responses, expected_value):
+
+        # if we are expecting no error, expected_value will
+        # be a
+        if
+
+
 
 .. _Responses: https://github.com/getsentry/responses
 .. _moto: https://github.com/getmoto/moto
