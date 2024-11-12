@@ -105,6 +105,13 @@ dependencies = [
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files tests}"
 
+[tool.hatch.envs.test]
+dependencies = [
+    "coverage[toml]>=6.5",
+    "pytest~={matrix:pytest}",
+    "pytest-xdist"
+]
+
 # documentation generation environment
 [tool.hatch.envs.docs]
 dependencies = [
@@ -112,30 +119,16 @@ dependencies = [
     "furo"
 ]
 
-# testing environments
-[tool.hatch.envs.hatch-test]
-dependencies = [
-    "pytest~={matrix:pytest}"
-]
-
-[[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12"]
+[[tool.hatch.envs.test.matrix]]
+python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 pytest = ["7.4", "8.2", "8.3"]
 integrations = ["none", "responses"]
 
-#[tool.hatch.envs.hatch-test.overrides]
-#matrix.integrations.dependencies = [
-#    {value = "responses", if = ["responses"]}
-#]
-#[tool.hatch.envs.hatch-test.overrides]
-#matrix.integrations.extra-dependencies = [
-#    {value = "responses", if = ["responses"]}
-#]
-
-[tool.hatch.envs.hatch-test.py3.9-7.4-responses]
-extra-dependencies = [
-    "responses"
+[tool.hatch.envs.test.overrides]
+matrix.integrations.dependencies = [
+    {value = "responses", if = ["responses"]}
 ]
+
 
 ##############################
 #                            #
