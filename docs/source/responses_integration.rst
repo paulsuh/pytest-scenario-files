@@ -116,13 +116,12 @@ the loaded value is a dict or a list and handles it accordingly.
 Having both suffixes is just to make reading the data files easier
 for humans.
 
-- Each of responses should be unique, as they are all added to a
-  single RequestsMock. If you inadvertently add two that match the
-  same request Responses will raise an exception
 - Loading values by reference will work as expected. See the detailed
   example for how it is used.
 - Support for loading native Responses files is planned for the near
   future.
+- Support for ``httpx`` and ``httpx-responses`` is also planned for
+  the future.
 
 Advanced Usage
 --------------
