@@ -1,5 +1,10 @@
 """Test indirect fixture loading"""
 
+import pytest
+
+# skip these tests if the responses module is not present
+pytest.importorskip("responses")
+
 
 def test_load_responses_fixture_single(pytester):
     # create the test code file
