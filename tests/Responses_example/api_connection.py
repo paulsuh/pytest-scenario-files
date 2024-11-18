@@ -32,7 +32,7 @@ class NetBrainConnection:
         self.tenant_id = None
         self.domain_id = None
 
-    def connect_to_api(self, username, password, tenant_name, domain_name) -> None:
+    def connect_to_api(self) -> None:
         """
         Establishes a connection to the API using the provided credentials and
         tenant/domain details. Sets the tenant and domain for future API calls during

@@ -1,0 +1,4 @@
+success_scenario_1:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect: mock_token
+  url_response_override_indirect: null
