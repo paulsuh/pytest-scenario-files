@@ -17,24 +17,35 @@ def url_response_override(
     return psf_responses
 
 
+@pytest.mark.skipif('not config.getoption("psf-load-responses", False)')
+def test_connect_to_api(url_response_override, psf_expected_result, netbrain_connection_obj):
+    with psf_expected_result as expected_result:
+        netbrain_connection_obj.connect_to_api()
+        assert netbrain_connection_obj.nb_req_headers["token"] == expected_result
+
+
+@pytest.mark.skipif('not config.getoption("psf-load-responses", False)')
 def test_login_to_api(url_response_override, psf_expected_result, netbrain_connection_obj):
     with psf_expected_result as expected_result:
         netbrain_connection_obj.login_to_api()
         assert netbrain_connection_obj.nb_req_headers["token"] == expected_result
 
 
+@pytest.mark.skipif('not config.getoption("psf-load-responses", False)')
 def test_get_tenant_id(url_response_override, psf_expected_result, netbrain_connection_obj):
     with psf_expected_result as expected_result:
         netbrain_connection_obj.get_tenant_id()
         assert netbrain_connection_obj.tenant_id == expected_result
 
 
+@pytest.mark.skipif('not config.getoption("psf-load-responses", False)')
 def test_get_domain_id(url_response_override, psf_expected_result, netbrain_connection_obj):
     with psf_expected_result as expected_result:
         netbrain_connection_obj.get_domain_id()
         assert netbrain_connection_obj.domain_id == expected_result
 
 
+@pytest.mark.skipif('not config.getoption("psf-load-responses", False)')
 def test_set_tenant_and_domain(url_response_override, psf_expected_result, netbrain_connection_obj):
     with psf_expected_result as expected_result:  # noqa F841
         netbrain_connection_obj.set_tenant_and_domain()
