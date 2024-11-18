@@ -294,13 +294,10 @@ def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManage
 
             module_name, exception_class_name = expected_exception_name.rsplit(".", 1)
             module = importlib.import_module(module_name)
-            exception_class = getattr(module, exception_class_name), request.param["expected_exception_msg"]
+            exception_class = getattr(module, exception_class_name)
         else:
             # expected exception is a builtin
-            exception_class = (
-                globals()["__builtins__"][expected_exception_name],
-                request.param["expected_exception_msg"],
-            )
+            exception_class = (globals()["__builtins__"][expected_exception_name],)
 
         return pytest.raises(exception_class, **request.param)
 
