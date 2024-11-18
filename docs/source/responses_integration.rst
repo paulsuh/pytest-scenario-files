@@ -120,6 +120,8 @@ for humans.
   example for how it is used.
 - Support for loading native Responses files is planned for the near
   future.
+- Support for additional responses features like various matchers for
+  headers, query parameters, json body, etc. is under consideration.
 - Support for ``httpx`` and ``httpx-responses`` is also planned for
   the future.
 
@@ -184,20 +186,34 @@ call ``override_responses_real_send()`` as per the `moto FAQ`_.
 Detailed Example
 ----------------
 The easiest way to see how this works is to take an example. One system
-I work with requires that you make four calls when you connect to it.
+I work with (the `NetBrain API`_) requires that you make four calls when
+you connect to it.
 
-1. Make a call to authenticate and get an access token.
+1. Authenticate and get an access token.
 2. Get the list of available tenants and their tenant IDs.
 3. Get the list of available domains and their domain IDs for the
    specified tenant.
-4. Set the tenant and domain to use and get back a session.
+4. Set the tenant and domain to be used for the current session.
+
+In addition to checking for an HTTP error code of 4xx or 5xx, you also
+need to check the status code in the response JSON. 790200 generally
+means the API call succeeded while anything else means it failed.
+
+Here is some simplified example code which handles the login process.
 
 .. code-block:: Python
-    :caption: ``api_utils.py``
+    :caption: ``api_connection.py``
 
     from requests import get, post
 
     def connect_to_api(username, password, tenant_name, domain_name):
+
+        def _check_response_status(response):
+            response.raise_for_status()
+            if response.json()["statusCode"] != "792000":
+                raise RuntimeException(
+                    f"Error with status code {response.json()["statusCode"]}"
+                )
 
         login_response = post(
             "https://api.example.com/rest/authenticate",
@@ -206,14 +222,14 @@ I work with requires that you make four calls when you connect to it.
                 "password": password,
             }
         )
-        login_response.raise_for_status()
+        _check_response_status(login_response):
         access_token = login_response["access_token"]
 
         tenant_response = get(
             "https://api.example.com/rest/tenants",
             headers={"Access-Token": access_token}
         )
-        tenant_response.raise_for_status()
+        _check_response_status(tenant_response):
         tenant_id = tenant_response[tenant_name]["TenantId"]
 
         domain_response = get(
@@ -221,7 +237,7 @@ I work with requires that you make four calls when you connect to it.
             params={"TenantId": tenant_id},
             headers={"Access-Token": access_token}
         )
-        domain_response.raise_for_status()
+        _check_response_status(domain_response):
         domain_id = domain_response[domain_name]["DomainId"]
 
         session_response = post(
@@ -232,19 +248,19 @@ I work with requires that you make four calls when you connect to it.
                 "DomainId": domain_id,
             }
         )
-        session_response.raise_for_status()
-        session_id = session_response["SessionId"]
+        _check_response_status(domain_response):
 
-        return access_token, session_id
+        return access_token
 
 The test function for this calls this function, then checks for either
 the correct return value or an exception, depending on the expected_value
 fixture.
 
 .. code-block:: Python
+    :caption: ``test_api_connection.py``
 
     import pytest
-    from api_utils import connect_to_api
+    from api_connection import connect_to_api
 
     @pytest.fixture
     def api_response_overrides(request, psf_responses):
@@ -256,11 +272,29 @@ fixture.
     def test_connect_to_api(psf_responses, expected_value):
 
         # if we are expecting no error, expected_value will
-        # be a
-        if
+        # be a string. If it is a dict then it will contain an
+        # exception type and message.
+        if instanceof(expected_value, str):
+            assert expected_value = connect_to_api(
+                "username",
+                "mock_password",
+                "mock_tenant_name",
+                "mock_domain_name"
+            )
+        else:
+            if "." in (exception_type : str := expected_value["exception_type"]):
+                # custom exception from a module
+                module_path, exception_name = exception_type.rsplit(".", 1)
+                importlib.import(exception_type)
+
+
+        else:
+            # builtin exception
+            with pytest.raises()
 
 
 
 .. _Responses: https://github.com/getsentry/responses
 .. _moto: https://github.com/getmoto/moto
 .. _moto FAQ: http://docs.getmoto.org/en/stable/docs/faq.html#how-can-i-mock-my-own-http-requests-using-the-responses-module
+.. _Netbrain API: https://github.com/NetBrainAPI/NetBrain-REST-API-R11.1/blob/main/REST%20APIs%20Documentation/Authentication%20and%20Authorization/Login%20API.md
