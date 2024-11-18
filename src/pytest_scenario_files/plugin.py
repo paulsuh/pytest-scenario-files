@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Generator
+from contextlib import AbstractContextManager, nullcontext
 from json import load
 from os.path import join
 from typing import TYPE_CHECKING, Any, Union
@@ -261,6 +262,51 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, N
         for one_response in request.param:
             rsps.add(**one_response)
         yield rsps
+
+
+@pytest.fixture(scope="function")
+def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManager:
+    """Convenience fixture for possible expected exceptions
+
+    Pytest has a pattern called Parameterized Conditional Raising (See:
+    https://docs.pytest.org/en/8.3.x/example/parametrize.html#parametrizing-conditional-raising).
+    This fixture allows the user to specify either an expected exception (including
+    a match string or regexp) in the scenario file, or any other expected result value.
+    An exception gets wrapped in a pytest.raises() context manager, while any other
+    value gets wrapped in a nullcontext() context manager. The test function can then
+    use a call like::
+
+        with psf_expected_result as expected_result:
+            assert expected_result == function_being_tested()
+
+    :param request: The fixture request object containing the test parameters.
+    :type request: pytest.FixtureRequest
+    :return: A context manager that either catches the expected exception or
+        a nullcontext() context manager.
+    :rtype: AbstractContextManager:
+    """
+    if isinstance(request.param, dict) and "expected_exception_name" in request.param:
+        # expected result is an exception
+        expected_exception_name = request.param.pop("expected_exception_name")
+        if "." in expected_exception_name:
+            # expected exception is defined in a module or package
+            import importlib
+
+            module_name, exception_class_name = expected_exception_name.rsplit(".", 1)
+            module = importlib.import_module(module_name)
+            exception_class = getattr(module, exception_class_name), request.param["expected_exception_msg"]
+        else:
+            # expected exception is a builtin
+            exception_class = (
+                globals()["__builtins__"][expected_exception_name],
+                request.param["expected_exception_msg"],
+            )
+
+        return pytest.raises(exception_class, **request.param)
+
+    else:
+        # expected result not an exception
+        return nullcontext(request.param)
 
 
 def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
