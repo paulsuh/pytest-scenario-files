@@ -248,7 +248,7 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
 def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, None]:
     """Load fixture data into responses mock.
 
-    Each test scenario needs to have its own responses mack, as they will be testing
+    Each test scenario needs to have its own responses mock, as they will be testing
     different aspects. We need to define a pytest fixture here and provide it to
     any scenario that uses responses.
     """
