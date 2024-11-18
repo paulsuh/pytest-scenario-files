@@ -109,7 +109,8 @@ check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files 
 dependencies = [
     "coverage[toml]>=6.5",
     "pytest~={matrix:pytest}",
-    "pytest-xdist"
+    "pytest-xdist",
+    "pytest-cov"
 ]
 
 # documentation generation environment
@@ -137,6 +138,7 @@ matrix.integrations.dependencies = [
 ##############################
 [tool.pytest.ini_options]
 pytester_example_dir = "tests/pytester_example_files"
+#addopts = "--numprocesses=auto"
 
 ##############################
 #                            #
