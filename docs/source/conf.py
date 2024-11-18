@@ -18,7 +18,7 @@ release = "1.1"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.githubpages"]
+extensions = ["sphinx.ext.githubpages", "sphinx.ext.autodoc", "sphinx.ext.autosummary"]
 
 templates_path = ["_templates"]
 exclude_patterns = []

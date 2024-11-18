@@ -45,6 +45,7 @@ This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
     basic_usage
     advanced_usage
     responses_integration
+    api
     contributing
     About <about>
 
