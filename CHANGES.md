@@ -1,5 +1,13 @@
 # Change Log
 
+#### 1.1 - 2024-11-21
+
+- Add integration with Responses.
+- Add convenience fixture psf_expected_result for parameterized
+  conditional raising.
+- Add detailed realistic(-ish) usage example.
+- Add conditional Hatch testing matrix dependencies.
+
 #### 1.0 - 2024-05-19
 
 Bump version to 1.0 and set Development Status to
