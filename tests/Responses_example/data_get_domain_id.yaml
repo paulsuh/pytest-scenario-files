@@ -1,0 +1,40 @@
+success_scenario_1:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect: mock_domain_id
+  url_response_override_indirect: null
+failure_scenario_1:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: requests.HTTPError
+  url_response_override_indirect:
+    method_or_response: GET
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Domains
+    status: 403
+    json:
+      statusCode: "795000"
+failure_scenario_2:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: RuntimeError
+  url_response_override_indirect:
+    method_or_response: GET
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Domains
+    status: 200
+    json:
+      statusCode: "795000"
+failure_scenario_3:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: RuntimeError
+    match: Domain with name mock_domain_name not found
+  url_response_override_indirect:
+    method_or_response: GET
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Domains
+    status: 200
+    json:
+        statusCode: "790200"
+        domains:
+          - domainName: first domain
+            domainId: first_domain_id
+          - domainName: second_domain
+            domainId: second_domain_id

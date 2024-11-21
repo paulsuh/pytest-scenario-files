@@ -1,0 +1,37 @@
+common_scenario_data:
+  common_responses:
+    - method: POST
+      url: https://netbrain-api.example.com/ServicesAPI/API/V1/Session
+      status: 200
+      json:
+        statusCode: "790200"
+        token: mock_token
+    - method: GET
+      url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Tenants
+      status: 200
+      json:
+        statusCode: "790200"
+        tenants:
+          - tenantName: other tenant
+            tenantId: other_tenant_id
+          - tenantName: mock_tenant_name
+            tenantId: mock_tenant_id
+          - tenantName: third tenant
+            tenantId: third_tenant_id
+    - method: GET
+      url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Domains
+      status: 200
+      json:
+        statusCode: "790200"
+        domains:
+          - domainName: first domain
+            domainId: first_domain_id
+          - domainName: second_domain
+            domainId: second_domain_id
+          - domainName: mock_domain_name
+            domainId: mock_domain_id
+    - method: PUT
+      url: https://netbrain-api.example.com//ServicesAPI/API/V1/Session/CurrentDomain
+      status: 200
+      json:
+        statusCode: "790200"

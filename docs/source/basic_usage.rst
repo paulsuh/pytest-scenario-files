@@ -52,6 +52,10 @@ including container types such as lists or dicts. An example data file might con
 This would parameterize into two test cases labeled ``test1`` and ``test2``, each with
 three fixtures, ``input_data_1``, ``input_data_2``, and ``expected_result``.
 
+Because of the nature of parameterization, *every scenario* **must** *have the same set of
+fixtures*, even if the fixture is unused in some circumstances. You can put in an empty
+string or null value if necessary.
+
 Integrating With Regular Fixtures
 ---------------------------------
 

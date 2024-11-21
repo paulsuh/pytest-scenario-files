@@ -40,6 +40,9 @@ unittest = [
     "pytest",
     "pytest-cov"
 ]
+responses = [
+    "responses"
+]
 
 [project.urls]
 "Documentation" = "https://pytest-scenario-files.mspex.net/"
@@ -50,6 +53,12 @@ unittest = [
 [project.entry-points.pytest11]
 pytest_scenario_files = "pytest_scenario_files"
 
+##############################
+#                            #
+# Hatch config               #
+#                            #
+##############################
+# Building
 [tool.hatch.build.targets.sdist]
 exclude = [
     ".github",
@@ -59,6 +68,13 @@ exclude = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/pytest_scenario_files"]
 
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "_version.py"
+
+# Default environment
 [tool.hatch.envs.default]
 dependencies = [
     "coverage[toml]",
@@ -80,6 +96,7 @@ cov = [
   "cov-report",
 ]
 
+# static type-checking environment
 [tool.hatch.envs.types]
 dependencies = [
   "mypy>=1.0.0",
@@ -92,8 +109,11 @@ check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files 
 dependencies = [
     "coverage[toml]>=6.5",
     "pytest~={matrix:pytest}",
+    "pytest-xdist",
+    "pytest-cov"
 ]
 
+# documentation generation environment
 [tool.hatch.envs.docs]
 dependencies = [
     "sphinx",
@@ -101,14 +121,14 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12"]
-pytest = ["7.4", "8.2"]
+python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+pytest = ["7.4", "8.2", "8.3"]
+integrations = ["none", "responses"]
 
-[tool.hatch.version]
-source = "vcs"
-
-[tool.hatch.build.hooks.vcs]
-version-file = "_version.py"
+[tool.hatch.envs.test.overrides]
+matrix.integrations.dependencies = [
+    {value = "responses", if = ["responses"]}
+]
 
 
 ##############################

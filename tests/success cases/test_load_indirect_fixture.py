@@ -1,5 +1,4 @@
-"""Test indirect fixture loading
-"""
+"""Test indirect fixture loading"""
 
 
 def test_load_indirect_fixture(pytester):
