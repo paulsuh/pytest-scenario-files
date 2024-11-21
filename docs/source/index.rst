@@ -26,15 +26,15 @@ Features
 - Fixtures may refer to fixtures in other files
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
-- Integration with Responses package
+- NEW - Integration with Responses package
 
 Compatibility
 -------------
 
 This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
 
-- Tested with ``pytest`` versions 7.4 and 8.2.
-- Tested with CPython 3.9-3.12.
+- Tested with ``pytest`` versions 7.4, 8.2 and 8.3.
+- Tested with CPython 3.9-3.13.
 
 .. toctree::
     :maxdepth: 2

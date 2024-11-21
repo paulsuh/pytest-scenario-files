@@ -40,8 +40,8 @@ YAML format.
 
 This package is a plug-in for `pytest` and works with Python 3.9 and up.
 
-- Tested with `pytest` versions 7.4 and 8.2.
-- Tested with CPython 3.9-3.12.
+- Tested with `pytest` versions 7.4, 8.2, and 8.3.
+- Tested with CPython 3.9-3.13.
 
 ### Documentation
 
@@ -153,8 +153,8 @@ Distributed under the terms of the `MIT` license,
 [link03]: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
 [link04]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 [link05]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
-[link06]: https://pytest-scenario-files.mspex.net/basic_usage.html
+[link06]: https://github.com/paulsuh/pytest-scenario-files
 [link07]: https://docs.pytest.org/en/stable/index.html
 [link08]: https://github.com/getsentry/responses/tree/master
-[link09]: https://paulsuh.github.io/pytest-scenario-files/
+[link09]: https://pytest-scenario-files.mspex.net/
 [link10]: https://github.com/paulsuh/pytest-scenario-files/issues
