@@ -1,15 +1,47 @@
+from __future__ import annotations
+
 import os
+from collections.abc import Generator
+from contextlib import AbstractContextManager, nullcontext
 from json import load
 from os.path import join
-from typing import Any, Union
+from typing import TYPE_CHECKING, Any, Union
 
+import pytest
 from yaml import safe_load
+
+if TYPE_CHECKING:
+    from requests import Response
 
 
 class BadTestCaseDataException(Exception):
     """An exception class used to mark bad test case data."""
 
     pass
+
+
+def pytest_addoption(parser, pluginmanager):
+    """
+    Pytest hook function.
+
+    Adds the command line option to automatically load responses and the
+    additional option whether to require all responses to be fired.
+    """
+    parser.addoption(
+        "--psf-load-responses",
+        action="store_true",
+        default=False,
+        dest="psf-load-responses",
+        help="Automatically load responses from scenario files",
+    )
+
+    parser.addoption(
+        "--psf-fire-all-responses",
+        action="store_true",
+        default=False,
+        dest="psf-fire-all-responses",
+        help="Are all responses required to be fired?",
+    )
 
 
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
@@ -61,23 +93,32 @@ def _locate_and_load_test_data(test_name: str, dir_name: str) -> dict[str, dict[
     """Locates and loads test data for the given test name.
 
     :param test_name: The name of the test.
+    :type test_name: str
+    :param dir_name:
+    :type dir_name: str
     :return: A dictionary containing the loaded test data.
+    :rtype: dict
     """
-    return _locate_and_load_data_files("data_" + test_name, start_dir_path=dir_name)
+    return _locate_and_load_data_files("data_" + test_name, dir_name)
 
 
-def _locate_and_load_data_files(filename_base: str, start_dir_path: str) -> dict[str, dict[str, Any]]:
+def _locate_and_load_data_files(filename_base: str, dir_name: str) -> dict[str, dict[str, Any]]:
     """Locates and loads data for the given file name.
+
+    This function is used by both _locate_and_load_test_data() and _load_referenced_data().
 
     :param filename_base: The root name of the files to be loaded.
     :type filename_base: str
-    :param start_dir_path: path where to start the search for the data files
-    :type start_dir_path: str
+    :param dir_name: path where to start the search for the data files
+    :type dir_name: str
     :return: A dictionary containing the loaded data.
     :rtype: dict
     """
+    # This could be more efficiently cached, as referenced files may be loaded many times.
+    # However, the total time required seems to be relatively small even for a complex
+    # set of over 100 tests, so we'll add that when it becomes necessary.
     result: dict[str, dict[str, Any]] = {}
-    for root, dirs, files in os.walk(start_dir_path):
+    for root, dirs, files in os.walk(dir_name):
         test_data_filenames = [one_filename for one_filename in files if one_filename.startswith(filename_base)]
 
         for one_data_file in test_data_filenames:
@@ -203,8 +244,108 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
     return list(fixture_cases_dict.keys()), fixture_data_list
 
 
-def pytest_generate_tests(metafunc):
-    """Hook called by Pytest for each test.
+@pytest.fixture(scope="function")
+def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, None]:
+    """Load fixture data into responses mock.
+
+    Each test scenario needs to have its own responses mock, as they will be testing
+    different aspects. We need to define a pytest fixture here and provide it to
+    any scenario that uses responses.
+    """
+    # Ultimately we need to wrap this up so that responses and httpx-responses
+    # are both supported.
+    # No qa flag as Ruff doesn't recognize the conditional import in pytest_configure()
+    import responses
+
+    psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
+    with responses.RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:  # noqa F821
+        for one_response in request.param:
+            rsps.add(**one_response)
+        yield rsps
+
+
+@pytest.fixture(scope="function")
+def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManager:
+    """Convenience fixture for possible expected exceptions
+
+    Pytest has a pattern called Parameterized Conditional Raising (See:
+    https://docs.pytest.org/en/8.3.x/example/parametrize.html#parametrizing-conditional-raising).
+    This fixture allows the user to specify either an expected exception (including
+    a match string or regexp) in the scenario file, or any other expected result value.
+    An exception gets wrapped in a pytest.raises() context manager, while any other
+    value gets wrapped in a nullcontext() context manager. The test function can then
+    use a call like::
+
+        with psf_expected_result as expected_result:
+            assert expected_result == function_being_tested()
+
+    :param request: The fixture request object containing the test parameters.
+    :type request: pytest.FixtureRequest
+    :return: A context manager that either catches the expected exception or
+        a nullcontext() context manager.
+    :rtype: AbstractContextManager:
+    """
+    if isinstance(request.param, dict) and "expected_exception_name" in request.param:
+        # expected result is an exception
+        expected_exception_name = request.param.pop("expected_exception_name")
+        if "." in expected_exception_name:
+            # expected exception is defined in a module or package
+            import importlib
+
+            module_name, exception_class_name = expected_exception_name.rsplit(".", 1)
+            module = importlib.import_module(module_name)
+            exception_class = getattr(module, exception_class_name)
+        else:
+            # expected exception is a builtin
+            exception_class = (globals()["__builtins__"][expected_exception_name],)
+
+        return pytest.raises(exception_class, **request.param)
+
+    else:
+        # expected result not an exception
+        return nullcontext(request.param)
+
+
+def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
+    """
+    Extract responses data into a single list for the mock.
+
+    This list will be added to the fixture data dict for a fixture with the name
+    "psf_responses", with indirect=True and autouse=True. The fixture will only be
+    exposed if the --psf-load-responses flag is used. The name in the fixture
+    data dict will be "psf_responses_indirect", which will then be processed
+    later on into an indirect fixture.
+
+    :param fixture_data_dict:
+    """
+    # for each scenario
+    #   for each fixture
+    #       check if fixture name ends with _responses or _response
+    #           remove it from the fixture_data_dict
+    #           add it to a list for the fixture psf_responses_indirect
+    for one_scenario in fixture_data_dict.values():
+        responses_fixture_names = [
+            one_fixture_name
+            for one_fixture_name in one_scenario.keys()
+            if one_fixture_name.endswith("_response") or one_fixture_name.endswith("_responses")
+        ]
+        psf_responses_data = []
+        for one_fixture_name in responses_fixture_names:
+            current_fixture_data = one_scenario.pop(one_fixture_name)
+            if isinstance(current_fixture_data, list):
+                psf_responses_data.extend(current_fixture_data)
+            elif isinstance(current_fixture_data, dict):
+                psf_responses_data.append(current_fixture_data)
+        if len(psf_responses_data) > 0:
+            one_scenario["psf_responses_indirect"] = psf_responses_data
+
+    # at the end of this the fixture data dict has had all of the "_responses"
+    # entries popped out of it and each scenario that has a "psf_responses_indirect" fixture
+    return
+
+
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+    """Pytest hook function called for each test.
 
     This is where the heavy lifting is done. This walks the directory tree
     looking for files that match the name of the test. Any data are loaded
@@ -217,22 +358,32 @@ def pytest_generate_tests(metafunc):
     # E.g.,
     # parameterize against list of names if match
     test_name = metafunc.definition.name.removeprefix("test_")
-    test_file_dir = metafunc.definition.path.parent
+    test_file_dir = str(metafunc.definition.path.parent)
 
     fixture_raw_data_dict = _locate_and_load_test_data(test_name, test_file_dir)
 
     if len(fixture_raw_data_dict) > 0:
         # do processing only if the search found cases
 
+        # if the psf-load-responses flag is set, go through the raw data dict
+        # to find any fixtures that end with _response or _responses. If any are
+        # found, remove them and set up psf_responses_indirect as an indirect fixture
+        if metafunc.config.getoption("psf-load-responses"):
+            _extract_responses(fixture_raw_data_dict)
+
         # get the list of fixture names sorted alphabetically
         # will raise an exception if the fixture names are inconsistent
         fixture_names = _extract_fixture_names(fixture_raw_data_dict)
 
         # pull out indirect fixtures and remove suffix from fixture names
-        # could be False if there are no indirect fixtures
+        # The returned value for indirect_fixture_names could be False
+        # if there are no indirect fixtures. (This comes from Metafunc.parameterize,
+        # which expects a list of indirect fixtures or False. Why not an empty
+        # list? I dunno?)
         fixture_names, indirect_fixture_names = _extract_indirect_fixtures(fixture_raw_data_dict, fixture_names)
 
-        # reformat the case ids and fixture data into list and list of lists respectively
+        # reformat the case ids and fixture data into list and list of
+        # lists respectively
         case_ids, fixture_data_list = _extract_fixture_data(fixture_raw_data_dict)
 
         # do the parameterization

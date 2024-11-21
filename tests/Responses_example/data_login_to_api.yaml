@@ -1,0 +1,24 @@
+success_scenario_1:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect: mock_token
+  url_response_override_indirect: null
+failure_scenario_1:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: requests.HTTPError
+  url_response_override_indirect:
+    method_or_response: POST
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/Session
+    status: 403
+    json:
+      statusCode: "795000"
+failure_scenario_2:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: RuntimeError
+  url_response_override_indirect:
+    method_or_response: POST
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/Session
+    status: 200
+    json:
+      statusCode: "795000"

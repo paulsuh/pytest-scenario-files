@@ -26,6 +26,7 @@ Features
 - Fixtures may refer to fixtures in other files
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
+- Integration with Responses package
 
 Compatibility
 -------------
@@ -43,6 +44,8 @@ This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
     installation
     basic_usage
     advanced_usage
+    responses_integration
+    api
     contributing
     About <about>
 

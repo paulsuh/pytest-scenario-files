@@ -1,0 +1,40 @@
+success_scenario_1:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect: mock_tenant_id
+  url_response_override_indirect: null
+failure_scenario_1:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: requests.HTTPError
+  url_response_override_indirect:
+    method_or_response: GET
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Tenants
+    status: 403
+    json:
+      statusCode: "795000"
+failure_scenario_2:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: RuntimeError
+  url_response_override_indirect:
+    method_or_response: GET
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Tenants
+    status: 200
+    json:
+      statusCode: "795000"
+failure_scenario_3:
+  common_responses: __common_test_data.yaml:common_scenario_data:common_responses
+  psf_expected_result_indirect:
+    expected_exception_name: RuntimeError
+    match: Tenant with name mock_tenant_name not found
+  url_response_override_indirect:
+    method_or_response: GET
+    url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Tenants
+    status: 200
+    json:
+        statusCode: "790200"
+        tenants:
+          - tenantName: other tenant
+            tenantId: other_tenant_id
+          - tenantName: third tenant
+            tenantId: third_tenant_id
