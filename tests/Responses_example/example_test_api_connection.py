@@ -1,6 +1,8 @@
 import pytest
-import responses
 from api_connection import NetBrainConnection
+
+# skip these tests if the responses module is not present
+responses = pytest.importorskip("responses")
 
 
 @pytest.fixture

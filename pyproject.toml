@@ -138,7 +138,6 @@ matrix.integrations.dependencies = [
 ##############################
 [tool.pytest.ini_options]
 pytester_example_dir = "tests/pytester_example_files"
-#addopts = "--numprocesses=auto"
 
 ##############################
 #                            #
