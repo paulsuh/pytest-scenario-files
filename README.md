@@ -40,7 +40,7 @@ YAML format.
 
 This package is a plug-in for `pytest` and works with Python 3.9 and up.
 
-- Tested with `pytest` versions 7.4 and 8.2.
+- Tested with `pytest` versions 7.4, 8.2, and 8.3.
 - Tested with CPython 3.9-3.12.
 
 ### Documentation
