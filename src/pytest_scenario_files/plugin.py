@@ -22,7 +22,7 @@ class BadTestCaseDataException(Exception):
 
 def pytest_addoption(parser, pluginmanager):
     """
-    Pytest hook function.
+    Pytest hook function that adds the command line options.
 
     Adds the command line option to automatically load responses and the
     additional option whether to require all responses to be fired.
@@ -246,19 +246,18 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
 
 @pytest.fixture(scope="function")
 def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, None]:
-    """Load fixture data into responses mock.
+    """Returns a ResponsesMock with scenario data loaded.
 
-    Each test scenario needs to have its own responses mock, as they will be testing
-    different aspects. We need to define a pytest fixture here and provide it to
-    any scenario that uses responses.
+    Used for integration with the Responses package. Each test scenario will get its
+    own active ResponsesMock object. This object can then be updated at runtime
+    to override the responses loaded from files.
     """
     # Ultimately we need to wrap this up so that responses and httpx-responses
     # are both supported.
-    # No qa flag as Ruff doesn't recognize the conditional import in pytest_configure()
     import responses
 
     psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
-    with responses.RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:  # noqa F821
+    with responses.RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:
         for one_response in request.param:
             rsps.add(**one_response)
         yield rsps
@@ -345,11 +344,17 @@ def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    """Pytest hook function called for each test.
+    """Pytest hook function that does the parameterization.
 
-    This is where the heavy lifting is done. This walks the directory tree
-    looking for files that match the name of the test. Any data are loaded
-    and used to parameterize the test for scenarios.
+    This is where the heavy lifting is done. The process is:
+
+    1. Walk the directory tree looking for files that match the name of the test.
+    2. Load test data from the files.
+    3. Extract fixture names and check for consistency.
+    4. Pull out indirect fixtures and remove suffixes from fixture names. (Includes
+       handling the Responses integration.)
+    5. Reformat the data for the parameterization.
+    6. Make the function call.
 
     :param metafunc: Pytest fixture used to create the parameterization
     """
