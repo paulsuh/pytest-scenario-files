@@ -1,62 +1,19 @@
 Responses Integration
 =====================
-One common usage is to load http responses from files into the `Responses`_
-package. While Responses has a native file loading capability in beta,
-Pytest-Scenario-Files can also load the responses from files.
-
-Installation
-------------
-As a convenience, you can install Pytest-Scenario-Files with the
-`responses` option:
-
-``pip install pytest-scenario-files[responses]``
-
-(This is not strictly necessary, as everything will work just fine
-if you install the Responses package separately.)
+This library can be used to load http responses from files into the
+`Responses`_ package. While Responses has a native file loading capability
+in beta, Pytest-Scenario-Files can also load the responses from its
+own files.
 
 Basic Usage
 -----------
 
 There are three steps to using the Responses integration:
 
-1. Activate it using the command line flags
-2. Use the ``psf-responses`` fixture as a parameter to your test
+1. Create the data files.
+2. Pass the ``psf-responses`` fixture as a parameter to your test
    function.
-3. Create the data files.
-
-Command line flags
-^^^^^^^^^^^^^^^^^^
-There are two command line flags for Pytest that are used for the
-Responses integration:
-
-- ``--psf-load-responses``
-
-  This turns on the integration. Since the fixtures intended for use
-  with Responses integration are marked by a special suffix, the
-  integration should be explicitly triggered to avoid accidentally
-  activating it for a developer who used the suffix without realizing
-  the special meaning.
-
-- ``--psf-fire-all-responses=[true|false]``
-
-  This allows you to turn on the flag ``assert_all_requests_are_fired``
-  for Responses. It defaults to false.
-
-The ``psf-responses`` fixture
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Pytest-Scenario-Files provides a ``psf-responses`` fixture that is used
-to load the responses. It returns a currently active RequestsMock object
-that has all of the responses from the data files for the current test
-already loaded. If all of the responses your test needs are already loaded
-via the data files you can just leave it be. However, If you need to add
-additional responses or to change a response for this particular test you
-can use it as you would any standard RequestsMock.
-
-.. code-block:: Python
-
-    def test_api_call(psf_responses):
-        http_result = requests.get("https://www.example.com/rest/endpoint")
-        assert http_result.status_code = 200
+3. Activate the Responses integration using the command line flags.
 
 Data file format
 ^^^^^^^^^^^^^^^^
@@ -125,6 +82,40 @@ for humans.
 - Support for ``httpx`` and ``httpx-responses`` is also planned for
   the future.
 
+The ``psf-responses`` fixture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Pytest-Scenario-Files provides a ``psf-responses`` fixture that is used
+to load the responses. It returns a currently active RequestsMock object
+that has all of the responses from the data files for the current test
+already loaded. If all of the responses your test needs are already loaded
+via the data files you can just leave it be. However, If you need to add
+additional responses or to change a response for this particular test you
+can use it as you would any standard RequestsMock.
+
+.. code-block:: Python
+
+    def test_api_call(psf_responses):
+        http_result = requests.get("https://www.example.com/rest/endpoint")
+        assert http_result.status_code = 200
+
+Command line flags
+^^^^^^^^^^^^^^^^^^
+There are two command line flags for Pytest that are used for the
+Responses integration:
+
+- ``--psf-load-responses``
+
+  This turns on the integration. Since the fixtures intended for use
+  with Responses integration are marked by a special suffix, the
+  integration should be explicitly triggered to avoid accidentally
+  activating it for a developer who uses the suffix without realizing
+  the special meaning.
+
+- ``--psf-fire-all-responses=[true|false]``
+
+  This allows you to turn on the flag ``assert_all_requests_are_fired``
+  for Responses. It defaults to false.
+
 Advanced Usage
 --------------
 Overriding a response
@@ -168,6 +159,11 @@ alter the responses for a test.
         url: https://www.example.com/rest/endpoint3
         body: Text body of the http response3
 
+This is intended to be used with the ``psf_expected_result`` fixture
+and an indirectly parameterized override for error scenarios. See the
+data files that go with the detailed example section to see how it
+all works together.
+
 Use with ``moto`` when mocking AWS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If you are using the package `moto`_ to mock out AWS services, note
@@ -199,102 +195,68 @@ In addition to checking for an HTTP error code of 4xx or 5xx, you also
 need to check the status code in the response JSON. 790200 generally
 means the API call succeeded while anything else means it failed.
 
-Here is some simplified example code which handles the login process.
+The complete example (with the API connection code, test code,
+and data files) is contained in the source repository in the
+`tests/Responses_example`_ directory. Some highlights of this
+example are:
+
+1. The ``common_test_data.yaml`` file. This holds a common set of responses
+   that are used as a base by all of the tests.
+
+.. code-block:: yaml
+
+    common_scenario_data:
+      common_responses:
+        - method: POST
+          url: https://netbrain-api.example.com/ServicesAPI/API/V1/Session
+          status: 200
+          json:
+            statusCode: "790200"
+            token: mock_token
+        - method: GET
+          url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Tenants
+          status: 200
+          json:
+
+2. Multiple scenarios (both success and failure) in each data file, covering
+   both the happy (successful) path and any error paths through the code.
+
+3. Each failure scenario uses a custom fixture ``url_response_override``
+   along with data from the file to give an error response.
+
+.. code-block:: yaml
+
+    url_response_override_indirect:
+      method_or_response: GET
+      url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Domains
+      status: 403
+      json:
+        statusCode: "795000"
+
+4. Each failure scenario uses the ``psf_expected_result`` fixture with
+   a dict containing a item with the key ``expected_exception_name``
+   to indicate the expected failure mode.
+
+.. code-block:: yaml
+
+    psf_expected_result_indirect:
+      expected_exception_name: requests.HTTPError
+
+5. Use of a regular, un-parameterized fixture that is used to prepare
+   a NetbrainConnection object for each test.
 
 .. code-block:: Python
-    :caption: ``api_connection.py``
-
-    from requests import get, post
-
-    def connect_to_api(username, password, tenant_name, domain_name):
-
-        def _check_response_status(response):
-            response.raise_for_status()
-            if response.json()["statusCode"] != "792000":
-                raise RuntimeException(
-                    f"Error with status code {response.json()["statusCode"]}"
-                )
-
-        login_response = post(
-            "https://api.example.com/rest/authenticate",
-            data={
-                "username": username,
-                "password": password,
-            }
-        )
-        _check_response_status(login_response):
-        access_token = login_response["access_token"]
-
-        tenant_response = get(
-            "https://api.example.com/rest/tenants",
-            headers={"Access-Token": access_token}
-        )
-        _check_response_status(tenant_response):
-        tenant_id = tenant_response[tenant_name]["TenantId"]
-
-        domain_response = get(
-            "https://api.example.com/rest/domains",
-            params={"TenantId": tenant_id},
-            headers={"Access-Token": access_token}
-        )
-        _check_response_status(domain_response):
-        domain_id = domain_response[domain_name]["DomainId"]
-
-        session_response = post(
-            "https://api.example.com/rest/session",
-            headers={"Access-Token": access_token},
-            data={
-                "TenantId": tenant_id,
-                "DomainId": domain_id,
-            }
-        )
-        _check_response_status(domain_response):
-
-        return access_token
-
-The test function for this calls this function, then checks for either
-the correct return value or an exception, depending on the expected_value
-fixture.
-
-.. code-block:: Python
-    :caption: ``test_api_connection.py``
-
-    import pytest
-    from api_connection import connect_to_api
 
     @pytest.fixture
-    def api_response_overrides(request, psf_responses):
-        if (override := getattr(request, param, None)) is not None:
-            if not isinstance(override, list)
-                override = [override]
-            for one_override in
+    def netbrain_connection_obj() -> NetBrainConnection:
+        return NetBrainConnection("username", "mock_password",
+            "mock_tenant_name", "mock_domain_name")
 
-    def test_connect_to_api(psf_responses, expected_value):
-
-        # if we are expecting no error, expected_value will
-        # be a string. If it is a dict then it will contain an
-        # exception type and message.
-        if instanceof(expected_value, str):
-            assert expected_value = connect_to_api(
-                "username",
-                "mock_password",
-                "mock_tenant_name",
-                "mock_domain_name"
-            )
-        else:
-            if "." in (exception_type : str := expected_value["exception_type"]):
-                # custom exception from a module
-                module_path, exception_name = exception_type.rsplit(".", 1)
-                importlib.import(exception_type)
-
-
-        else:
-            # builtin exception
-            with pytest.raises()
-
-
+Running all of the tests will give you complete coverage for the
+``api_connection.py`` file.
 
 .. _Responses: https://github.com/getsentry/responses
 .. _moto: https://github.com/getmoto/moto
 .. _moto FAQ: http://docs.getmoto.org/en/stable/docs/faq.html#how-can-i-mock-my-own-http-requests-using-the-responses-module
 .. _Netbrain API: https://github.com/NetBrainAPI/NetBrain-REST-API-R11.1/blob/main/REST%20APIs%20Documentation/Authentication%20and%20Authorization/Login%20API.md
+.. _tests/Responses_example: https://github.com/paulsuh/pytest-scenario-files/tree/main/tests/Responses_example
