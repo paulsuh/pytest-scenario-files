@@ -28,7 +28,7 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
     package or the httpx-pytest package and the additional option whether to require all
     responses to be fired.
     """
-    option_group = parser.getgroup("Pytest Scenario Files", "Options associated with the pytest-scenario-files plug-in")
+    option_group = parser.getgroup("Pytest Scenario Files", "Options for the pytest-scenario-files plug-in")
     option_group.addoption(
         "--psf-load-responses",
         action="store_true",
@@ -48,7 +48,7 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
         action="store_true",
         default=False,
         dest="psf-fire-all-responses",
-        help="Are all responses required to be fired?",
+        help="Are all responses required to be fired (whether for Responses or pytest-httpx)?",
     )
 
 
@@ -62,7 +62,7 @@ def pytest_configure(config: pytest.Config):
         options are specified simultaneously.
     """
     if config.getoption("psf-load-responses") and config.getoption("psf-load-httpx"):
-        raise pytest.UsageError("The --psf-load-resposes and --psf-load-httpx options are mutally exclusive.")
+        raise pytest.UsageError("The --psf-load-resposes and --psf-load-httpx options are mutually exclusive.")
 
 
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
