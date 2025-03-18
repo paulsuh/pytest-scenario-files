@@ -20,28 +20,49 @@ class BadTestCaseDataException(Exception):
     pass
 
 
-def pytest_addoption(parser, pluginmanager):
+def pytest_addoption(parser: pytest.Parser, pluginmanager):
     """
     Pytest hook function that adds the command line options.
 
-    Adds the command line option to automatically load responses and the
-    additional option whether to require all responses to be fired.
+    Adds the command line option to automatically load http responses for the Responses
+    package or the httpx-pytest package and the additional option whether to require all
+    responses to be fired.
     """
-    parser.addoption(
+    option_group = parser.getgroup("Pytest Scenario Files", "Options associated with the pytest-scenario-files plug-in")
+    option_group.addoption(
         "--psf-load-responses",
         action="store_true",
         default=False,
         dest="psf-load-responses",
-        help="Automatically load responses from scenario files",
+        help="Automatically load data for Responses from scenario files",
     )
-
-    parser.addoption(
+    option_group.addoption(
+        "--psf-load-httpx",
+        action="store_true",
+        default=False,
+        dest="psf-load-httpx",
+        help="Automatically load data for pytest-httpx from scenario files",
+    )
+    option_group.addoption(
         "--psf-fire-all-responses",
         action="store_true",
         default=False,
         dest="psf-fire-all-responses",
         help="Are all responses required to be fired?",
     )
+
+
+def pytest_configure(config: pytest.Config):
+    """Raises an exception if both --psf-load-responses` and `--psf-load-httpx` are enabled since these are mutually exclusive options.
+
+    :param config: The pytest configuration object containing all command-line
+        options and plugin configuration.
+    :type config: pytest.Config
+    :raises pytest.UsageError: If both `--psf-load-responses` and `--psf-load-httpx`
+        options are specified simultaneously.
+    """
+    if config.getoption("psf-load-responses") and config.getoption("psf-load-httpx"):
+        raise pytest.UsageError("The --psf-load-resposes and --psf-load-httpx options are mutally exclusive.")
 
 
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
