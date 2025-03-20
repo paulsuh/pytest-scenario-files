@@ -5,7 +5,7 @@ from collections.abc import Generator
 from contextlib import AbstractContextManager, nullcontext
 from json import load
 from os.path import join
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Literal, Union
 
 import pytest
 from yaml import safe_load
@@ -387,17 +387,24 @@ def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManage
         return nullcontext(request.param)
 
 
-def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]], fixture_key: str) -> None:
+def _extract_responses(
+    fixture_data_dict: dict[str, dict[str, Any]],
+    fixture_key: Literal["psf_responses_indirect", "psf_httpx_mock_indirect"],
+) -> None:
     """
     Extract responses data into a single list for the mock.
 
-    This list will be added to the fixture data dict for a fixture with the name
-    "psf_responses", with indirect=True and autouse=True. The fixture will only be
-    exposed if the --psf-load-responses flag is used. The name in the fixture
-    data dict will be "psf_responses_indirect", which will then be processed
-    later on into an indirect fixture.
+    This list will be added to the fixture data dict for a fixture with either the name
+    "psf_responses" or "psf_httpx_mock", with indirect=True. The fixture will only be
+    exposed if the --psf-load-responses or --psf-load-httpx flags are used. The name in
+    the fixture data dict will be either "psf_responses_indirect" or
+    "psf_httpx_mock_indirect", which will then be processed later on into an indirect
+    fixture.
 
-    :param fixture_data_dict:
+    :param fixture_data_dict: dict containing all parameterization data
+    :type fixture_data_dict: dict[str, dict[str, Any]]
+    :param fixture_key: name of the fixture key that will be added
+    :type fixture_key: value must be "psf_responses_indirect" or "psf_httpx_mock_indirect"
     """
     # for each scenario
     #   for each fixture
@@ -421,7 +428,8 @@ def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]], fixture_key
             one_scenario[fixture_key] = psf_responses_data
 
     # at the end of this the fixture data dict has had all of the "_responses"
-    # entries popped out of it and each scenario that has a "psf_responses_indirect" fixture
+    # entries popped out of it and each scenario that has a "psf_responses_indirect" or
+    # a "psf_httpx_mock_indirect" fixture, depending on the fixture_key parameter.
     return
 
 
