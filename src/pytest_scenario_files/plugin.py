@@ -11,6 +11,7 @@ import pytest
 from yaml import safe_load
 
 if TYPE_CHECKING:
+    from pytest_httpx import HTTPXMock
     from requests import Response
 
 
@@ -273,8 +274,6 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, N
     own active ResponsesMock object. This object can then be updated at runtime
     to override the responses loaded from files.
     """
-    # Ultimately we need to wrap this up so that responses and httpx-responses
-    # are both supported.
     import responses
 
     psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
@@ -282,6 +281,63 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, N
         for one_response in request.param:
             rsps.add(**one_response)
         yield rsps
+
+
+@pytest.fixture(scope="function")
+def psf_httpx_mock(request: pytest.FixtureRequest, httpx_mock: HTTPXMock) -> HTTPXMock:
+    """Returns a HTTPXMock with scenario data loaded.
+
+    Used for integration with the pytest_httpx plugin. Each test scenario will get its
+    own active HTTPXMock object. This object can then be updated at runtime
+    to override the responses loaded from files.
+    """
+    for one_response in request.param:
+        httpx_mock.add_response(**one_response)
+    return httpx_mock
+
+
+# NOTE: Going from responses to pytest_httpx the three significant translations are
+#     body -> text
+#     status -> status_code
+#     content_type function arg -> content-type header value
+# Translations not covered:
+#   - For pytest-scenario-files there isn't really an easy way to specify a bytes object
+#     so we don't use the content arg to pytest_httpx
+#   - adding_headers is a really old argument that is no longer documented in Responses,
+#     so I think we can safely skip this one
+#   - The method for Responses is actually a string under the hood so there's actually
+#     no need to translate it.
+def _translate_from_responses_to_pytest_httpx(resp_dict: dict[str, Any]) -> dict[str, Any]:
+    result_dict = {}
+    added_headers = {}
+    for k, v in resp_dict.items():
+        if k == "body":
+            result_dict["text"] = v
+        elif k == "status":
+            result_dict["status_code"] = v
+        elif k == "content_type":
+            added_headers["content-type"] = v
+        else:
+            result_dict[k] = v
+    result_dict.setdefault("headers", {}).update(added_headers)
+    return result_dict
+
+
+# NOTE: Going from pytest_httpx to Responses there are only two significant translations
+#     text -> body
+#     status_code -> status
+# Responses is happy to accept a header "content-type" so there's no need to translate
+# the value from pytest_httpx.
+def _translate_from_pytest_httpx_to_responses(resp_dict: dict[str, Any]) -> dict[str, Any]:
+    result_dict = {}
+    for k, v in resp_dict.items():
+        if k == "text":
+            result_dict["body"] = v
+        elif k == "status_code":
+            result_dict["status"] = v
+        else:
+            result_dict[k] = v
+    return result_dict
 
 
 @pytest.fixture(scope="function")
@@ -326,7 +382,7 @@ def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManage
         return nullcontext(request.param)
 
 
-def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
+def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]], fixture_key: str) -> None:
     """
     Extract responses data into a single list for the mock.
 
@@ -357,7 +413,7 @@ def _extract_responses(fixture_data_dict: dict[str, dict[str, Any]]) -> None:
             elif isinstance(current_fixture_data, dict):
                 psf_responses_data.append(current_fixture_data)
         if len(psf_responses_data) > 0:
-            one_scenario["psf_responses_indirect"] = psf_responses_data
+            one_scenario[fixture_key] = psf_responses_data
 
     # at the end of this the fixture data dict has had all of the "_responses"
     # entries popped out of it and each scenario that has a "psf_responses_indirect" fixture
@@ -395,7 +451,9 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
         # to find any fixtures that end with _response or _responses. If any are
         # found, remove them and set up psf_responses_indirect as an indirect fixture
         if metafunc.config.getoption("psf-load-responses"):
-            _extract_responses(fixture_raw_data_dict)
+            _extract_responses(fixture_raw_data_dict, "psf_responses_indirect")
+        elif metafunc.config.getoption("psf-load-httpx"):
+            _extract_responses(fixture_raw_data_dict, "psf_httpx_mock_indirect")
 
         # get the list of fixture names sorted alphabetically
         # will raise an exception if the fixture names are inconsistent
