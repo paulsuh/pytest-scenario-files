@@ -460,9 +460,10 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     if len(fixture_raw_data_dict) > 0:
         # do processing only if the search found cases
 
-        # if the psf-load-responses flag is set, go through the raw data dict
-        # to find any fixtures that end with _response or _responses. If any are
-        # found, remove them and set up psf_responses_indirect as an indirect fixture
+        # if either the psf-load-responses or psf-load-httpx flags is set, go through
+        # the raw data dict to find any fixtures that end with _response or _responses.
+        # If any are found, remove them and set up psf_responses_indirect or
+        # psf_httpx_mock_indirect as an indirect fixture.
         if metafunc.config.getoption("psf-load-responses"):
             _extract_responses(fixture_raw_data_dict, "psf_responses_indirect")
         elif metafunc.config.getoption("psf-load-httpx"):
