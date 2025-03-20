@@ -1,0 +1,17 @@
+test_one:
+  example_response:
+    method: GET
+    url: https://www.example.com/
+    status_code: 200
+    text: This is a test.
+
+  expected_result: This is a test.
+
+test_two:
+  example_responses:
+  - method: GET
+    url: https://www.example.com/
+    status_code: 404
+    text: Nobody here.
+
+  expected_result: Nobody here.

@@ -291,8 +291,13 @@ def psf_httpx_mock(request: pytest.FixtureRequest, httpx_mock: HTTPXMock) -> HTT
     own active HTTPXMock object. This object can then be updated at runtime
     to override the responses loaded from files.
     """
+    # slightly hinky using private API, but the simplest way for now
+    psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
+    httpx_mock._options.assert_all_responses_were_requested = psf_fire_all_responses
+
     for one_response in request.param:
         httpx_mock.add_response(**one_response)
+
     return httpx_mock
 
 
