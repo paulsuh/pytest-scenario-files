@@ -5,14 +5,14 @@ from collections.abc import Generator
 from contextlib import AbstractContextManager, nullcontext
 from json import load
 from os.path import join
-from typing import TYPE_CHECKING, Any, Literal, Union
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
 
 import pytest
 from yaml import safe_load
 
 if TYPE_CHECKING:
-    from pytest_httpx import HTTPXMock
     from requests import Response
+    from respx import MockRouter
 
 
 class BadTestCaseDataException(Exception):
@@ -38,11 +38,11 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
         help="Automatically load data for Responses from scenario files",
     )
     option_group.addoption(
-        "--psf-load-httpx",
+        "--psf-load-respx",
         action="store_true",
         default=False,
-        dest="psf-load-httpx",
-        help="Automatically load data for pytest-httpx from scenario files",
+        dest="psf-load-respx",
+        help="Automatically load data for respx from scenario files",
     )
     option_group.addoption(
         "--psf-fire-all-responses",
@@ -62,8 +62,8 @@ def pytest_configure(config: pytest.Config):
     :raises pytest.UsageError: If both `--psf-load-responses` and `--psf-load-httpx`
         options are specified simultaneously.
     """
-    if config.getoption("psf-load-responses") and config.getoption("psf-load-httpx"):
-        raise pytest.UsageError("The --psf-load-resposes and --psf-load-httpx options are mutually exclusive.")
+    if config.getoption("psf-load-responses") and config.getoption("psf-load-respx"):
+        raise pytest.UsageError("The --psf-load-resposes and --psf-load-respx options are mutually exclusive.")
 
 
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
@@ -284,21 +284,23 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, N
 
 
 @pytest.fixture(scope="function")
-def psf_httpx_mock(request: pytest.FixtureRequest, httpx_mock: HTTPXMock) -> HTTPXMock:
-    """Returns a HTTPXMock with scenario data loaded.
+def psf_respx_mock(request: pytest.FixtureRequest, respx_mock: MockRouter) -> MockRouter:
+    """Returns a respx.MockRouter with scenario data loaded.
 
-    Used for integration with the pytest_httpx plugin. Each test scenario will get its
-    own active HTTPXMock object. This object can then be updated at runtime
+    Used for integration with the respx package. Each test scenario will get its
+    own active MockRouter object. This object can then be updated at runtime
     to override the responses loaded from files.
     """
     # slightly hinky using private API, but the simplest way for now
     psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
-    httpx_mock._options.assert_all_responses_were_requested = psf_fire_all_responses
+    respx_mock._assert_all_called = psf_fire_all_responses
 
     for one_response in request.param:
-        httpx_mock.add_response(**one_response)
+        mock_response_kwargs = cast(dict, one_response.copy())
+        route_match = {k: mock_response_kwargs.pop(k) for k in ("method", "url")}
+        respx_mock.route(**route_match).respond(**mock_response_kwargs)
 
-    return httpx_mock
+    return respx_mock
 
 
 # NOTE: Going from responses to pytest_httpx the three significant translations are
@@ -466,8 +468,8 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
         # psf_httpx_mock_indirect as an indirect fixture.
         if metafunc.config.getoption("psf-load-responses"):
             _extract_responses(fixture_raw_data_dict, "psf_responses_indirect")
-        elif metafunc.config.getoption("psf-load-httpx"):
-            _extract_responses(fixture_raw_data_dict, "psf_httpx_mock_indirect")
+        elif metafunc.config.getoption("psf-load-respx"):
+            _extract_responses(fixture_raw_data_dict, "psf_respx_mock_indirect")
 
         # get the list of fixture names sorted alphabetically
         # will raise an exception if the fixture names are inconsistent

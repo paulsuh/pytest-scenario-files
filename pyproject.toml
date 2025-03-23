@@ -44,6 +44,9 @@ unittest = [
 responses = [
     "responses"
 ]
+pytest_httpx = [
+    "pytest-httpx"
+]
 
 [project.urls]
 "Documentation" = "https://pytest-scenario-files.mspex.net/"
@@ -124,11 +127,12 @@ dependencies = [
 [[tool.hatch.envs.test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 pytest = ["7.4", "8.2", "8.3"]
-integrations = ["none", "responses"]
+integrations = ["none", "responses", "respx"]
 
 [tool.hatch.envs.test.overrides]
 matrix.integrations.dependencies = [
-    {value = "responses", if = ["responses"]}
+    {value = "responses", if = ["responses"]},
+    {value = "respx", if = ["respx"]}
 ]
 
 

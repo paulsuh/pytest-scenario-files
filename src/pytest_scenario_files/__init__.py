@@ -2,8 +2,8 @@
 
 from .plugin import (
     psf_expected_result,
-    psf_httpx_mock,
     psf_responses,
+    psf_respx_mock,
     pytest_addoption,
     pytest_configure,
     pytest_generate_tests,
@@ -12,7 +12,8 @@ from .plugin import (
 all = [
     "psf_expected_result",
     "psf_responses",
-    "psf_httpx_mock" "pytest_addoption",
+    "psf_respx_mock",
+    "pytest_addoption",
     "pytest_generate_tests",
     "pytest_configure",
 ]
