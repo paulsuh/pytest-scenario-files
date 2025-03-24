@@ -13,6 +13,13 @@ License
 Distributed under the terms of the MIT license, ``pytest-scenario-files`` is free and
 open source software.
 
+Future Directions
+-----------------
+- Support for loading native Responses files is planned.
+- Support for additional responses features like various matchers for
+  headers, query parameters, json body, etc. is under consideration.
+
+
 Motivation
 ----------
 
