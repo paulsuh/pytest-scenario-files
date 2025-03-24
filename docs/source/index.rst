@@ -26,15 +26,18 @@ Features
 - Fixtures may refer to fixtures in other files
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
-- NEW - Integration with Responses package
+- Integration with Responses package
+- NEW - Integration with the respx mockig package for httpx
 
 Compatibility
 -------------
 
-This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
+This package is a plug-in for Pytest and works with Python 3.9 and up.
 
-- Tested with ``pytest`` versions 7.4, 8.2 and 8.3.
-- Tested with CPython 3.9-3.13.
+- Tested with Pytest versions 7.4, 8.2 and 8.3
+- Tested with CPython 3.9-3.13
+- Tested with Responses 0.25.7
+- Tested with Respx 0.22.0
 
 .. toctree::
     :maxdepth: 2
@@ -45,6 +48,7 @@ This package is a plug-in for ``pytest`` and works with Python 3.9 and up.
     basic_usage
     advanced_usage
     responses_integration
+    respx_integration
     api
     contributing
     About <about>

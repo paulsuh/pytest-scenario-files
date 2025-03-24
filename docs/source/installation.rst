@@ -16,3 +16,10 @@ the Responses package separately or use the Responses option:
 .. code-block::
 
     pip install pytest-scenario-files[responses]
+
+Similarly, if you want to utilize the respx integration you can either
+install the respx package directly or you can use the respx option:
+
+.. code-block::
+
+    pip install pytest-scenario-files[respx]

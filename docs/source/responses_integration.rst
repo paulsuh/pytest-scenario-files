@@ -73,14 +73,10 @@ the loaded value is a dict or a list and handles it accordingly.
 Having both suffixes is just to make reading the data files easier
 for humans.
 
-- Loading values by reference will work as expected. See the detailed
-  example for how it is used.
-- Support for loading native Responses files is planned for the near
-  future.
-- Support for additional responses features like various matchers for
-  headers, query parameters, json body, etc. is under consideration.
-- Support for ``httpx`` and ``httpx-responses`` is also planned for
-  the future.
+.. note::
+
+    Loading values by reference will work as expected. See the detailed
+    example for how it is used.
 
 The ``psf-responses`` fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
