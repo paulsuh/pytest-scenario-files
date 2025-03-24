@@ -11,7 +11,7 @@ Basic Usage
 There are three steps to using the Responses integration:
 
 1. Create the data files.
-2. Pass the ``psf-responses`` fixture as a parameter to your test
+2. Pass the ``psf_responses`` fixture as a parameter to your test
    function.
 3. Activate the Responses integration using the command line flags.
 
@@ -21,7 +21,7 @@ Data to be loaded into responses should be put into fixtures whose names
 end with ``_response`` or ``_responses``. For example, you might have a
 fixture named ``oauth2_response`` or a fixture named ``api_responses``.
 These fixtures will not actually be created or parameterized for the
-test. Instead, each will be loaded into the ``psf-responses`` fixture
+test. Instead, each will be loaded into the ``psf_responses`` fixture
 and removed from the list of fixtures.
 
 Each response should be structured as a dictionary that contains two
@@ -66,7 +66,7 @@ The fixture may contain a list of responses in the same format:
         body: Text body of the http response3
 
 All of the responses in the list will be loaded into the RequestsMock
-for the fixture ``psf-responses``. While the response loading recognizes
+for the fixture ``psf_responses``. While the response loading recognizes
 both ``_response`` and ``_responses``, there is no actual difference
 in how they are handled. They underlying code checks to see whether
 the loaded value is a dict or a list and handles it accordingly.
@@ -80,7 +80,7 @@ for humans.
 
 The ``psf-responses`` fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Pytest-Scenario-Files provides a ``psf-responses`` fixture that is used
+Pytest-Scenario-Files provides a ``psf_responses`` fixture that is used
 to load the responses. It returns a currently active RequestsMock object
 that has all of the responses from the data files for the current test
 already loaded. If all of the responses your test needs are already loaded
@@ -116,7 +116,7 @@ Advanced Usage
 --------------
 Overriding a response
 ^^^^^^^^^^^^^^^^^^^^^
-You can use the ``psf-responses`` fixture to override a response for
+You can use the ``psf_responses`` fixture to override a response for
 a particular test. Use the ``replace()`` or ``upsert()`` methods
 to do this. The replacement can be done in a separate fixture or
 in the test function itself. If you are doing this in a separate
