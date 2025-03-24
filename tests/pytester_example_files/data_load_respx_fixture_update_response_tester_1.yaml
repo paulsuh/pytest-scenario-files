@@ -1,0 +1,20 @@
+test_one:
+  example_response:
+    method: GET
+    url: https://www.example.com/
+    status_code: 200
+    text: This is a test.
+
+  psf_expected_result_indirect: This is a test.
+  substitute_value: Substitute response
+
+test_two:
+  example_responses:
+  - method: GET
+    url: https://www.example.com/
+    status_code: 404
+    text: Nobody here.
+
+  psf_expected_result_indirect:
+    expected_exception_name: httpx.HTTPError
+  substitute_value: null
