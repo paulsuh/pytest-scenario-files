@@ -13,7 +13,7 @@ test_one:
     status_code: 200
     text: This is a test from example.net.
 
-  expected_result:
+  url_tests:
     - url: https://www.example.com/
       text: This is a test from example.com.
     - url: https://www.example.org/

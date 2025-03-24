@@ -6,6 +6,7 @@ test_one:
     text: This is a test.
 
   psf_expected_result_indirect: This is a test.
+  substitute_value: Substitute response
 
 test_two:
   example_responses:
@@ -16,3 +17,4 @@ test_two:
 
   psf_expected_result_indirect:
     expected_exception_name: httpx.HTTPError
+  substitute_value: null
