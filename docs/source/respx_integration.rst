@@ -15,6 +15,7 @@ The differences are:
 3. Use the fixture ``psf_respx_mock``.
 4. The keys used by ``respx`` to specify the response are a
    little bit different.
+
 ========================== ===================
 Responses key              respx key
 ========================== ===================
@@ -22,6 +23,7 @@ status                     status_code
 body                       text
 content_type function arg  content_type header
 ========================== ===================
+
 5. Replacing a response in Respx is different from Responses. There
    are no specific methods like ``replace()`` or ``upsert()``. Instead,
    you overwrite an existing response by setting a new response
@@ -91,8 +93,8 @@ The fixture may contain a list of responses in the same format:
         url: https://www.example.com/rest/endpoint3
         text: Text body of the http response3
 
-All of the responses in the list will be loaded into the HTTPXMock
-for the fixture ``psf-httpx-mock``. While the response loading recognizes
+All of the responses in the list will be loaded into the HTTPXMocker
+for the fixture ``psf_httpx_mock``. While the response loading recognizes
 both ``_response`` and ``_responses``, there is no actual difference
 in how they are handled. They underlying code checks to see whether
 the loaded value is a dict or a list and handles it accordingly.
@@ -105,7 +107,7 @@ for humans.
     example for how it is used.
 
 The ``psf_respx_mock`` fixture
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Pytest-Scenario-Files provides a ``psf_respx_mock`` fixture that is used
 to load the responses. It returns a currently active ``respx.MockRouter`` object
 that has all of the responses from the data files for the current test
@@ -129,7 +131,7 @@ Responses integration:
 - ``--psf-load-respx``
 
   This turns on the integration. Since the fixtures intended for use
-  with pytest-httpx integration are marked by a special suffix, the
+  with Respx integration are marked by a special suffix, the
   integration should be explicitly triggered to avoid accidentally
   activating it for a developer who uses the suffix without realizing
   the special meaning.
@@ -144,8 +146,7 @@ Advanced Usage
 Overriding a response
 ^^^^^^^^^^^^^^^^^^^^^
 You can use the ``psf_respx_mock`` fixture to override a response for
-a particular test. Use the ``replace()`` or ``upsert()`` methods
-to do this. The replacement can be done in a separate fixture or
+a particular test. The replacement can be done in a separate fixture or
 in the test function itself. If you are doing this in a separate
 fixture the convention is to return the RequestsMock as the fixture
 value so that you can chain together multiple fixtures that add or
@@ -154,17 +155,16 @@ alter the responses for a test.
 .. code-block:: Python
 
     @pytest.fixture
-    def error_response(psf_responses):
-        psf_responses.replace(
-            "GET",
-            "https://www.example.com/rest/endpoint3",
-            status=401
-        )
-        return psf_responses
+    def error_response(psf_respx_mock):
+        psf_respx_mock.route(
+            method="GET",
+            url="https://www.example.com/rest/endpoint3"
+        ).respond(status_code=404, text="Not found.")
+        return psf_respx_mock
 
     def test_endpoint_3_error(error_response):
         http_result = requests.get("https://www.example.com/rest/endpoint3")
-        assert http_result.status_code = 401
+        assert http_result.status_code = 404
 
 
 .. code-block:: yaml
@@ -186,82 +186,6 @@ This is intended to be used with the ``psf_expected_result`` fixture
 and an indirectly parameterized override for error scenarios. See the
 data files that go with the detailed example section to see how it
 all works together.
-
-Detailed Example
-----------------
-The easiest way to see how this works is to take an example. One system
-I work with (the `NetBrain API`_) requires that you make four calls when
-you connect to it.
-
-1. Authenticate and get an access token.
-2. Get the list of available tenants and their tenant IDs.
-3. Get the list of available domains and their domain IDs for the
-   specified tenant.
-4. Set the tenant and domain to be used for the current session.
-
-In addition to checking for an HTTP error code of 4xx or 5xx, you also
-need to check the status code in the response JSON. 790200 generally
-means the API call succeeded while anything else means it failed.
-
-The complete example (with the API connection code, test code,
-and data files) is contained in the source repository in the
-`tests/Responses_example`_ directory. Some highlights of this
-example are:
-
-1. The ``common_test_data.yaml`` file. This holds a common set of responses
-   that are used as a base by all of the tests.
-
-.. code-block:: yaml
-
-    common_scenario_data:
-      common_responses:
-        - method: POST
-          url: https://netbrain-api.example.com/ServicesAPI/API/V1/Session
-          status: 200
-          json:
-            statusCode: "790200"
-            token: mock_token
-        - method: GET
-          url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Tenants
-          status: 200
-          json:
-
-2. Multiple scenarios (both success and failure) in each data file, covering
-   both the happy (successful) path and any error paths through the code.
-
-3. Each failure scenario uses a custom fixture ``url_response_override``
-   along with data from the file to give an error response.
-
-.. code-block:: yaml
-
-    url_response_override_indirect:
-      method_or_response: GET
-      url: https://netbrain-api.example.com/ServicesAPI/API/V1/CMDB/Domains
-      status: 403
-      json:
-        statusCode: "795000"
-
-4. Each failure scenario uses the ``psf_expected_result`` fixture with
-   a dict containing a item with the key ``expected_exception_name``
-   to indicate the expected failure mode.
-
-.. code-block:: yaml
-
-    psf_expected_result_indirect:
-      expected_exception_name: requests.HTTPError
-
-5. Use of a regular, un-parameterized fixture that is used to prepare
-   a NetbrainConnection object for each test.
-
-.. code-block:: Python
-
-    @pytest.fixture
-    def netbrain_connection_obj() -> NetBrainConnection:
-        return NetBrainConnection("username", "mock_password",
-            "mock_tenant_name", "mock_domain_name")
-
-Running all of the tests will give you complete coverage for the
-``api_connection.py`` file.
 
 .. _Respx: https://lundberg.github.io/respx/
 .. _moto: https://github.com/getmoto/moto
