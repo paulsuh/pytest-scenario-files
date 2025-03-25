@@ -93,18 +93,12 @@ The fixture may contain a list of responses in the same format:
         url: https://www.example.com/rest/endpoint3
         text: Text body of the http response3
 
-All of the responses in the list will be loaded into the HTTPXMocker
-for the fixture ``psf_httpx_mock``. While the response loading recognizes
-both ``_response`` and ``_responses``, there is no actual difference
-in how they are handled. They underlying code checks to see whether
-the loaded value is a dict or a list and handles it accordingly.
-Having both suffixes is just to make reading the data files easier
-for humans.
-
-.. note::
-
-    Loading values by reference will work as expected. See the detailed
-    example for how it is used.
+All of the responses in the list will be loaded into a MockRouter. While
+the response loading recognizes both ``_response`` and ``_responses``,
+there is no actual difference in how they are handled. The underlying
+code checks to see whether the loaded value is a dict or a list and
+handles it accordingly. Having both suffixes is just to make reading
+the data files easier for humans.
 
 The ``psf_respx_mock`` fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -148,7 +142,7 @@ Overriding a response
 You can use the ``psf_respx_mock`` fixture to override a response for
 a particular test. The replacement can be done in a separate fixture or
 in the test function itself. If you are doing this in a separate
-fixture the convention is to return the RequestsMock as the fixture
+fixture the convention is to return the ``MockRouter`` as the fixture
 value so that you can chain together multiple fixtures that add or
 alter the responses for a test.
 
@@ -182,10 +176,79 @@ alter the responses for a test.
         url: https://www.example.com/rest/endpoint3
         body: Text body of the http response3
 
-This is intended to be used with the ``psf_expected_result`` fixture
-and an indirectly parameterized override for error scenarios. See the
-data files that go with the detailed example section to see how it
-all works together.
+Usage with the ``psf_expected_result`` fixture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can set up a data file with the generally expected response for a specific
+URL, then override the response to check error conditions. Here is an example
+using a file with the standard API response and a test that checks
+both a successful and an unsuccessful test of the API.
+
+This first file contains the basic API responses, which are loaded by
+reference for each scenario:
+
+.. code-block:: yaml
+    :caption: ``all_api_responses.yaml``
+
+    api_testing:
+      api_responses:
+      - url: https://www.example.com/rest/endpoint
+        method: GET
+        status_code: 200
+        body: The call was successful.
+
+The second file contains the scenarios, success and failure. The success
+scenario just runs through the call and contains no overrides. The failure
+scenario specifies that the call should return a 403 error and catch a
+``httpx.HTTPError`` exception:
+
+.. code-block:: yaml
+    :caption: ``data_api_check_full.yaml``
+
+    success_scenario:
+      api_responses: __all_api_responses.yaml:api_testing:api_responses
+      psf_expected_result_indirect: The call was successful.
+    failure_scenario:
+      api_responses: __all_api_responses.yaml:api_testing:api_responses
+      response_override_indirect:
+        url: https://www.example.com/rest/endpoint
+        method: GET
+        status_code: 403
+        text: Access denied.
+      psf_expected_result_indirect:
+        expected_exception_type: httpx.HTTPError
+
+The third file is the Python unit tests. It has a fixture ``response_override()``
+that will set up an override specified by the scenario. If the scenario
+has no override then it will just return the ``psf_responses`` fixture
+unchanged.
+
+.. code-block:: Python
+    :caption: ``test_api.py``
+
+    @pytest.fixture
+    def response_override(request, psf_responses):
+        if hasattr(request, "param") and isinstance(request.param, dict):
+            response_params = request.param.copy()
+            route_match = {k: response_params.pop(k) for k in ("method", "url")}
+            respx_mock.route(**route_match).respond(**response_params)
+        return psf_responses
+
+    def test_api_check(response_override, psf_expected_result):
+        with psf_expected_result as expected_result:
+            api_call_result = requests.get("http://www.example.com/rest/endpoint")
+            api_call_result.raise_for_status()
+            assert api_call_result.body == "The call was successful."
+
+When the test is run the first time (``success_scenario``), Respx will
+return a 200 response with a body of "The call was successful." — which is
+the expected value from the ``psf_expected_result`` fixture.
+
+When the test is run the second time (``failure_scenario``), Respx will
+return a 403 response. ``raise_for_status()`` will then raise an exception
+``httpx.HTTPError``, which will be caught by the context manager since
+the ``psf_expected_value`` fixture will return a ``pytest.raises(httpx.HTTPError)``
+context manager object. Any other kind of error or exception will cause the
+test to fail.
 
 .. _Respx: https://lundberg.github.io/respx/
 .. _moto: https://github.com/getmoto/moto

@@ -16,7 +16,7 @@ def test_load_respx_fixture_update_response_tester(
         )
         psf_expected_result.enter_result = substitute_value
 
-    # x = httpx.HTTPError
+    # httpx.HTTPError
     with psf_expected_result as expected_result:
         with httpx.Client() as client:
             req_result = client.get("https://www.example.com/")
