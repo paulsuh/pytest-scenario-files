@@ -158,7 +158,7 @@ to that string value:
     success_scenario_1:
         psf_expected_result_indirect: This is a result string.
 
-This fixture is very useful in conjunction with the Responses integration.
+This fixture is very useful in conjunction with the Responses and Respx integration.
 
 .. _indirect parameterization: https://docs.pytest.org/en/stable/example/parametrize.html#indirect-parametrization
 .. _Parameterized Conditional Raising: https://docs.pytest.org/en/8.3.x/example/parametrize.html#parametrizing-conditional-raising
