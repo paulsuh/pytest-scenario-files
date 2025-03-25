@@ -175,11 +175,83 @@ call ``override_responses_real_send()`` as per the `moto FAQ`_.
         override_responses_real_send(psf_responses)
         ...
 
+Usage with the ``psf_expected_result`` fixture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can set up a data file with the generally expected response for a specific
+URL, then override the response to check error conditions. Here is an example
+using a file with the standard API response and a test that checks
+both a successful and an unsuccessful test of the API.
+
+This first file contains the basic API responses, which are loaded by
+reference for each scenario:
+
+.. code-block:: yaml
+    :caption: ``all_api_responses.yaml``
+
+    api_testing:
+      api_responses:
+      - url: https://www.example.com/rest/endpoint
+        method: GET
+        status: 200
+        body: The call was successful.
+
+The second file contains the scenarios, success and failure. The success
+scenario just runs through the call and contains no overrides. The failure
+scenario specifies that the call should return a 403 error and catch a
+``responses.HTTPError`` exception:
+
+.. code-block:: yaml
+    :caption: ``data_api_check_full.yaml``
+
+    success_scenario:
+      api_responses: __all_api_responses.yaml:api_testing:api_responses
+      psf_expected_result_indirect: The call was successful.
+    failure_scenario:
+      api_responses: __all_api_responses.yaml:api_testing:api_responses
+      response_override_indirect:
+        url: https://www.example.com/rest/endpoint
+        method: GET
+        status: 403
+        body: Access denied.
+      psf_expected_result_indirect:
+        expected_exception_type: requests.HTTPError
+
+The third file is the Python unit tests. It has a fixture ``response_override()``
+that will set up any overrides specified by the scenario. If the scenario
+has no overrides then it will just return the ``psf_responses`` fixture
+unchanged.
+
+.. code-block:: Python
+    :caption: ``test_api.py``
+
+    @pytest.fixture
+    def response_override(request, psf_responses):
+        if hasattr(request, "param") and isinstance(request.param, dict):
+            psf_responses.upsert(**request.param)
+        return psf_responses
+
+    def test_api_check(response_override, psf_expected_result):
+        with psf_expected_result as expected_result:
+            api_call_result = requests.get("http://www.example.com/rest/endpoint")
+            api_call_result.raise_for_status()
+            assert api_call_result.body == "The call was successful."
+
+When the test is run the first time (``success_scenaro``), Responses will
+return a 200 response with a body of "The call was successful." — which is
+the expected value from the ``psf_expected_result`` fixture.
+
+When the test is run the second time (``failure_scenario``), Responses will
+return a 403 response. ``raise_for_status()`` will then raise an exception
+``requests.HTTPError``, which will be caught by the context manager since
+the ``psf_expected_value`` fixture will return a ``pytest.raises(requests.HTTPError)``
+context manager object. Any other kind of error or exception will cause the
+test to fail.
+
 Detailed Example
 ----------------
-The easiest way to see how this works is to take an example. One system
-I work with (the `NetBrain API`_) requires that you make four calls when
-you connect to it.
+Putting all this together is easiest to see using a detailed example. One
+system I work with (the `NetBrain API`_) requires that you make four calls
+when you connect to it.
 
 1. Authenticate and get an access token.
 2. Get the list of available tenants and their tenant IDs.

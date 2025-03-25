@@ -26,8 +26,8 @@ Features
 - Fixtures may refer to fixtures in other files
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
-- Integration with Responses package
-- NEW - Integration with the respx mockig package for httpx
+- Integration with Responses mocking package for Requests
+- NEW - Integration with the respx mocking package for httpx
 
 Compatibility
 -------------
