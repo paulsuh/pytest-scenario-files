@@ -26,7 +26,7 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
     Pytest hook function that adds the command line options.
 
     Adds the command line option to automatically load http responses for the Responses
-    package or the httpx-pytest package and the additional option whether to require all
+    package or the Respx package and the additional option whether to require all
     responses to be fired.
     """
     option_group = parser.getgroup("Pytest Scenario Files", "Options for the pytest-scenario-files plug-in")
@@ -42,24 +42,24 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
         action="store_true",
         default=False,
         dest="psf-load-respx",
-        help="Automatically load data for respx from scenario files",
+        help="Automatically load data for Respx from scenario files",
     )
     option_group.addoption(
         "--psf-fire-all-responses",
         action="store_true",
         default=False,
         dest="psf-fire-all-responses",
-        help="Are all responses required to be fired (whether for Responses or pytest-httpx)?",
+        help="Are all responses required to be fired (whether for Responses or Respx)?",
     )
 
 
 def pytest_configure(config: pytest.Config):
-    """Raises an exception if both --psf-load-responses` and `--psf-load-httpx` are enabled since these are mutually exclusive options.
+    """Raises an exception if both `--psf-load-responses` and `--psf-load-respx` are enabled since these are mutually exclusive options.
 
     :param config: The pytest configuration object containing all command-line
         options and plugin configuration.
     :type config: pytest.Config
-    :raises pytest.UsageError: If both `--psf-load-responses` and `--psf-load-httpx`
+    :raises pytest.UsageError: If both `--psf-load-responses` and `--psf-load-respx`
         options are specified simultaneously.
     """
     if config.getoption("psf-load-responses") and config.getoption("psf-load-respx"):
@@ -287,7 +287,7 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, N
 def psf_respx_mock(request: pytest.FixtureRequest, respx_mock: MockRouter) -> MockRouter:
     """Returns a respx.MockRouter with scenario data loaded.
 
-    Used for integration with the respx package. Each test scenario will get its
+    Used for integration with the Respx package. Each test scenario will get its
     own active MockRouter object. This object can then be updated at runtime
     to override the responses loaded from files.
     """
@@ -303,18 +303,18 @@ def psf_respx_mock(request: pytest.FixtureRequest, respx_mock: MockRouter) -> Mo
     return respx_mock
 
 
-# NOTE: Going from responses to pytest_httpx the three significant translations are
+# NOTE: Going from responses to Respx the three significant translations are
 #     body -> text
 #     status -> status_code
 #     content_type function arg -> content-type header value
 # Translations not covered:
 #   - For pytest-scenario-files there isn't really an easy way to specify a bytes object
-#     so we don't use the content arg to pytest_httpx
+#     so we don't use the content arg to respx
 #   - adding_headers is a really old argument that is no longer documented in Responses,
 #     so I think we can safely skip this one
 #   - The method for Responses is actually a string under the hood so there's actually
 #     no need to translate it.
-def _translate_from_responses_to_pytest_httpx(resp_dict: dict[str, Any]) -> dict[str, Any]:
+def _translate_from_responses_to_respx(resp_dict: dict[str, Any]) -> dict[str, Any]:
     result_dict = {}
     added_headers = {}
     for k, v in resp_dict.items():
@@ -330,12 +330,12 @@ def _translate_from_responses_to_pytest_httpx(resp_dict: dict[str, Any]) -> dict
     return result_dict
 
 
-# NOTE: Going from pytest_httpx to Responses there are only two significant translations
+# NOTE: Going from Respx to Responses there are only two significant translations
 #     text -> body
 #     status_code -> status
 # Responses is happy to accept a header "content-type" so there's no need to translate
-# the value from pytest_httpx.
-def _translate_from_pytest_httpx_to_responses(resp_dict: dict[str, Any]) -> dict[str, Any]:
+# the value from Respx.
+def _translate_from_respx_to_responses(resp_dict: dict[str, Any]) -> dict[str, Any]:
     result_dict = {}
     for k, v in resp_dict.items():
         if k == "text":
@@ -391,22 +391,22 @@ def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManage
 
 def _extract_responses(
     fixture_data_dict: dict[str, dict[str, Any]],
-    fixture_key: Literal["psf_responses_indirect", "psf_httpx_mock_indirect"],
+    fixture_key: Literal["psf_responses_indirect", "psf_respx_mock_indirect"],
 ) -> None:
     """
     Extract responses data into a single list for the mock.
 
     This list will be added to the fixture data dict for a fixture with either the name
-    "psf_responses" or "psf_httpx_mock", with indirect=True. The fixture will only be
-    exposed if the --psf-load-responses or --psf-load-httpx flags are used. The name in
+    "psf_responses" or "psf_respx_mock", with indirect=True. The fixture will only be
+    exposed if the --psf-load-responses or --psf-load-respx flags are used. The name in
     the fixture data dict will be either "psf_responses_indirect" or
-    "psf_httpx_mock_indirect", which will then be processed later on into an indirect
+    "psf_respx_mock_indirect", which will then be processed later on into an indirect
     fixture.
 
     :param fixture_data_dict: dict containing all parameterization data
     :type fixture_data_dict: dict[str, dict[str, Any]]
     :param fixture_key: name of the fixture key that will be added
-    :type fixture_key: value must be "psf_responses_indirect" or "psf_httpx_mock_indirect"
+    :type fixture_key: value must be "psf_responses_indirect" or "psf_respx_mock_indirect"
     """
     # for each scenario
     #   for each fixture
@@ -431,7 +431,7 @@ def _extract_responses(
 
     # at the end of this the fixture data dict has had all of the "_responses"
     # entries popped out of it and each scenario that has a "psf_responses_indirect" or
-    # a "psf_httpx_mock_indirect" fixture, depending on the fixture_key parameter.
+    # a "psf_respx_mock_indirect" fixture, depending on the fixture_key parameter.
     return
 
 
@@ -444,7 +444,7 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     2. Load test data from the files.
     3. Extract fixture names and check for consistency.
     4. Pull out indirect fixtures and remove suffixes from fixture names. (Includes
-       handling the Responses integration.)
+       handling the Responses and Respx integration.)
     5. Reformat the data for the parameterization.
     6. Make the function call.
 
@@ -462,10 +462,10 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     if len(fixture_raw_data_dict) > 0:
         # do processing only if the search found cases
 
-        # if either the psf-load-responses or psf-load-httpx flags is set, go through
+        # if either the psf-load-responses or psf-load-respx flags is set, go through
         # the raw data dict to find any fixtures that end with _response or _responses.
         # If any are found, remove them and set up psf_responses_indirect or
-        # psf_httpx_mock_indirect as an indirect fixture.
+        # psf_respx_mock_indirect as an indirect fixture.
         if metafunc.config.getoption("psf-load-responses"):
             _extract_responses(fixture_raw_data_dict, "psf_responses_indirect")
         elif metafunc.config.getoption("psf-load-respx"):
