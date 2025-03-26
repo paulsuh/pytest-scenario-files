@@ -1,7 +1,7 @@
 Respx Integration
 ========================
 This library can be used to load http responses from files into the
-`Respx`_ package, used for mocking responses with the httpx package.
+`Respx`_ package, used for mocking responses with the Httpx package.
 This chapter is almost identical to the chapter on Responses
 integration. If you are already familiar with the Responses
 integration you can just read the Differences below.
@@ -15,7 +15,7 @@ integration you can just read the Differences below.
        little bit different.
 
     ========================== ===================
-    Responses key              respx key
+    Responses key              Respx key
     ========================== ===================
     status                     status_code
     body                       text
