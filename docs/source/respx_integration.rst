@@ -4,34 +4,32 @@ This library can be used to load http responses from files into the
 `Respx`_ package, used for mocking responses with the httpx package.
 This chapter is almost identical to the chapter on Responses
 integration. If you are already familiar with the Responses
-integration you can just read the TL; DR.
+integration you can just read the Differences below.
 
-TL; DR
-------
-The differences are:
+.. admonition:: Differences from Responses Integration
 
-1. Specify the extra ``pytest-scenario-files[respx]`` for installation.
-2. Use the command line flag ``--psf-load-respx``.
-3. Use the fixture ``psf_respx_mock``.
-4. The keys used by ``respx`` to specify the response are a
-   little bit different.
+    1. Specify the extra ``pytest-scenario-files[respx]`` for installation.
+    2. Use the command line flag ``--psf-load-respx``.
+    3. Use the fixture ``psf_respx_mock``.
+    4. The keys used by ``respx`` to specify the response are a
+       little bit different.
 
-========================== ===================
-Responses key              respx key
-========================== ===================
-status                     status_code
-body                       text
-content_type function arg  content_type header
-========================== ===================
+    ========================== ===================
+    Responses key              respx key
+    ========================== ===================
+    status                     status_code
+    body                       text
+    content_type function arg  content_type header
+    ========================== ===================
 
-5. Replacing a response in Respx is different from Responses. There
-   are no specific methods like ``replace()`` or ``upsert()``. Instead,
-   you overwrite an existing response by setting a new response
-   route with the same HTTP method and URL.
-6. Responses will automatically queue up successive responses to the
-   same method and URL and feed them to the calling test automatically.
-   Multiple responses for the same method and URL must be done explicitly
-   in Respx and is not yet supported in Pytest-Scenario-Files.
+    5. Replacing a response in Respx is different from Responses. There
+       are no specific methods like ``replace()`` or ``upsert()``. Instead,
+       you overwrite an existing response by setting a new response
+       route with the same HTTP method and URL.
+    6. Responses will automatically queue up successive responses to the
+       same method and URL and feed them to the calling test automatically.
+       Multiple responses for the same method and URL must be done explicitly
+       in Respx and is not yet supported in Pytest-Scenario-Files.
 
 Basic Usage
 -----------
