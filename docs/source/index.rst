@@ -27,7 +27,7 @@ Features
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
 - Integration with Responses mocking package for Requests
-- NEW - Integration with the respx mocking package for httpx
+- NEW - Integration with the Respx mocking package for Httpx
 
 Compatibility
 -------------
