@@ -113,7 +113,7 @@ the files
 
 would all be loaded.
 
-.. note::
+.. caution::
 
     *Test and Data File Name Conflicts*
 

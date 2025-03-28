@@ -37,7 +37,7 @@ and be of the format:
 
 .. code-block::
 
-    fixture_name: __<Filename>:<test case id>:<fixture name>
+    fixture_name: __{Filename}:{test case id}:{fixture name}
 
 For instance, a data file ``data_other_check_3.yaml`` might reference the data file
 ``data_foo_2.yaml`` from the previous section:
@@ -52,7 +52,7 @@ This would result in two fixture values being sent into the test function,
 ``input_data_1 = 42`` and ``other_data = 170``, for a test case with ``id =
 check_functionality``.
 
-.. note::
+.. caution::
 
     There is nothing preventing an infinite self-referential loop although that is
     something that should be avoided.
