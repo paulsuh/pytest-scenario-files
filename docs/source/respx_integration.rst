@@ -147,16 +147,17 @@ alter the responses for a test.
 .. code-block:: Python
 
     @pytest.fixture
-    def error_response(psf_respx_mock):
+    def alt_response_mock(psf_respx_mock):
         psf_respx_mock.route(
             method="GET",
             url="https://www.example.com/rest/endpoint3"
-        ).respond(status_code=404, text="Not found.")
+        ).respond(status_code=200, text="Alternate response 3.")
         return psf_respx_mock
 
-    def test_endpoint_3_error(error_response):
-        http_result = requests.get("https://www.example.com/rest/endpoint3")
-        assert http_result.status_code = 404
+    def test_endpoint_3_error(alt_response_mock):
+        with httpx.Client() as client:
+            http_result = client.get("https://www.example.com/rest/endpoint3")
+            assert http_result.text == "Alternate response 3."
 
 
 .. code-block:: yaml
@@ -233,9 +234,10 @@ unchanged.
 
     def test_api_check(response_override, psf_expected_result):
         with psf_expected_result as expected_result:
-            api_call_result = requests.get("http://www.example.com/rest/endpoint")
-            api_call_result.raise_for_status()
-            assert api_call_result.body == "The call was successful."
+            with httpx.Client() as client:
+                http_result = client.get("https://www.example.com/rest/endpoint3")
+                api_call_result.raise_for_status()
+                assert api_call_result.body == "The call was successful."
 
 When the test is run the first time (``success_scenario``), Respx will
 return a 200 response with a body of "The call was successful." — which is
