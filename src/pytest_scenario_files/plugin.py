@@ -324,50 +324,6 @@ def psf_respx_mock(request: pytest.FixtureRequest, respx_mock: MockRouter) -> Mo
     return respx_mock
 
 
-# NOTE: Going from responses to Respx the three significant translations are
-#     body -> text
-#     status -> status_code
-#     content_type function arg -> content-type header value
-# Translations not covered:
-#   - For pytest-scenario-files there isn't really an easy way to specify a bytes object
-#     so we don't use the content arg to respx
-#   - adding_headers is a really old argument that is no longer documented in Responses,
-#     so I think we can safely skip this one
-#   - The method for Responses is actually a string under the hood so there's actually
-#     no need to translate it.
-def _translate_from_responses_to_respx(resp_dict: dict[str, Any]) -> dict[str, Any]:
-    result_dict = {}
-    added_headers = {}
-    for k, v in resp_dict.items():
-        if k == "body":
-            result_dict["text"] = v
-        elif k == "status":
-            result_dict["status_code"] = v
-        elif k == "content_type":
-            added_headers["content-type"] = v
-        else:
-            result_dict[k] = v
-    result_dict.setdefault("headers", {}).update(added_headers)
-    return result_dict
-
-
-# NOTE: Going from Respx to Responses there are only two significant translations
-#     text -> body
-#     status_code -> status
-# Responses is happy to accept a header "content-type" so there's no need to translate
-# the value from Respx.
-def _translate_from_respx_to_responses(resp_dict: dict[str, Any]) -> dict[str, Any]:
-    result_dict = {}
-    for k, v in resp_dict.items():
-        if k == "text":
-            result_dict["body"] = v
-        elif k == "status_code":
-            result_dict["status"] = v
-        else:
-            result_dict[k] = v
-    return result_dict
-
-
 @pytest.fixture(scope="function")
 def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManager:
     """Convenience fixture for possible expected exceptions
