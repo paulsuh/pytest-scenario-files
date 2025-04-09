@@ -5,14 +5,19 @@ from collections.abc import Generator
 from contextlib import AbstractContextManager, nullcontext
 from json import load
 from os.path import join
-from typing import TYPE_CHECKING, Any, Literal, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple, Union, cast
 
 import pytest
 from yaml import safe_load
 
 if TYPE_CHECKING:
     from requests import Response
-    from respx import MockRouter
+    from respx import MockResponse, MockRouter
+
+
+class _RespxRouteKey(NamedTuple):
+    method: str
+    url: str
 
 
 class BadTestCaseDataException(Exception):
@@ -295,10 +300,23 @@ def psf_respx_mock(request: pytest.FixtureRequest, respx_mock: MockRouter) -> Mo
     psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
     respx_mock._assert_all_called = psf_fire_all_responses
 
+    #   work through the list of fixtures and transform them by sorting into
+    #   new fixtures by route (method, url)
+    from respx.models import MockResponse
+
+    routes_dict: dict[_RespxRouteKey, list[MockResponse]] = {}
     for one_response in request.param:
         mock_response_kwargs = cast(dict, one_response.copy())
-        route_match = {k: mock_response_kwargs.pop(k) for k in ("method", "url")}
-        respx_mock.route(**route_match).respond(**mock_response_kwargs)
+        route_match_dict = {k: mock_response_kwargs.pop(k) for k in ("method", "url")}
+        route_match = _RespxRouteKey(**route_match_dict)
+        routes_dict.setdefault(route_match, list()).append(MockResponse(**mock_response_kwargs))
+    #   If there is only one, set up router return value = MockResponse
+    #   If three are multiple, set up router side effect = list of MockResponse
+    for one_route, one_result in routes_dict.items():
+        if len(one_result) == 1:
+            respx_mock.route(**one_route._asdict()).return_value = one_result[0]
+        else:
+            respx_mock.route(**one_route._asdict()).side_effect = one_result
 
     return respx_mock
 
