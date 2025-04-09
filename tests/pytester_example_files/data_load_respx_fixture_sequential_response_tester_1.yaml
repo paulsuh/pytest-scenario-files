@@ -9,7 +9,9 @@ test_one:
     status_code: 200
     text: This is response 2 from example.com.
   psf_expected_result_indirect: This is response 2 from example.com.
-  expected_response_1: This is a test from example.com.
+  all_expected_texts:
+  - This is a test from example.com.
+  - This is response 2 from example.com.
 test_two:
   example_responses:
   - method: GET
@@ -20,6 +22,33 @@ test_two:
     url: https://www.example.com/
     status_code: 404
     text: Not found.
+  - method: GET
+    url: https://www.example.com/
+    status_code: 200
+    text: This is response 3 from example.com.
   psf_expected_result_indirect:
     expected_exception_name: httpx.HTTPError
-  expected_response_1: This is a test from example.com.
+  all_expected_texts:
+  - This is a test from example.com.
+  - This is response 2 from example.com.
+  - This is response 3 from example.com.
+test_three:
+  example_responses:
+  - method: GET
+    url: https://www.example.com/
+    status_code: 200
+    text: This is a test from example.com.
+  - method: GET
+    url: https://www.example.com/
+    status_code: 200
+    text: This is response 2 from example.com.
+  - method: GET
+    url: https://www.example.com/
+    status_code: 200
+    text: This is response 3 from example.com.
+  psf_expected_result_indirect: This is response 2 from example.com.
+  all_expected_texts:
+  - This is a test from example.com.
+  - This is response 2 from example.com.
+  - This is response 3 from example.com.
+  - This is response 3 from example.com.

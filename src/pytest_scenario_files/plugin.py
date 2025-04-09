@@ -15,6 +15,9 @@ if TYPE_CHECKING:
     from respx import MockResponse, MockRouter
 
 
+# Need to use a NamedTuple as the key for the routing dict
+# Can't use a dict as a dict can't be a dict key (unless you
+# do funky stuff to make it immutable).
 class _RespxRouteKey(NamedTuple):
     method: str
     url: str

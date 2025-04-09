@@ -67,4 +67,4 @@ def test_load_respx_fixture_sequential_response(pytester):
 
     result = pytester.runpytest("-v", "-rA", "--psf-load-respx")
 
-    result.assert_outcomes(passed=2)
+    result.assert_outcomes(passed=2, failed=1)
