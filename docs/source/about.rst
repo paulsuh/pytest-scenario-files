@@ -16,7 +16,6 @@ open source software.
 Future Directions
 -----------------
 - Support for loading native Responses files is planned.
-- Support for loading multiple responses for Respx is planned.
 - Support for additional responses features like various matchers for
   headers, query parameters, json body, etc. is under consideration.
 - An automated method for specifying Responses or Respx overrides is
