@@ -44,8 +44,8 @@ unittest = [
 responses = [
     "responses"
 ]
-pytest_httpx = [
-    "pytest-httpx"
+respx = [
+    "respx"
 ]
 
 [project.urls]

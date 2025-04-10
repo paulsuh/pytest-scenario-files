@@ -35,7 +35,7 @@ YAML format.
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
 - Integration with [Responses][link08]
-- **NEW** - Integration with [Pytest-Httpx][link09]
+- **NEW** - Integration with [Respx][link09]
 
 ### Compatibility
 
@@ -157,6 +157,6 @@ Distributed under the terms of the `MIT` license,
 [link06]: https://github.com/paulsuh/pytest-scenario-files
 [link07]: https://docs.pytest.org/en/stable/index.html
 [link08]: https://github.com/getsentry/responses/tree/master
-[link09]: https://colin-b.github.io/pytest_httpx/
+[link09]: https://github.com/lundberg/respx/tree/master
 [link10]: https://pytest-scenario-files.mspex.net/
 [link11]: https://github.com/paulsuh/pytest-scenario-files/issues

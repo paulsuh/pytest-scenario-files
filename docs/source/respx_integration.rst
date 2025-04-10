@@ -34,12 +34,12 @@ integration you can just read the Differences below.
 Basic Usage
 -----------
 
-There are three steps to using the Responses integration:
+There are three steps to using the Respx integration:
 
 1. Create the data files.
 2. Pass the ``psf_respx_mock`` fixture as a parameter to your test
    function.
-3. Activate the respx integration using the command line flags.
+3. Activate the Respx integration using the command line flags.
 
 Data file format
 ^^^^^^^^^^^^^^^^
@@ -118,7 +118,7 @@ can use it as you would any standard ``MockRouter``.
 Command line flags
 ^^^^^^^^^^^^^^^^^^
 There are two command line flags for Pytest that are used for the
-Responses integration:
+Respx integration:
 
 - ``--psf-load-respx``
 
@@ -226,7 +226,7 @@ list of responses would be exhausted.
 
 .. note::
 
-    Pytest-Scenario-Files does not include a way to speciffy that the last
+    Pytest-Scenario-Files does not include a way to specify that the last
     response should be repeated forever. The Respx documentation suggests
     that this can be accomplished by using the library functions
     ``itertools.chain()`` and ``itertools.repeat()`` together. When using
@@ -276,19 +276,19 @@ scenario specifies that the call should return a 403 error and catch a
 
 The third file is the Python unit tests. It has a fixture ``response_override()``
 that will set up an override specified by the scenario. If the scenario
-has no override then it will just return the ``psf_responses`` fixture
+has no override then it will just return the ``psf_respx_mock`` fixture
 unchanged.
 
 .. code-block:: Python
     :caption: ``test_api.py``
 
     @pytest.fixture
-    def response_override(request, psf_responses):
+    def response_override(request, psf_respx_mock):
         if hasattr(request, "param") and isinstance(request.param, dict):
             response_params = request.param.copy()
             route_match = {k: response_params.pop(k) for k in ("method", "url")}
             respx_mock.route(**route_match).respond(**response_params)
-        return psf_responses
+        return psf_respx_mock
 
     def test_api_check(response_override, psf_expected_result):
         with psf_expected_result as expected_result:
@@ -309,7 +309,3 @@ context manager object. Any other kind of error or exception will cause the
 test to fail.
 
 .. _Respx: https://lundberg.github.io/respx/
-.. _moto: https://github.com/getmoto/moto
-.. _moto FAQ: http://docs.getmoto.org/en/stable/docs/faq.html#how-can-i-mock-my-own-http-requests-using-the-responses-module
-.. _Netbrain API: https://github.com/NetBrainAPI/NetBrain-REST-API-R11.1/blob/main/REST%20APIs%20Documentation/Authentication%20and%20Authorization/Login%20API.md
-.. _tests/Responses_example: https://github.com/paulsuh/pytest-scenario-files/tree/main/tests/Responses_example
