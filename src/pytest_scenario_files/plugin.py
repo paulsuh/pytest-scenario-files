@@ -377,7 +377,7 @@ def _extract_responses(
     "psf_responses" or "psf_respx_mock", with indirect=True. The fixture will only be
     exposed if the --psf-load-responses or --psf-load-respx flags are used. The name in
     the fixture data dict will be either "psf_responses_indirect" or
-    "psf_respx_mock_indirect", which will then be processed later on into an indirect
+    "psf_respx_mock_indirect", which will then be processed later as an indirect
     fixture.
 
     :param fixture_data_dict: dict containing all parameterization data
@@ -389,8 +389,12 @@ def _extract_responses(
     #   for each fixture
     #       check if fixture name ends with _responses or _response
     #           remove it from the fixture_data_dict
-    #           add it to a list for the fixture psf_responses_indirect
+    #           add it to a list for the fixture for Responses or Respx
     for one_scenario in fixture_data_dict.values():
+        # Note: have to do this in two stages as the dict keys
+        # will be changing when we pop values off the dict. Trying to
+        # iterate over the dict keys directly or using filter() will
+        # result in an exception.
         responses_fixture_names = [
             one_fixture_name
             for one_fixture_name in one_scenario.keys()
@@ -399,12 +403,22 @@ def _extract_responses(
         psf_responses_data = []
         for one_fixture_name in responses_fixture_names:
             current_fixture_data = one_scenario.pop(one_fixture_name)
+            # TODO: once Python 3.9 is EOL, change this to the cleaner structural
+            #  pattern matching form.
+            # It's entirely possible that the contents of either the list
+            # or the dict are not usable, but that will be caught when the
+            # mocks are constructed.
             if isinstance(current_fixture_data, list):
                 psf_responses_data.extend(current_fixture_data)
             elif isinstance(current_fixture_data, dict):
                 psf_responses_data.append(current_fixture_data)
-        if len(psf_responses_data) > 0:
-            one_scenario[fixture_key] = psf_responses_data
+            else:
+                raise RuntimeError(f"Pytest-Scenario-Files: {one_fixture_name} is not a list or dict.")
+        # It's possible to have a scenario where there are no responses, such
+        # as a case where a fixture is auto-used but the particular scenario
+        # doesn't actually make any HTTP calls so there's no need to mack anything
+        # so we need to put in a list even if the length is zero.
+        one_scenario[fixture_key] = psf_responses_data
 
     # at the end of this the fixture data dict has had all of the "_responses"
     # entries popped out of it and each scenario that has a "psf_responses_indirect" or
@@ -443,6 +457,8 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
         # the raw data dict to find any fixtures that end with _response or _responses.
         # If any are found, remove them and set up psf_responses_indirect or
         # psf_respx_mock_indirect as an indirect fixture.
+        # TODO: when Python 3.9 is EOL, convert this to the cleaner structural pattern
+        #  matching form.
         if metafunc.config.getoption("psf-load-responses"):
             _extract_responses(fixture_raw_data_dict, "psf_responses_indirect")
         elif metafunc.config.getoption("psf-load-respx"):
