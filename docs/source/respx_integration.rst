@@ -29,7 +29,7 @@ integration you can just read the Differences below.
     6. Responses will automatically queue up successive responses to the
        same method and URL and feed them to the calling test automatically.
        Multiple responses for the same method and URL must be done explicitly
-       in Respx and is not yet supported in Pytest-Scenario-Files.
+       in Respx.
 
 Basic Usage
 -----------
@@ -174,6 +174,64 @@ alter the responses for a test.
       - method: GET
         url: https://www.example.com/rest/endpoint3
         body: Text body of the http response3
+
+Multiple Responses for the Same URL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+There are some test cases where you would want to call the same URL multiple
+times. For example, you may need to call a reset endpoint several times as
+part of a sequence of tasks; or you may be polling an endpoint to see if a
+process has been completed.
+
+- If you put a single response in for a method and URL, Respx will reply
+  to repeated requests to that URL with the same response.
+
+- If you want to have different responses to the same method and URL you can
+  put the desired responses into a list of responses in the data file, all with
+  the same method and URL. Pytest-Scenario-Files will load them into the proper
+  place in the MockRouter to respond accordingly. The order of responses is
+  guaranteed if they are within the same list of responses, but the order is not
+  guaranteed between lists of responses.
+
+Using the following data file will return a status code of 202 and a json block
+with ``process_completed = false`` three times, followed by a status code of
+200 and a json block with ``process_completed = true``. If the test does a GET
+on the URL for a fifth time it will cause a StopIteration exception, as the
+list of responses would be exhausted.
+
+.. code-block:: yaml
+    :caption: ``data_api_polling_test.yaml``
+
+    api_polling_scenario:
+      api_responses:
+      - method: GET
+        url: https://www.example.com/rest/process_done
+        status_code: 202
+        json:
+          process_completed: false
+      - method: GET
+        url: https://www.example.com/rest/process_done
+        status_code: 202
+        json:
+          process_completed: false
+      - method: GET
+        url: https://www.example.com/rest/process_done
+        status_code: 202
+        json:
+          process_completed: false
+      - method: GET
+        url: https://www.example.com/rest/process_done
+        status_code: 200
+        json:
+          process_completed: true
+
+.. note::
+
+    Pytest-Scenario-Files does not include a way to speciffy that the last
+    response should be repeated forever. The Respx documentation suggests
+    that this can be accomplished by using the library functions
+    ``itertools.chain()`` and ``itertools.repeat()`` together. When using
+    Pytest-Scenario-Files the recommended way to handle this is to create your
+    own response override fixture that will set up the proper iteration.
 
 Usage with the ``psf_expected_result`` fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
