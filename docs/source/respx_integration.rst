@@ -118,7 +118,7 @@ can use it as you would any standard ``MockRouter``.
 
 Command line flags
 ^^^^^^^^^^^^^^^^^^
-There are two command line flags for Pytest that are used for the
+There are three command line flags for Pytest that are used for the
 Respx integration:
 
 - ``--psf-load-respx``
