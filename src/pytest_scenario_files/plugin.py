@@ -8,11 +8,32 @@ from os.path import join
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple, Union, cast
 
 import pytest
+from responses import RequestsMock
 from yaml import safe_load
 
 if TYPE_CHECKING:
-    from requests import Response
     from respx import MockResponse, MockRouter
+
+
+# configuration flag holding space
+class _PsfConfigTuple(NamedTuple):
+    psf_load_responses: bool
+    psf_load_respx: bool
+    psf_fire_all_responses: bool
+    psf_assert_all_called: bool
+    psf_assert_all_mocked: bool
+
+
+_config_keys = (
+    ("psf-load-responses", "Automatically load data for Responses from scenario files"),
+    ("psf-load-respx", "Automatically load data for Respx from scenario files"),
+    ("psf-fire-all-responses", "Are all responses required to be fired (for Responses)?"),
+    ("psf-assert-all-called", "Are all responses required to be fired (for Respx)?"),
+    ("psf-assert-all-mocked", "Are all Httpx calls required to be mocked (for Respx)?"),
+)
+
+
+_psf_configs: _PsfConfigTuple | None = None
 
 
 # Need to use a NamedTuple as the key for the routing dict
@@ -38,31 +59,22 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
     responses to be fired.
     """
     option_group = parser.getgroup("Pytest Scenario Files", "Options for the pytest-scenario-files plug-in")
-    option_group.addoption(
-        "--psf-load-responses",
-        action="store_true",
-        default=False,
-        dest="psf-load-responses",
-        help="Automatically load data for Responses from scenario files",
-    )
-    option_group.addoption(
-        "--psf-load-respx",
-        action="store_true",
-        default=False,
-        dest="psf-load-respx",
-        help="Automatically load data for Respx from scenario files",
-    )
-    option_group.addoption(
-        "--psf-fire-all-responses",
-        action="store_true",
-        default=False,
-        dest="psf-fire-all-responses",
-        help="Are all responses required to be fired (whether for Responses or Respx)?",
-    )
+    for opt, help in _config_keys:
+        option_group.addoption(
+            f"--{opt}",
+            action="store_true",
+            default=False,
+            dest=opt,
+            help=help,
+        )
 
 
 def pytest_configure(config: pytest.Config):
-    """Raises an exception if both `--psf-load-responses` and `--psf-load-respx` are enabled since these are mutually exclusive options.
+    """Get config data from command line flags
+
+    Raises an exception if both `--psf-load-responses` and `--psf-load-respx` are both
+    enabled since these are mutually exclusive options. Also stores values for
+    `psf-fire-all-responses`, `psf-assert-all-fired`, and `psf-assert-all-mocked`.
 
     :param config: The pytest configuration object containing all command-line
         options and plugin configuration.
@@ -70,7 +82,9 @@ def pytest_configure(config: pytest.Config):
     :raises pytest.UsageError: If both `--psf-load-responses` and `--psf-load-respx`
         options are specified simultaneously.
     """
-    if config.getoption("psf-load-responses") and config.getoption("psf-load-respx"):
+    global _psf_configs
+    _psf_configs = _PsfConfigTuple(*(config.getoption(opt) for opt, help in _config_keys))
+    if _psf_configs.psf_load_responses and _psf_configs.psf_load_respx:
         raise pytest.UsageError("The --psf-load-resposes and --psf-load-respx options are mutually exclusive.")
 
 
@@ -275,53 +289,54 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
 
 
 @pytest.fixture(scope="function")
-def psf_responses(request: pytest.FixtureRequest) -> Generator[Response, None, None]:
+def psf_responses(request: pytest.FixtureRequest) -> Generator[RequestsMock, None, None]:
     """Returns a ResponsesMock with scenario data loaded.
 
     Used for integration with the Responses package. Each test scenario will get its
     own active ResponsesMock object. This object can then be updated at runtime
     to override the responses loaded from files.
     """
-    import responses
+    from responses import RequestsMock
 
-    psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
-    with responses.RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:
+    psf_fire_all_responses = _psf_configs.psf_fire_all_responses
+    with RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:
         for one_response in request.param:
             rsps.add(**one_response)
         yield rsps
 
 
 @pytest.fixture(scope="function")
-def psf_respx_mock(request: pytest.FixtureRequest, respx_mock: MockRouter) -> MockRouter:
+def psf_respx_mock(request: pytest.FixtureRequest) -> Generator[MockRouter, None, None]:
     """Returns a respx.MockRouter with scenario data loaded.
 
     Used for integration with the Respx package. Each test scenario will get its
     own active MockRouter object. This object can then be updated at runtime
     to override the responses loaded from files.
     """
-    # slightly hinky using private API, but the simplest way for now
-    psf_fire_all_responses = request.config.getoption("psf-fire-all-responses")
-    respx_mock._assert_all_called = psf_fire_all_responses
-
-    #   work through the list of fixtures and transform them by sorting into
-    #   new fixtures by route (method, url)
+    from respx import mock
     from respx.models import MockResponse
 
-    routes_dict: dict[_RespxRouteKey, list[MockResponse]] = {}
-    for one_response in request.param:
-        mock_response_kwargs = cast(dict, one_response.copy())
-        route_match_dict = {k: mock_response_kwargs.pop(k) for k in ("method", "url")}
-        route_match = _RespxRouteKey(**route_match_dict)
-        routes_dict.setdefault(route_match, list()).append(MockResponse(**mock_response_kwargs))
-    #   If there is only one, set up router return value = MockResponse
-    #   If three are multiple, set up router side effect = list of MockResponse
-    for one_route, one_result in routes_dict.items():
-        if len(one_result) == 1:
-            respx_mock.route(**one_route._asdict()).return_value = one_result[0]
-        else:
-            respx_mock.route(**one_route._asdict()).side_effect = one_result
+    with mock(
+        assert_all_mocked=_psf_configs.psf_assert_all_mocked, assert_all_called=_psf_configs.psf_assert_all_called
+    ) as respx_mock:
+        #   work through the list of values for the psf_respx_mock fixture
+        #   and transform them by sorting into a new dict of lists by route (method, url)
+        routes_dict: dict[_RespxRouteKey, list[MockResponse]] = {}
+        for one_response in request.param:
+            mock_response_kwargs = cast(dict, one_response.copy())
+            route_match_dict = {k: mock_response_kwargs.pop(k) for k in ("method", "url")}
+            route_match = _RespxRouteKey(**route_match_dict)
+            routes_dict.setdefault(route_match, list()).append(MockResponse(**mock_response_kwargs))
+        # pass through the dict of routes and add them to the mock
+        for one_route, one_result in routes_dict.items():
+            # If there is only one, set up router return value = MockResponse
+            # If three are multiple, set up router side effect = list of MockResponse
+            if len(one_result) == 1:
+                respx_mock.route(**one_route._asdict()).return_value = one_result[0]
+            else:
+                respx_mock.route(**one_route._asdict()).side_effect = one_result
 
-    return respx_mock
+        yield respx_mock
 
 
 @pytest.fixture(scope="function")
@@ -459,9 +474,9 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
         # psf_respx_mock_indirect as an indirect fixture.
         # TODO: when Python 3.9 is EOL, convert this to the cleaner structural pattern
         #  matching form.
-        if metafunc.config.getoption("psf-load-responses"):
+        if _psf_configs.psf_load_responses:
             _extract_responses(fixture_raw_data_dict, "psf_responses_indirect")
-        elif metafunc.config.getoption("psf-load-respx"):
+        elif _psf_configs.psf_load_respx:
             _extract_responses(fixture_raw_data_dict, "psf_respx_mock_indirect")
 
         # get the list of fixture names sorted alphabetically

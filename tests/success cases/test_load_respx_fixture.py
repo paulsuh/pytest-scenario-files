@@ -39,7 +39,7 @@ def test_load_respx_fixture_partial(pytester):
     # create the data file
     pytester.copy_example("data_load_respx_fixture_partial_tester_1.yaml")
 
-    result = pytester.runpytest("-v", "--psf-load-respx", "--psf-fire-all-responses")
+    result = pytester.runpytest("-v", "--psf-load-respx", "--psf-assert-all-called")
 
     result.assert_outcomes(passed=1, errors=1)
 
