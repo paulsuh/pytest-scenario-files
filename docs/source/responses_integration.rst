@@ -101,7 +101,7 @@ Responses integration:
   activating it for a developer who uses the suffix without realizing
   the special meaning.
 
-- ``--psf-fire-all-responses=[true|false]``
+- ``--psf-fire-all-responses=[true|FALSE]``
 
   This allows you to turn on the flag ``assert_all_requests_are_fired``
   for Responses. It defaults to false.
