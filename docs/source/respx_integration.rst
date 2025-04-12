@@ -176,7 +176,7 @@ alter the responses for a test.
         body: Text body of the http response3
 
 Multiple Responses for the Same URL
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 There are some test cases where you would want to call the same URL multiple
 times. For example, you may need to call a reset endpoint several times as
 part of a sequence of tasks; or you may be polling an endpoint to see if a
