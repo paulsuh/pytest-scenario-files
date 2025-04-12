@@ -121,6 +121,7 @@ dependencies = [
 [tool.hatch.envs.docs]
 dependencies = [
     "sphinx",
+    "responses",
     "furo"
 ]
 
