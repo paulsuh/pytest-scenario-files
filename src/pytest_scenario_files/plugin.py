@@ -8,10 +8,10 @@ from os.path import join
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple, Union, cast
 
 import pytest
-from responses import RequestsMock
 from yaml import safe_load
 
 if TYPE_CHECKING:
+    from responses import RequestsMock
     from respx import MockResponse, MockRouter
 
 

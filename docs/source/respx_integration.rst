@@ -9,7 +9,8 @@ integration you can just read the Differences below.
 .. admonition:: Differences from Responses Integration
 
     1. Specify the extra ``pytest-scenario-files[respx]`` for installation.
-    2. Use the command line flag ``--psf-load-respx``.
+    2. Use the command line flags ``--psf-load-respx``, ``--psf-assert-all-called``,
+       and ``--psf-assert-all-mocked`` to load and configure the mocking.
     3. Use the fixture ``psf_respx_mock``.
     4. The keys used by ``respx`` to specify the response are a
        little bit different.
@@ -27,9 +28,9 @@ integration you can just read the Differences below.
        you overwrite an existing response by setting a new response
        route with the same HTTP method and URL.
     6. Responses will automatically queue up successive responses to the
-       same method and URL and feed them to the calling test automatically.
-       Multiple responses for the same method and URL must be done explicitly
-       in Respx.
+       same method and URL and feed them to the calling test in order.
+       Multiple responses for the same method and URL must be specified
+       explicitly in Respx.
 
 Basic Usage
 -----------
@@ -128,9 +129,14 @@ Respx integration:
   activating it for a developer who uses the suffix without realizing
   the special meaning.
 
-- ``--psf-fire-all-responses=[true|false]``
+- ``--psf-assert-all-called=[true|FALSE]``
 
-  This allows you to turn on the flag ``assert_all_requests_are_fired``
+  This allows you to turn on the flag ``assert_all_called``
+  for Respx. It defaults to false.
+
+- ``--psf-assert-all-mocked=[true|FALSE]``
+
+  This allows you to turn on the flag ``assert_all_mocked``
   for Respx. It defaults to false.
 
 Advanced Usage
