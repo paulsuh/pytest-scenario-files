@@ -68,3 +68,16 @@ def test_load_respx_fixture_sequential_response(pytester):
     result = pytester.runpytest("-v", "-rA", "--psf-load-respx")
 
     result.assert_outcomes(passed=2, failed=1)
+
+
+def test_respx_assert_all_mocked_flag(pytester):
+    # create the test code file
+    test_file_path = pytester.copy_example("example_test_respx_assert_all_mocked_flag_tester.py")
+    test_file_path.rename("test_respx_assert_all_mocked_flag_tester.py")
+
+    # create the data file
+    pytester.copy_example("data_respx_assert_all_mocked_flag_tester_1.yaml")
+
+    result = pytester.runpytest("-v", "-rA", "--psf-load-respx", "--psf-assert-all-mocked")
+
+    result.assert_outcomes(passed=2, failed=1)
