@@ -59,13 +59,13 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
     responses to be fired.
     """
     option_group = parser.getgroup("Pytest Scenario Files", "Options for the pytest-scenario-files plug-in")
-    for opt, help in _config_keys:
+    for opt, help_text in _config_keys:
         option_group.addoption(
             f"--{opt}",
             action="store_true",
             default=False,
             dest=opt,
-            help=help,
+            help=help_text,
         )
 
 
@@ -83,7 +83,7 @@ def pytest_configure(config: pytest.Config):
         options are specified simultaneously.
     """
     global _psf_configs
-    _psf_configs = _PsfConfigTuple(*(config.getoption(opt) for opt, help in _config_keys))
+    _psf_configs = _PsfConfigTuple(*(config.getoption(opt) for opt, _ in _config_keys))
     if _psf_configs.psf_load_responses and _psf_configs.psf_load_respx:
         raise pytest.UsageError("The --psf-load-resposes and --psf-load-respx options are mutually exclusive.")
 
