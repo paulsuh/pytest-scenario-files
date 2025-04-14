@@ -427,6 +427,8 @@ def _extract_responses(
                 psf_responses_data.extend(current_fixture_data)
             elif isinstance(current_fixture_data, dict):
                 psf_responses_data.append(current_fixture_data)
+            elif current_fixture_data is None:
+                pass
             else:
                 raise RuntimeError(f"Pytest-Scenario-Files: {one_fixture_name} is not a list or dict.")
         # It's possible to have a scenario where there are no responses, such
