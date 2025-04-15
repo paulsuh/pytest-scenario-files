@@ -54,9 +54,9 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
     """
     Pytest hook function that adds the command line options.
 
-    Adds the command line option to automatically load http responses for the Responses
-    package or the Respx package and the additional option whether to require all
-    responses to be fired.
+    Adds the command line options to automatically load http responses for the Responses
+    package or the Respx package and additional options whether to require all
+    responses to be fired and all calls to be mocked.
     """
     option_group = parser.getgroup("Pytest Scenario Files", "Options for the pytest-scenario-files plug-in")
     for opt, help_text in _config_keys:
@@ -290,10 +290,10 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
 
 @pytest.fixture(scope="function")
 def psf_responses(request: pytest.FixtureRequest) -> Generator[RequestsMock, None, None]:
-    """Returns a ResponsesMock with scenario data loaded.
+    """Returns a responses.RequestsMock with scenario data loaded.
 
     Used for integration with the Responses package. Each test scenario will get its
-    own active ResponsesMock object. This object can then be updated at runtime
+    own active RequestsMock object. This object can then be updated at runtime
     to override the responses loaded from files.
     """
     from responses import RequestsMock
@@ -451,10 +451,13 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     1. Walk the directory tree looking for files that match the name of the test.
     2. Load test data from the files.
     3. Extract fixture names and check for consistency.
-    4. Pull out indirect fixtures and remove suffixes from fixture names. (Includes
-       handling the Responses and Respx integration.)
-    5. Reformat the data for the parameterization.
-    6. Make the function call.
+    4. (Optional) Gather data from all fixtures with the suffixes ``_response``
+       or ``_responses`` into a single fixture for use with the Responses or
+       Respx integrations.
+    5. Get list of indirect fixtures and remove the suffix ``_indirect`` from
+       indirect fixture names.
+    6. Reformat the data into lists for the parameterization call.
+    7. Make the function call.
 
     :param metafunc: Pytest fixture used to create the parameterization
     """
