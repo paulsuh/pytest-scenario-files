@@ -18,16 +18,16 @@ if TYPE_CHECKING:
 # configuration flag holding space
 class _PsfConfigTuple(NamedTuple):
     psf_load_responses: bool
-    psf_load_respx: bool
     psf_fire_all_responses: bool
+    psf_load_respx: bool
     psf_assert_all_called: bool
     psf_assert_all_mocked: bool
 
 
 _config_keys = (
     ("psf-load-responses", "Automatically load data for Responses from scenario files"),
-    ("psf-load-respx", "Automatically load data for Respx from scenario files"),
     ("psf-fire-all-responses", "Are all responses required to be fired (for Responses)?"),
+    ("psf-load-respx", "Automatically load data for Respx from scenario files"),
     ("psf-assert-all-called", "Are all responses required to be fired (for Respx)?"),
     ("psf-assert-all-mocked", "Are all Httpx calls required to be mocked (for Respx)?"),
 )
