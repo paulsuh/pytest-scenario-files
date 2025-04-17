@@ -103,7 +103,9 @@ cov = [
 # static type-checking environment
 [tool.hatch.envs.types]
 dependencies = [
-  "mypy>=1.0.0",
+    "mypy>=1.0.0",
+    "responses",
+    "respx"
 ]
 
 [tool.hatch.envs.types.scripts]

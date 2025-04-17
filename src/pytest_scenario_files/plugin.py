@@ -33,7 +33,7 @@ _config_keys = (
 )
 
 
-_psf_configs: _PsfConfigTuple | None = None
+_psf_configs: _PsfConfigTuple
 
 
 # Need to use a NamedTuple as the key for the routing dict
@@ -374,7 +374,10 @@ def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManage
             # expected exception is a builtin
             exception_class = (globals()["__builtins__"][expected_exception_name],)
 
-        return pytest.raises(exception_class, **request.param)
+        # pytest.raises() has a deprecated legacy form where you pass in a callable
+        # and it returns an ExceptionInfo object. Tell mypy to gnore this as we are
+        # only using the form of the call that returns a context manager.
+        return pytest.raises(exception_class, **request.param)  # type:ignore[return-value]
 
     else:
         # expected result not an exception
