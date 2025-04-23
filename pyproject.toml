@@ -127,6 +127,9 @@ dependencies = [
     "furo"
 ]
 
+[tool.hatch.envs.docs.scripts]
+generate = "sphinx-build --builder html --write-all --verbose docs/source docs/build"
+
 [[tool.hatch.envs.test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 pytest = ["7.4", "8.2", "8.3"]
