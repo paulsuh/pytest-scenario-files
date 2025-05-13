@@ -53,8 +53,6 @@ jobs:
         path: dist/
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://pypi.org/legacy/
     - name: Store the distribution packages for later steps
       uses: actions/upload-artifact@v4
       with:
