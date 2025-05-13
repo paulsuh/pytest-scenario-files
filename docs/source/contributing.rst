@@ -17,10 +17,10 @@ request, please:
 - Check test coverage with ``hatch run cov``
 - Generate and proofread docs by running ``hatch run docs:generate``
 
-Within the Github repo, actions are set up so that:
+Within the Github repo, Github Actions are set up so that:
 
-- Creating a tag that starts with "release-..." will trigger a release action.
-- Creating a tag that starts with "docs-..." will trigger a documentation update.
+- Creating a tag of the format "v#.#.#" will build a release and upload it to PyPI.
+- Creating a tag that starts with "docs-..." will trigger a documentation build.
 
 .. _docstrfmt: https://github.com/LilSpazJoekp/docstrfmt
 
