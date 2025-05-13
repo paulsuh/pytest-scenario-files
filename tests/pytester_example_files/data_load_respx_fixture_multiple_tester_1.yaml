@@ -1,0 +1,20 @@
+test_one:
+  example_responses:
+  - method: GET
+    url: https://www.example.com/
+    status_code: 200
+    text: This is a test from example.com.
+  - method: GET
+    url: https://www.example.org/
+    status_code: 200
+    text: This is a test from example.org.
+  - method: GET
+    url: https://www.example.net/
+    status_code: 200
+    text: This is a test from example.net.
+
+  url_tests:
+    - url: https://www.example.com/
+      text: This is a test from example.com.
+    - url: https://www.example.org/
+      text: This is a test from example.org.

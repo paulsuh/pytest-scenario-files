@@ -11,7 +11,7 @@ Basic Usage
 There are three steps to using the Responses integration:
 
 1. Create the data files.
-2. Pass the ``psf-responses`` fixture as a parameter to your test
+2. Pass the ``psf_responses`` fixture as a parameter to your test
    function.
 3. Activate the Responses integration using the command line flags.
 
@@ -21,7 +21,7 @@ Data to be loaded into responses should be put into fixtures whose names
 end with ``_response`` or ``_responses``. For example, you might have a
 fixture named ``oauth2_response`` or a fixture named ``api_responses``.
 These fixtures will not actually be created or parameterized for the
-test. Instead, each will be loaded into the ``psf-responses`` fixture
+test. Instead, each will be loaded into the ``psf_responses`` fixture
 and removed from the list of fixtures.
 
 Each response should be structured as a dictionary that contains two
@@ -65,32 +65,22 @@ The fixture may contain a list of responses in the same format:
         url: https://www.example.com/rest/endpoint3
         body: Text body of the http response3
 
-All of the responses in the list will be loaded into the RequestsMock
-for the fixture ``psf-responses``. While the response loading recognizes
-both ``_response`` and ``_responses``, there is no actual difference
-in how they are handled. They underlying code checks to see whether
-the loaded value is a dict or a list and handles it accordingly.
-Having both suffixes is just to make reading the data files easier
-for humans.
-
-- Loading values by reference will work as expected. See the detailed
-  example for how it is used.
-- Support for loading native Responses files is planned for the near
-  future.
-- Support for additional responses features like various matchers for
-  headers, query parameters, json body, etc. is under consideration.
-- Support for ``httpx`` and ``httpx-responses`` is also planned for
-  the future.
+All of the responses in the list will be loaded into a ``RequestsMock``.
+While the response loading recognizes both ``_response`` and ``_responses``,
+there is no actual difference in how they are handled. They underlying
+code checks to see whether the loaded value is a dict or a list and
+handles it accordingly. Having both suffixes is just to make reading
+the data files easier for humans.
 
 The ``psf-responses`` fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Pytest-Scenario-Files provides a ``psf-responses`` fixture that is used
-to load the responses. It returns a currently active RequestsMock object
+Pytest-Scenario-Files provides a ``psf_responses`` fixture that is used
+to load the responses. It returns a currently active ``RequestsMock`` object
 that has all of the responses from the data files for the current test
 already loaded. If all of the responses your test needs are already loaded
 via the data files you can just leave it be. However, If you need to add
 additional responses or to change a response for this particular test you
-can use it as you would any standard RequestsMock.
+can use it as you would any standard ``RequestsMock``.
 
 .. code-block:: Python
 
@@ -111,7 +101,7 @@ Responses integration:
   activating it for a developer who uses the suffix without realizing
   the special meaning.
 
-- ``--psf-fire-all-responses=[true|false]``
+- ``--psf-fire-all-responses=[true|FALSE]``
 
   This allows you to turn on the flag ``assert_all_requests_are_fired``
   for Responses. It defaults to false.
@@ -120,11 +110,11 @@ Advanced Usage
 --------------
 Overriding a response
 ^^^^^^^^^^^^^^^^^^^^^
-You can use the ``psf-responses`` fixture to override a response for
+You can use the ``psf_responses`` fixture to override a response for
 a particular test. Use the ``replace()`` or ``upsert()`` methods
 to do this. The replacement can be done in a separate fixture or
 in the test function itself. If you are doing this in a separate
-fixture the convention is to return the RequestsMock as the fixture
+fixture the convention is to return the ``RequestsMock`` as the fixture
 value so that you can chain together multiple fixtures that add or
 alter the responses for a test.
 
@@ -159,11 +149,6 @@ alter the responses for a test.
         url: https://www.example.com/rest/endpoint3
         body: Text body of the http response3
 
-This is intended to be used with the ``psf_expected_result`` fixture
-and an indirectly parameterized override for error scenarios. See the
-data files that go with the detailed example section to see how it
-all works together.
-
 Use with ``moto`` when mocking AWS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If you are using the package `moto`_ to mock out AWS services, note
@@ -179,11 +164,83 @@ call ``override_responses_real_send()`` as per the `moto FAQ`_.
         override_responses_real_send(psf_responses)
         ...
 
+Usage with the ``psf_expected_result`` fixture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can set up a data file with the generally expected response for a specific
+URL, then override the response to check error conditions. Here is an example
+using a file with the standard API response and a test that checks
+both a successful and an unsuccessful test of the API.
+
+This first file contains the basic API responses, which are loaded by
+reference for each scenario:
+
+.. code-block:: yaml
+    :caption: ``all_api_responses.yaml``
+
+    api_testing:
+      api_responses:
+      - url: https://www.example.com/rest/endpoint
+        method: GET
+        status: 200
+        body: The call was successful.
+
+The second file contains the scenarios, success and failure. The success
+scenario just runs through the call and contains no overrides. The failure
+scenario specifies that the call should return a 403 error and catch a
+``responses.HTTPError`` exception:
+
+.. code-block:: yaml
+    :caption: ``data_api_check_full.yaml``
+
+    success_scenario:
+      api_responses: __all_api_responses.yaml:api_testing:api_responses
+      psf_expected_result_indirect: The call was successful.
+    failure_scenario:
+      api_responses: __all_api_responses.yaml:api_testing:api_responses
+      response_override_indirect:
+        url: https://www.example.com/rest/endpoint
+        method: GET
+        status: 403
+        body: Access denied.
+      psf_expected_result_indirect:
+        expected_exception_type: requests.HTTPError
+
+The third file is the Python unit tests. It has a fixture ``response_override()``
+that will set up any overrides specified by the scenario. If the scenario
+has no overrides then it will just return the ``psf_responses`` fixture
+unchanged.
+
+.. code-block:: Python
+    :caption: ``test_api.py``
+
+    @pytest.fixture
+    def response_override(request, psf_responses):
+        if hasattr(request, "param") and isinstance(request.param, dict):
+            psf_responses.upsert(**request.param)
+        return psf_responses
+
+    def test_api_check(response_override, psf_expected_result):
+        with psf_expected_result as expected_result:
+            api_call_result = requests.get("http://www.example.com/rest/endpoint")
+            api_call_result.raise_for_status()
+            assert api_call_result.body == "The call was successful."
+
+When the test is run the first time (``success_scenaro``), Responses will
+return a 200 response with a body of "The call was successful." — which is
+the expected value from the ``psf_expected_result`` fixture.
+
+When the test is run the second time (``failure_scenario``), Responses will
+return a 403 response. ``raise_for_status()`` will then raise an exception
+``requests.HTTPError``, which will be caught by the context manager since
+the ``psf_expected_value`` fixture will return a ``pytest.raises(requests.HTTPError)``
+context manager object. Any other kind of error or exception will cause the
+test to fail.
+
 Detailed Example
 ----------------
-The easiest way to see how this works is to take an example. One system
-I work with (the `NetBrain API`_) requires that you make four calls when
-you connect to it.
+Putting all this together is easiest to see using a detailed example. One
+system I work with (the `NetBrain API`_) requires that you make four calls
+when you connect to it.
 
 1. Authenticate and get an access token.
 2. Get the list of available tenants and their tenant IDs.

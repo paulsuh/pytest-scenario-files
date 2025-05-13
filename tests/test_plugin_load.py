@@ -1,7 +1,6 @@
 """The most basic test.
 
-See if the plug-in has loaded via the entrypoint by looking in the output
-of pytest's help.
+See if the plug-in has loaded via the entrypoint.
 """
 
 

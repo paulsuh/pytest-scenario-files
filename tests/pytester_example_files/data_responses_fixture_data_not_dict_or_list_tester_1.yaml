@@ -1,0 +1,12 @@
+test_one:
+  example_responses: Just a string.
+  psf_expected_result_indirect: This is a test.
+
+test_two:
+  example_responses:
+  - method: GET
+    url: https://www.example.com/
+    status: 404
+    body: Nobody here.
+
+  psf_expected_result_indirect: Nobody here.

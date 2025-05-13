@@ -1,5 +1,9 @@
 # Change Log
 
+#### 1.2 - 2025-03-XX
+
+- Add integration with Respx for testing httpx.
+
 #### 1.1 - 2024-11-21
 
 - Add integration with Responses.

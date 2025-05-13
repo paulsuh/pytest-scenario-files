@@ -10,11 +10,12 @@ This project uses hatch_ for its environments and build system, as well as pre-c
 ruff_, mdformat_, and docstrfmt_ for formatting and linting. Before you send in a pull
 request, please:
 
-- Set up ``pre-commit`` and use it to run ``ruff``, ``mdformat``, and ``docstrfmt`` with
+- Set up ``pre-commit`` and use it to run ``ruff`` and ``mdformat`` with
   the settings included in the ``pyproject.toml`` and ``.pre-commit-config.yaml`` files
 - Run tests using the command ``hatch run test:test``, which will run all of the tests
-  against CPython 3.9-3.12 and Pytest 7.4.x and 8.2.x.
+  against CPython 3.9-3.12 and Pytest 7.4.x, 8.2.x, and 8.3.x.
 - Check test coverage with ``hatch run cov``
+- Generate and proofread docs by running ``hatch run docs:generate``
 
 Within the Github repo, actions are set up so that:
 

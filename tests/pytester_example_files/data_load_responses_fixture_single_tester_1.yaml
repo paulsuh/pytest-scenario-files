@@ -5,7 +5,7 @@ test_one:
     status: 200
     body: This is a test.
 
-  expected_result: This is a test.
+  psf_expected_result_indirect: This is a test.
 
 test_two:
   example_responses:
@@ -14,4 +14,4 @@ test_two:
     status: 404
     body: Nobody here.
 
-  expected_result: Nobody here.
+  psf_expected_result_indirect: Nobody here.
