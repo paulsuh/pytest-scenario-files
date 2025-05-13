@@ -12,8 +12,11 @@ def netbrain_connection_obj() -> NetBrainConnection:
 
 @pytest.fixture
 def url_response_override(
-    request: pytest.FixtureRequest, psf_responses: responses.RequestsMock
-) -> responses.RequestsMock:
+    request: pytest.FixtureRequest,
+    psf_responses: responses.RequestsMock,  # type:ignore[name-defined]
+) -> responses.RequestsMock:  # type:ignore[name-defined]
+    # NOTE: mypy gets cranky since it doesn't understand pytest.importorskip(), so
+    # ignore type errors on responses.RequestsMock
     if hasattr(request, "param") and isinstance(request.param, dict):
         psf_responses.upsert(**request.param)
     return psf_responses

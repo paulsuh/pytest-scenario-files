@@ -44,6 +44,9 @@ unittest = [
 responses = [
     "responses"
 ]
+respx = [
+    "respx"
+]
 
 [project.urls]
 "Documentation" = "https://pytest-scenario-files.mspex.net/"
@@ -100,7 +103,9 @@ cov = [
 # static type-checking environment
 [tool.hatch.envs.types]
 dependencies = [
-  "mypy>=1.0.0",
+    "mypy>=1.0.0",
+    "responses",
+    "respx"
 ]
 
 [tool.hatch.envs.types.scripts]
@@ -118,17 +123,22 @@ dependencies = [
 [tool.hatch.envs.docs]
 dependencies = [
     "sphinx",
+    "responses",
     "furo"
 ]
+
+[tool.hatch.envs.docs.scripts]
+generate = "sphinx-build --builder html --write-all --verbose docs/source docs/build"
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 pytest = ["7.4", "8.2", "8.3"]
-integrations = ["none", "responses"]
+integrations = ["none", "responses", "respx"]
 
 [tool.hatch.envs.test.overrides]
 matrix.integrations.dependencies = [
-    {value = "responses", if = ["responses"]}
+    {value = "responses", if = ["responses"]},
+    {value = "respx", if = ["respx"]}
 ]
 
 
@@ -259,12 +269,3 @@ docstring-code-format = true
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
-
-##############################
-#                            #
-# Mypy config                #
-#                            #
-##############################
-[[tool.mypy.overrides]]
-module = "deepmerge"
-ignore_missing_imports = true

@@ -15,3 +15,8 @@ test_two:
     body: Nobody here.
 
   psf_expected_result_indirect: Nobody here.
+
+test_three:
+  example_responses: null
+  psf_expected_result_indirect:
+    expected_exception_name: requests.exceptions.ConnectionError

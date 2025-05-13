@@ -34,7 +34,8 @@ YAML format.
 - Fixtures may refer to fixtures in other files
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
-- **NEW** - Integration with [Responses][link08]
+- Integration with [Responses][link08]
+- **NEW** - Integration with [Respx][link09]
 
 ### Compatibility
 
@@ -46,7 +47,7 @@ This package is a plug-in for `pytest` and works with Python 3.9 and up.
 ### Documentation
 
 For more information on advanced usages, read the
-[detailed documentation][link09].
+[detailed documentation][link10].
 
 ______________________________________________________________________
 
@@ -140,7 +141,7 @@ ______________________________________________________________________
 
 ## Reporting Issues
 
-If you encounter any problems, please [file an issue][link10] including
+If you encounter any problems, please [file an issue][link11] including
 a detailed description and (if possible) an example of the problem.
 
 ## License
@@ -156,5 +157,6 @@ Distributed under the terms of the `MIT` license,
 [link06]: https://github.com/paulsuh/pytest-scenario-files
 [link07]: https://docs.pytest.org/en/stable/index.html
 [link08]: https://github.com/getsentry/responses/tree/master
-[link09]: https://pytest-scenario-files.mspex.net/
-[link10]: https://github.com/paulsuh/pytest-scenario-files/issues
+[link09]: https://github.com/lundberg/respx/tree/master
+[link10]: https://pytest-scenario-files.mspex.net/
+[link11]: https://github.com/paulsuh/pytest-scenario-files/issues

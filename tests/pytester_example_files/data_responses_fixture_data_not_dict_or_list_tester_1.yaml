@@ -1,10 +1,5 @@
 test_one:
-  example_response:
-    method: GET
-    url: https://www.example.com/
-    status: 200
-    body: This is a test.
-
+  example_responses: Just a string.
   psf_expected_result_indirect: This is a test.
 
 test_two:

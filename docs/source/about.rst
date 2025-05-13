@@ -13,6 +13,14 @@ License
 Distributed under the terms of the MIT license, ``pytest-scenario-files`` is free and
 open source software.
 
+Future Directions
+-----------------
+- Support for loading native Responses files is planned.
+- Support for additional matchers for both Responses and Respx (for matching
+  headers, query parameters, json body, etc.) is under consideration.
+- An automated method for specifying Responses or Respx overrides is under
+  consideration.
+
 Motivation
 ----------
 
@@ -25,6 +33,7 @@ scalable:
 
 - If you have 50 unit tests you shouldn’t have to individually specify all 50 files to
   load, whether in code or on the command line.
+- You should be able to have multiple data files for each test.
 - You should be able to reference data from other files to reduce duplication.
 
 An additional issue with the basic pytest parameterization API is how the user must
@@ -50,9 +59,9 @@ and provide a more descriptive title, I renamed this project to
 - I liked the way that ``pytest-xpara`` loaded data into a fixture, but didn’t like that
   it would only work with one file and that I had to specify the file on the command
   line.
-- After I wrote much of this project I found the package ``parameterize-from-files``
-  which has a similar name. It’s a powerful and capable tool, but it’s not to my taste
-  as I think it’s trying too hard.
+- After I wrote much of the initial release of this project I found the package
+  ``parameterize-from-file`` which has a similar name. It’s a powerful and capable tool,
+  but it’s not to my taste as I think it’s trying too hard.
 
   - It requires a decorator per test function, with potentially complex syntax inside
     the decorator’s arguments.
