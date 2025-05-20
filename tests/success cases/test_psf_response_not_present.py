@@ -1,6 +1,5 @@
-"""Load multiple test cases from one file.
-
-This also tests loading from a YAML file as well.
+"""Check for correct behavior when psf-load-responses flag is set
+but there is no '_responses' fixture specified in the data file.
 """
 
 
