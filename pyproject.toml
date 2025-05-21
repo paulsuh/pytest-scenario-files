@@ -83,7 +83,6 @@ version-file = "_version.py"
 dependencies = [
     "coverage[toml]",
     "pytest",
-    "pytest-cov",
     "ruff",
     "sphinx",
     "responses",
