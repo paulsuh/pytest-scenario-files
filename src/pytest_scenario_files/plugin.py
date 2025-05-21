@@ -418,27 +418,30 @@ def _extract_responses(
             for one_fixture_name in one_scenario.keys()
             if one_fixture_name.endswith("_response") or one_fixture_name.endswith("_responses")
         ]
-        psf_responses_data = []
-        for one_fixture_name in responses_fixture_names:
-            current_fixture_data = one_scenario.pop(one_fixture_name)
-            # TODO: once Python 3.9 is EOL, change this to the cleaner structural
-            #  pattern matching form.
-            # It's entirely possible that the contents of either the list
-            # or the dict are not usable, but that will be caught when the
-            # mocks are constructed.
-            if isinstance(current_fixture_data, list):
-                psf_responses_data.extend(current_fixture_data)
-            elif isinstance(current_fixture_data, dict):
-                psf_responses_data.append(current_fixture_data)
-            elif current_fixture_data is None:
-                pass
-            else:
-                raise RuntimeError(f"Pytest-Scenario-Files: {one_fixture_name} is not a list or dict.")
-        # It's possible to have a scenario where there are no responses, such
-        # as a case where a fixture is auto-used but the particular scenario
-        # doesn't actually make any HTTP calls so there's no need to mack anything
-        # so we need to put in a list even if the length is zero.
-        one_scenario[fixture_key] = psf_responses_data
+        # Need to differentiate between the case where responses are not specified
+        # at all and where there are only null responses
+        if len(responses_fixture_names) > 0:
+            psf_responses_data = []
+            for one_fixture_name in responses_fixture_names:
+                current_fixture_data = one_scenario.pop(one_fixture_name)
+                # TODO: once Python 3.9 is EOL, change this to the cleaner structural
+                #  pattern matching form.
+                # It's entirely possible that the contents of either the list
+                # or the dict are not usable, but that will be caught when the
+                # mocks are constructed.
+                if isinstance(current_fixture_data, list):
+                    psf_responses_data.extend(current_fixture_data)
+                elif isinstance(current_fixture_data, dict):
+                    psf_responses_data.append(current_fixture_data)
+                elif current_fixture_data is None:
+                    pass
+                else:
+                    raise RuntimeError(f"Pytest-Scenario-Files: {one_fixture_name} is not a list or dict.")
+            # It's possible to have a scenario where there are no responses, such
+            # as a case where a fixture is auto-used but the particular scenario
+            # doesn't actually make any HTTP calls so there's no need to mack anything
+            # so we need to put in a list even if the length is zero.
+            one_scenario[fixture_key] = psf_responses_data
 
     # at the end of this the fixture data dict has had all of the "_responses"
     # entries popped out of it and each scenario that has a "psf_responses_indirect" or
