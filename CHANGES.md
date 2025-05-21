@@ -1,6 +1,12 @@
 # Change Log
 
-#### 1.2 - 2025-03-XX
+#### 1.2.1 - 2025-05-20
+
+- Fix a bug where if you have a test that doesn't use the psf_responses
+  fixture and the --psf-load-responses flag is used, the test will fail
+  with an error, `functions uses no fixture 'psf_responses'`.
+
+#### 1.2 - 2025-05-12
 
 - Add integration with Respx for testing httpx.
 
