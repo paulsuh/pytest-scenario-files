@@ -84,7 +84,9 @@ dependencies = [
     "coverage[toml]",
     "pytest",
     "ruff",
-    "sphinx"
+    "sphinx",
+    "responses",
+    "respx"
 ]
 python="3.11"
 
