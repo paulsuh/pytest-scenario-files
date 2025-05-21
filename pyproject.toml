@@ -85,7 +85,9 @@ dependencies = [
     "pytest",
     "pytest-cov",
     "ruff",
-    "sphinx"
+    "sphinx",
+    "responses",
+    "respx"
 ]
 python="3.11"
 

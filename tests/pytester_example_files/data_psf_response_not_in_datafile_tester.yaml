@@ -1,0 +1,9 @@
+test_one:
+  input_data_1: 19
+  input_data_2: 17
+  expected_result: 36
+
+test_two:
+  input_data_1: "blah"
+  input_data_2: "blah"
+  expected_result: "blahblah"
