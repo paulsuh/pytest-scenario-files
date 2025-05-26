@@ -2,8 +2,10 @@ name: Deploy Sphinx documentation to Pages
 
 on:
   push:
+    branches:
+    - documentation
     tags:
-      - docs-*
+    - docs-*
 
 jobs:
   pages:
