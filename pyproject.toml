@@ -91,7 +91,7 @@ dependencies = [
     "responses",
     "respx"
 ]
-python="3.12"
+python="3.13"
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
