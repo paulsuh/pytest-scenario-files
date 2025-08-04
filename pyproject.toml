@@ -27,8 +27,8 @@ classifiers = [
     'Operating System :: OS Independent',
 ]
 dependencies = [
-    "pytest>=7.0",
-    "pyyaml"
+    "pytest >= 7.4, < 9",
+    "pyyaml < 7"
 ]
 requires-python = ">=3.9"
 dynamic = ["version"]
@@ -42,10 +42,10 @@ unittest = [
     "pytest-cov"
 ]
 responses = [
-    "responses"
+    "responses < 1"
 ]
 respx = [
-    "respx"
+    "respx < 1"
 ]
 
 [project.urls]
@@ -80,7 +80,10 @@ version-file = "_version.py"
 
 # Default environment
 [tool.hatch.envs.default]
+installer = "uv"
 dependencies = [
+    "hatchling",
+    "hatch-vcs",
     "coverage[toml]",
     "pytest",
     "ruff",
@@ -88,7 +91,7 @@ dependencies = [
     "responses",
     "respx"
 ]
-python="3.11"
+python="3.13"
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
