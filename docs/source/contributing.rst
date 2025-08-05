@@ -13,7 +13,7 @@ request, please:
 - Set up ``pre-commit`` and use it to run ``ruff`` and ``mdformat`` with
   the settings included in the ``pyproject.toml`` and ``.pre-commit-config.yaml`` files
 - Run tests using the command ``hatch run test:test``, which will run all of the tests
-  against CPython 3.9-3.12 and Pytest 7.4.x, 8.2.x, and 8.3.x.
+  against CPython 3.9-3.12 and Pytest 7.4.x, 8.2.x, 8.3.x, and 8.4.x.
 - Check test coverage with ``hatch run cov``
 - Generate and proofread docs by running ``hatch run docs:generate``
 

@@ -27,8 +27,8 @@ classifiers = [
     'Operating System :: OS Independent',
 ]
 dependencies = [
-    "pytest>=7.0",
-    "pyyaml"
+    "pytest >= 7.4, < 9",
+    "pyyaml < 7"
 ]
 requires-python = ">=3.9"
 dynamic = ["version"]
@@ -42,10 +42,10 @@ unittest = [
     "pytest-cov"
 ]
 responses = [
-    "responses"
+    "responses < 1"
 ]
 respx = [
-    "respx"
+    "respx < 1"
 ]
 
 [project.urls]
@@ -80,7 +80,10 @@ version-file = "_version.py"
 
 # Default environment
 [tool.hatch.envs.default]
+installer = "uv"
 dependencies = [
+    "hatchling",
+    "hatch-vcs",
     "coverage[toml]",
     "pytest",
     "ruff",
@@ -88,7 +91,7 @@ dependencies = [
     "responses",
     "respx"
 ]
-python="3.11"
+python="3.13"
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
@@ -134,7 +137,7 @@ generate = "sphinx-build --builder html --write-all --verbose docs/source docs/b
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
-pytest = ["7.4", "8.2", "8.3"]
+pytest = ["7.4", "8.2", "8.3", "8.4"]
 integrations = ["none", "responses", "respx"]
 
 [tool.hatch.envs.test.overrides]
