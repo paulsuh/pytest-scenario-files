@@ -1,5 +1,11 @@
 # Change Log
 
+#### 1.2.1 - 2025-07-04
+
+- Update tests to ensure compatibility with pytest 8.4.
+- No change to the code, and thus no change to the version number.
+- Edit documentation to reflect the updated tests.
+
 #### 1.2.1 - 2025-05-20
 
 - Fix a bug where if you have a test that doesn't use the psf_responses
