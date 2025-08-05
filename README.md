@@ -7,7 +7,7 @@
 ![Hatch project][link03] ![Ruff][link04] ![Pre-Commit][link05]
 
 [`pytest-scenario-files`][link06] is a [`pytest`][link07] plugin that
-runs unit test scenarios using data loaded from files.
+runs tests using data loaded from files via parameterized fixtures.
 
 ______________________________________________________________________
 
@@ -41,7 +41,7 @@ YAML format.
 
 This package is a plug-in for `pytest` and works with Python 3.9 and up.
 
-- Tested with `pytest` versions 7.4, 8.2, and 8.3.
+- Tested with `pytest` versions 7.4, 8.2, 8.3, and 8.4.
 - Tested with CPython 3.9-3.13.
 
 ### Documentation

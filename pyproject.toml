@@ -137,7 +137,7 @@ generate = "sphinx-build --builder html --write-all --verbose docs/source docs/b
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
-pytest = ["7.4", "8.2", "8.3"]
+pytest = ["7.4", "8.2", "8.3", "8.4"]
 integrations = ["none", "responses", "respx"]
 
 [tool.hatch.envs.test.overrides]
