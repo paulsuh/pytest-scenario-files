@@ -1,10 +1,11 @@
 # Change Log
 
-#### 1.2.1 - 2025-07-04
+#### 1.2.1 - 2025-08-11
 
 - Update tests to ensure compatibility with pytest 8.4.
 - No change to the code, and thus no change to the version number.
 - Edit documentation to reflect the updated tests.
+- Fix the CI/CD GitHub Actions workflows for publishing.
 
 #### 1.2.1 - 2025-05-20
 
