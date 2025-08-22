@@ -72,6 +72,21 @@ code checks to see whether the loaded value is a dict or a list and
 handles it accordingly. Having both suffixes is just to make reading
 the data files easier for humans.
 
+A fixture with the name ``responses_native_file`` may be used to load a data
+file in the native Responses format. This fixture should have a string
+value that gives the filename containing the native Responses data. The
+search path for this file will be the same as for locating other files.
+The data in this file will be loaded into the ``psf_responses`` fixture
+using the Responses internal data file loading mechanism.
+
+.. code-block:: yaml
+
+    scenario_3:
+      responses_native_file: responses_replay_data.yaml
+
+Responses data for scenario_3 will be loaded from a file named
+``responses_replay_data.yaml``.
+
 The ``psf-responses`` fixture
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Pytest-Scenario-Files provides a ``psf_responses`` fixture that is used
