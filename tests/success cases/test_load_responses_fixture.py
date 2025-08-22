@@ -56,3 +56,16 @@ def test_load_responses_fixture_empty(pytester):
     result = pytester.runpytest("-v", "--psf-load-responses")
 
     result.assert_outcomes(passed=3)
+
+
+def test_load_native_responses_load(pytester):
+    # create the test code file
+    test_file_path = pytester.copy_example("example_test_load_native_responses_load_tester.py")
+    test_file_path.rename("test_load_native_responses_load_tester.py")
+
+    # create the data file
+    pytester.copy_example("data_load_native_responses_load_tester.yaml")
+
+    result = pytester.runpytest("-v", "--psf-load-responses")
+
+    result.assert_outcomes(passed=1)

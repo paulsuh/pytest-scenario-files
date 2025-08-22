@@ -1,29 +1,3 @@
-responses:
-- response:
-    auto_calculate_content_length: false
-    body: 404 Not Found
-    content_type: text/plain
-    method: GET
-    status: 404
-    url: https://httpstat.us/404
-- response:
-    auto_calculate_content_length: false
-    body: Invalid status code
-    content_type: text/plain
-    method: GET
-    status: 400
-    url: https://httpbin.org/status/wrong
-- response:
-    auto_calculate_content_length: false
-    body: 500 Internal Server Error
-    content_type: text/plain
-    method: GET
-    status: 500
-    url: https://httpstat.us/500
-- response:
-    auto_calculate_content_length: false
-    body: 202 Accepted
-    content_type: text/plain
-    method: GET
-    status: 202
-    url: https://httpstat.us/202
+test_1:
+  responses_native_file: responses_replay_data.yaml
+  psf_expected_result_indirect: 202 Accepted
