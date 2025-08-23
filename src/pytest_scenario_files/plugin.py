@@ -5,6 +5,7 @@ from collections.abc import Generator
 from contextlib import AbstractContextManager, nullcontext
 from json import load
 from os.path import join
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple, Union, cast
 
 import pytest
@@ -301,7 +302,10 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[RequestsMock, Non
     psf_fire_all_responses = _psf_configs.psf_fire_all_responses
     with RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:
         for one_response in request.param:
-            rsps.add(**one_response)
+            if isinstance(one_response, Path):
+                rsps._add_from_file(one_response)
+            else:
+                rsps.add(**one_response)
         yield rsps
 
 
@@ -433,6 +437,9 @@ def _extract_responses(
                     psf_responses_data.extend(current_fixture_data)
                 elif isinstance(current_fixture_data, dict):
                     psf_responses_data.append(current_fixture_data)
+                elif isinstance(current_fixture_data, str):
+                    file_abs_path = tuple(Path(".").rglob(current_fixture_data))[0].resolve(strict=True)
+                    psf_responses_data.append(file_abs_path)
                 elif current_fixture_data is None:
                     pass
                 else:
