@@ -72,12 +72,12 @@ code checks to see whether the loaded value is a dict or a list and
 handles it accordingly. Having both suffixes is just to make reading
 the data files easier for humans.
 
-A fixture with the name ``responses_native_file`` may be used to load a data
-file in the native Responses format. This fixture should have a string
-value that gives the filename containing the native Responses data. The
-search path for this file will be the same as for locating other files.
-The data in this file will be loaded into the ``psf_responses`` fixture
-using the Responses internal data file loading mechanism.
+If a fixture with a name that ends in ``_response`` or ``_responses``
+has a string value, the string will be treated as the name of a file in the
+native Responses format. The contents of this file will be loaded into the
+``psf_responses`` fixture using the Responses internal data file loading
+mechanism in addition to any other responses. The search path for locating
+this file will be the same as for other data files.
 
 .. code-block:: yaml
 
