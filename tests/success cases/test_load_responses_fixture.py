@@ -60,11 +60,12 @@ def test_load_responses_fixture_empty(pytester):
 
 def test_load_native_responses_load(pytester):
     # create the test code file
-    test_file_path = pytester.copy_example("example_test_load_native_responses_load_tester.py")
-    test_file_path.rename("test_load_native_responses_load_tester.py")
+    test_file_path = pytester.copy_example("example_test_native_responses_load_tester.py")
+    test_file_path.rename("test_native_responses_load_tester.py")
 
-    # create the data file
-    pytester.copy_example("data_load_native_responses_load_tester.yaml")
+    # create the data file and native Responses file
+    pytester.copy_example("data_native_responses_load_tester.yaml")
+    pytester.copy_example("responses_replay_data.yaml")
 
     result = pytester.runpytest("-v", "--psf-load-responses")
 
