@@ -433,12 +433,13 @@ def _extract_responses(
                 # It's entirely possible that the contents of either the list
                 # or the dict are not usable, but that will be caught when the
                 # mocks are constructed.
+                breakpoint()
                 if isinstance(current_fixture_data, list):
                     psf_responses_data.extend(current_fixture_data)
                 elif isinstance(current_fixture_data, dict):
                     psf_responses_data.append(current_fixture_data)
                 elif isinstance(current_fixture_data, str):
-                    file_abs_path = tuple(Path(".").rglob(current_fixture_data))[0].resolve(strict=True)
+                    file_abs_path = tuple(Path.cwd().rglob(current_fixture_data))[0].resolve(strict=True)
                     psf_responses_data.append(file_abs_path)
                 elif current_fixture_data is None:
                     pass
