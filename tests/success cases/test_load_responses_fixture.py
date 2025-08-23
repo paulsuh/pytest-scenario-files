@@ -69,4 +69,4 @@ def test_load_native_responses_load(pytester):
 
     result = pytester.runpytest("-v", "--psf-load-responses")
 
-    result.assert_outcomes(passed=1)
+    result.assert_outcomes(passed=2)

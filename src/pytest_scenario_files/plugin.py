@@ -433,7 +433,7 @@ def _extract_responses(
                 # It's entirely possible that the contents of either the list
                 # or the dict are not usable, but that will be caught when the
                 # mocks are constructed.
-                breakpoint()
+                # breakpoint()
                 if isinstance(current_fixture_data, list):
                     psf_responses_data.extend(current_fixture_data)
                 elif isinstance(current_fixture_data, dict):
