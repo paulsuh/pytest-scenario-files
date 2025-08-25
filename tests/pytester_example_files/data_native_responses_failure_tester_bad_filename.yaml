@@ -1,0 +1,5 @@
+test_1:
+  native_file_responses: bad_filename.yaml
+  psf_expected_result_indirect:
+    expected_exception_name: RuntimeError
+  target_url: https://httpstat.us/202
