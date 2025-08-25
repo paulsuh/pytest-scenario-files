@@ -425,7 +425,7 @@ def _extract_responses(
         # Need to differentiate between the case where responses are not specified
         # at all and where there are only null responses
         if len(responses_fixture_names) > 0:
-            psf_responses_data = []
+            psf_responses_data: list[dict[str, str] | Path] = []
             for one_fixture_name in responses_fixture_names:
                 current_fixture_data = one_scenario.pop(one_fixture_name)
                 # TODO: once Python 3.9 is EOL, change this to the cleaner structural
@@ -439,8 +439,18 @@ def _extract_responses(
                 elif isinstance(current_fixture_data, dict):
                     psf_responses_data.append(current_fixture_data)
                 elif isinstance(current_fixture_data, str):
-                    file_abs_path = tuple(Path.cwd().rglob(current_fixture_data))[0].resolve(strict=True)
-                    psf_responses_data.append(file_abs_path)
+                    # if it doesn't find the Responses file (or it finds it more than once) raise an exception
+                    file_loc = tuple(Path.cwd().rglob(current_fixture_data))
+                    if len(file_loc) == 0:
+                        raise RuntimeError(
+                            f"Pytest-Scenario-Files: {one_fixture_name}: file '{current_fixture_data}' not found."
+                        )
+                    elif len(file_loc) > 1:
+                        raise RuntimeError(
+                            f"Pytest-Scenario-Files: {one_fixture_name}: file '{current_fixture_data}' mutiple copies found."
+                        )
+                    file_abs_path_obj = file_loc[0].resolve(strict=True)
+                    psf_responses_data.append(file_abs_path_obj)
                 elif current_fixture_data is None:
                     pass
                 else:
