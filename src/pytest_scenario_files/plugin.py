@@ -407,6 +407,7 @@ def _extract_responses(
     :param fixture_key: name of the fixture key that will be added
     :type fixture_key: value must be "psf_responses_indirect" or "psf_respx_mock_indirect"
     """
+    # TODO: once we hit a minimum of Python 3.11, switch fixture_key to be a StrEnum
     # for each scenario
     #   for each fixture
     #       check if fixture name ends with _responses or _response
@@ -438,7 +439,7 @@ def _extract_responses(
                     psf_responses_data.extend(current_fixture_data)
                 elif isinstance(current_fixture_data, dict):
                     psf_responses_data.append(current_fixture_data)
-                elif isinstance(current_fixture_data, str):
+                elif isinstance(current_fixture_data, str) and fixture_key == "psf_responses_indirect":
                     # if it doesn't find the Responses file (or it finds it more than once) raise an exception
                     file_loc = tuple(Path.cwd().rglob(current_fixture_data))
                     if len(file_loc) == 0:
