@@ -82,7 +82,7 @@ this file will be the same as for other data files.
 .. code-block:: yaml
 
     scenario_3:
-      responses_native_file: responses_replay_data.yaml
+      native_file_responses: responses_replay_data.yaml
 
 Responses data for scenario_3 will be loaded from a file named
 ``responses_replay_data.yaml``.
