@@ -448,7 +448,7 @@ def _extract_responses(
                         )
                     elif len(file_loc) > 1:
                         raise RuntimeError(
-                            f"Pytest-Scenario-Files: {one_fixture_name}: file '{current_fixture_data}' mutiple copies found."
+                            f"Pytest-Scenario-Files: {one_fixture_name}: file '{current_fixture_data}' multiple copies found."
                         )
                     file_abs_path_obj = file_loc[0].resolve(strict=True)
                     psf_responses_data.append(file_abs_path_obj)
