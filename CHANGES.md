@@ -1,5 +1,9 @@
 # Change Log
 
+#### 1.3.0 - 2025-09-02
+
+- Add loading of native Responses files.
+
 #### 1.2.1 - 2025-08-11
 
 - Update tests to ensure compatibility with pytest 8.4.

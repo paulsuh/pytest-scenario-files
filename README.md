@@ -35,7 +35,8 @@ YAML format.
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
 - Integration with [Responses][link08]
-- **NEW** - Integration with [Respx][link09]
+- **NEW** - Can load native Responses files
+- Integration with [Respx][link09]
 
 ### Compatibility
 
