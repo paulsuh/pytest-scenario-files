@@ -11,9 +11,7 @@ def test_responses_fixture_data_not_dict_or_list(pytester):
     # create the data files
     pytester.copy_example("data_responses_fixture_data_not_dict_or_list_tester_1.yaml")
 
-    result = pytester.runpytest(
-        "-k", "test_responses_fixture_data_not_dict_or_list_tester", "--psf-load-responses", "-v"
-    )
+    result = pytester.runpytest("-k", "test_responses_fixture_data_not_dict_or_list_tester", "--psf-load-respx", "-v")
 
     result.assert_outcomes(errors=1)
     result.stdout.fnmatch_lines("E   RuntimeError: Pytest-Scenario-Files: example_responses is not a list or dict.")

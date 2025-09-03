@@ -1,0 +1,10 @@
+test_1:
+  native_file_responses: responses_replay_data.yaml
+  psf_expected_result_indirect: 202 Accepted
+  target_url: https://httpstat.us/202
+
+test_2:
+  native_file_responses: responses_replay_data.yaml
+  psf_expected_result_indirect:
+    expected_exception_name: requests.HTTPError
+  target_url: https://httpstat.us/404

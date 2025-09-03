@@ -5,6 +5,7 @@ from collections.abc import Generator
 from contextlib import AbstractContextManager, nullcontext
 from json import load
 from os.path import join
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple, Union, cast
 
 import pytest
@@ -301,7 +302,10 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[RequestsMock, Non
     psf_fire_all_responses = _psf_configs.psf_fire_all_responses
     with RequestsMock(assert_all_requests_are_fired=psf_fire_all_responses) as rsps:
         for one_response in request.param:
-            rsps.add(**one_response)
+            if isinstance(one_response, Path):
+                rsps._add_from_file(one_response)
+            else:
+                rsps.add(**one_response)
         yield rsps
 
 
@@ -403,6 +407,7 @@ def _extract_responses(
     :param fixture_key: name of the fixture key that will be added
     :type fixture_key: value must be "psf_responses_indirect" or "psf_respx_mock_indirect"
     """
+    # TODO: once we hit a minimum of Python 3.11, switch fixture_key to be a StrEnum
     # for each scenario
     #   for each fixture
     #       check if fixture name ends with _responses or _response
@@ -421,7 +426,7 @@ def _extract_responses(
         # Need to differentiate between the case where responses are not specified
         # at all and where there are only null responses
         if len(responses_fixture_names) > 0:
-            psf_responses_data = []
+            psf_responses_data: list[dict[str, str] | Path] = []
             for one_fixture_name in responses_fixture_names:
                 current_fixture_data = one_scenario.pop(one_fixture_name)
                 # TODO: once Python 3.9 is EOL, change this to the cleaner structural
@@ -429,10 +434,24 @@ def _extract_responses(
                 # It's entirely possible that the contents of either the list
                 # or the dict are not usable, but that will be caught when the
                 # mocks are constructed.
+                # breakpoint()
                 if isinstance(current_fixture_data, list):
                     psf_responses_data.extend(current_fixture_data)
                 elif isinstance(current_fixture_data, dict):
                     psf_responses_data.append(current_fixture_data)
+                elif isinstance(current_fixture_data, str) and fixture_key == "psf_responses_indirect":
+                    # if it doesn't find the Responses file (or it finds it more than once) raise an exception
+                    file_loc = tuple(Path.cwd().rglob(current_fixture_data))
+                    if len(file_loc) == 0:
+                        raise RuntimeError(
+                            f"Pytest-Scenario-Files: {one_fixture_name}: file '{current_fixture_data}' not found."
+                        )
+                    elif len(file_loc) > 1:
+                        raise RuntimeError(
+                            f"Pytest-Scenario-Files: {one_fixture_name}: file '{current_fixture_data}' multiple copies found."
+                        )
+                    file_abs_path_obj = file_loc[0].resolve(strict=True)
+                    psf_responses_data.append(file_abs_path_obj)
                 elif current_fixture_data is None:
                     pass
                 else:
