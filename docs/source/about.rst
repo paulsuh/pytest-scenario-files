@@ -19,6 +19,9 @@ Future Directions
   headers, query parameters, json body, etc.) is under consideration.
 - An automated method for specifying Responses or Respx overrides is under
   consideration.
+- I'm going to see if there is any traction for rolling the (relatively simple)
+  code to specify parameterization into ``pytest`` so that it becomes easier
+  for other people.
 
 Motivation
 ----------
@@ -43,6 +46,10 @@ can be difficult to keep track of which fixture corresponds to which value if yo
 many of them, and also which group of values corresponds to which test id. The file
 structure uses a dict to keep the test case id’s, fixture names, and data values
 together in a way that is easier on the human brain.
+
+Loading the native Responses save files wasn't too hard. The worst part was figuring
+out how to specify the file to be loaded, and fixing up the tests so that they covered
+the cases.
 
 ----
 
