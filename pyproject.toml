@@ -27,7 +27,7 @@ classifiers = [
     'Operating System :: OS Independent',
 ]
 dependencies = [
-    "pytest >= 7.4, < 9",
+    "pytest >= 7.4, < 10",
     "pyyaml < 7"
 ]
 requires-python = ">=3.9"
@@ -91,7 +91,7 @@ dependencies = [
     "responses",
     "respx"
 ]
-python="3.13"
+python="3.14"
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
@@ -136,8 +136,13 @@ dependencies = [
 generate = "sphinx-build --builder html --write-all --verbose docs/source docs/build"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+python = ["3.9"]
 pytest = ["7.4", "8.2", "8.3", "8.4"]
+integrations = ["none", "responses", "respx"]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.14t"]
+pytest = ["7.4", "8.2", "8.3", "8.4", "9.0"]
 integrations = ["none", "responses", "respx"]
 
 [tool.hatch.envs.test.overrides]
