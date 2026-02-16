@@ -34,9 +34,9 @@ Compatibility
 
 This package is a plug-in for Pytest and works with Python 3.9 and up.
 
-- Tested with Pytest versions 7.4, 8.2, 8.3, and 8.4
-- Tested with CPython 3.9–3.13
-- Tested with Responses 0.25.7
+- Tested with Pytest versions 7.4, 8.2, 8.3, 8.4, and 9.0
+- Tested with CPython 3.9–3.14 (including 3.14t)
+- Tested with Responses 0.25.8
 - Tested with Respx 0.22.0
 
 .. toctree::
