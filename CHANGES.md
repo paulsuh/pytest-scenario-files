@@ -1,5 +1,10 @@
 # Change Log
 
+#### 1.3.1 - 2026-02-16
+
+- Update tests to ensure compatibility with pytest 9.0 and CPython 3.14.
+- Edit documentation to reflect the updated tests.
+
 #### 1.3.0 - 2025-09-02
 
 - Add loading of native Responses files.
