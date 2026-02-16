@@ -152,6 +152,29 @@ matrix.integrations.dependencies = [
     {value = "respx", if = ["respx"]}
 ]
 
+[tool.hatch.envs.hatch-test]
+dependencies = [
+    "coverage[toml]>=6.5",
+    "pytest~={matrix:pytest}",
+    "pytest-xdist",
+    "pytest-cov"
+]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.9"]
+pytest = ["7.4", "8.4"]
+integrations = ["none", "responses", "respx"]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.14t"]
+pytest = ["7.4", "8.4", "9.0"]
+integrations = ["none", "responses", "respx"]
+
+[tool.hatch.envs.hatch-test.overrides]
+matrix.integrations.dependencies = [
+    {value = "responses", if = ["responses"]},
+    {value = "respx", if = ["respx"]}
+]
 
 ##############################
 #                            #
