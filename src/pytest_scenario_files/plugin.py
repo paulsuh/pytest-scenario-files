@@ -52,12 +52,12 @@ class BadTestCaseDataException(Exception):
 
 
 def pytest_addoption(parser: pytest.Parser, pluginmanager):
-    """
-    Pytest hook function that adds the command line options.
+    """Pytest hook function that adds the command line options.
 
     Adds the command line options to automatically load http responses for the Responses
-    package or the Respx package and additional options whether to require all
-    responses to be fired and all calls to be mocked.
+    package or the Respx package and additional options whether to require all responses
+    to be fired and all calls to be mocked.
+
     """
     option_group = parser.getgroup("Pytest Scenario Files", "Options for the pytest-scenario-files plug-in")
     for opt, help_text in _config_keys:
@@ -77,11 +77,12 @@ def pytest_configure(config: pytest.Config):
     enabled since these are mutually exclusive options. Also stores values for
     `psf-fire-all-responses`, `psf-assert-all-fired`, and `psf-assert-all-mocked`.
 
-    :param config: The pytest configuration object containing all command-line
-        options and plugin configuration.
-    :type config: pytest.Config
+    :param pytest.Config config: The pytest configuration object containing all
+        command-line options and plugin configuration.
+
     :raises pytest.UsageError: If both `--psf-load-responses` and `--psf-load-respx`
         options are specified simultaneously.
+
     """
     global _psf_configs
     _psf_configs = _PsfConfigTuple(*(config.getoption(opt) for opt, _ in _config_keys))
@@ -92,11 +93,14 @@ def pytest_configure(config: pytest.Config):
 def _load_test_data_from_file(filepath: str) -> dict[str, Any]:
     """Load test data from a file and return it as a dictionary.
 
-    :param filepath: The path of the file to load.
-    :type filepath: str
-    :return: The loaded test data as a dictionary.
+    :param str filepath: The path of the file to load.
+
+    :returns: The loaded test data as a dictionary.
     :rtype: dict[str, Any]
-    :raises BadTestCaseDataException: If the loaded test case data are of the incorrect format.
+
+    :raises BadTestCaseDataException: If the loaded test case data are of the incorrect
+        format.
+
     """
     with open(filepath) as fp:
         if filepath.endswith(".json"):
@@ -122,7 +126,9 @@ def _load_referenced_data(base_data_dict: dict[str, dict[str, Any]]) -> None:
     """Load data for fixtures that refer to fixtures in other files.
 
     :param base_data_dict: A dictionary containing test cases and their fixtures.
-    :return: None
+
+    :returns: None
+
     """
     for one_test_case in base_data_dict.values():
         for one_fixture_name, one_fixture_value in one_test_case.items():
@@ -137,12 +143,12 @@ def _load_referenced_data(base_data_dict: dict[str, dict[str, Any]]) -> None:
 def _locate_and_load_test_data(test_name: str, dir_name: str) -> dict[str, dict[str, Any]]:
     """Locates and loads test data for the given test name.
 
-    :param test_name: The name of the test.
-    :type test_name: str
-    :param dir_name:
-    :type dir_name: str
-    :return: A dictionary containing the loaded test data.
+    :param str test_name: The name of the test.
+    :param str dir_name: path where to start the search for the data files
+
+    :returns: A dictionary containing the loaded test data.
     :rtype: dict
+
     """
     return _locate_and_load_data_files("data_" + test_name, dir_name)
 
@@ -150,14 +156,15 @@ def _locate_and_load_test_data(test_name: str, dir_name: str) -> dict[str, dict[
 def _locate_and_load_data_files(filename_base: str, dir_name: str) -> dict[str, dict[str, Any]]:
     """Locates and loads data for the given file name.
 
-    This function is used by both _locate_and_load_test_data() and _load_referenced_data().
+    This function is used by both _locate_and_load_test_data() and
+    _load_referenced_data().
 
-    :param filename_base: The root name of the files to be loaded.
-    :type filename_base: str
-    :param dir_name: path where to start the search for the data files
-    :type dir_name: str
-    :return: A dictionary containing the loaded data.
+    :param str filename_base: The root name of the files to be loaded.
+    :param str dir_name: path where to start the search for the data files
+
+    :returns: A dictionary containing the loaded data.
     :rtype: dict
+
     """
     # This could be more efficiently cached, as referenced files may be loaded many times.
     # However, the total time required seems to be relatively small even for a complex
@@ -180,10 +187,14 @@ def _merge_new_test_data(
 
     :param result: A dictionary representing the result of merging the test data.
     :param new_test_data: A dictionary containing new test data to be merged.
-    :param new_data_file: A string representing the file from which the new test data is loaded.
-    :return: None
-    :raises BadTestCaseDataException: raised if there is a conflict between data files for a given
-            test case id and fixture
+    :param new_data_file: A string representing the file from which the new test data is
+        loaded.
+
+    :returns: None
+
+    :raises BadTestCaseDataException: raised if there is a conflict between data files
+        for a given test case id and fixture
+
     """
     for new_test_case in new_test_data.keys():
         if result.get(new_test_case) is None:
@@ -209,8 +220,11 @@ def _extract_fixture_names(fixture_dict: dict[str, dict[str, Any]]) -> list[str]
     If all of the fixture names are consistent, return a sorted list of fixture names
 
     :param fixture_dict: Dict of dicts containing test case data.
-    :return: A list of fixture names sorted alphabetically.
+
+    :returns: A list of fixture names sorted alphabetically.
+
     :raises BadTestCaseData: If the fixture keys are mismatched between the test cases.
+
     """
     # check that all of the test cases have the same sets of keys
     # get all of the keys from all of the test cases
@@ -238,11 +252,15 @@ def _extract_indirect_fixtures(
 ) -> tuple[list[str], Union[list[str], bool]]:  # noqa UP007    Allow old style Union for Python 3.9
     """Extracts indirect fixtures
 
-    :param fixture_data_dict: A dictionary of fixture data after loading referenced fixtures.
+    :param fixture_data_dict: A dictionary of fixture data after loading referenced
+        fixtures.
     :param all_fixture_names: A list of all fixture names.
-    :return: A tuple containing the list of all fixture names with any _indirect suffixes removed and either
-             a list of indirect fixture names or False if there are no indirect fixtures (so that this
-             value can be fed directly into metafunc.parameterize()).
+
+    :returns: A tuple containing the list of all fixture names with any _indirect
+        suffixes removed and either a list of indirect fixture names or False if there
+        are no indirect fixtures (so that this value can be fed directly into
+        metafunc.parameterize()).
+
     """
     indirect_fixtures = []
     all_fixtures_trimmed = []
@@ -266,14 +284,18 @@ def _extract_indirect_fixtures(
 def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> tuple[list[str], list[list[Any]]]:
     """Extracts fixture data into a format ready for the parameterize call.
 
-    metafunc.parameterize() expects a list of fixture names, a list of lists of data, and an optional list
-    of case id's. _extract_fixture_names() gets the names, this function sets up the other two lists.
+    metafunc.parameterize() expects a list of fixture names, a list of lists of data,
+    and an optional list of case id's. _extract_fixture_names() gets the names, this
+    function sets up the other two lists.
 
-    :param fixture_raw_data_dict: A dictionary containing fixture data, where the keys are test case IDs and the
-                                  values are dictionaries mapping fixture names to fixture data.
-    :type fixture_raw_data_dict: dict[str, dict[str, Any]]
-    :return: A tuple containing the list of test case IDs and a list of lists representing the fixture data.
+    :param dict[str, dict[str, Any]] fixture_raw_data_dict: A dictionary containing
+        fixture data, where the keys are test case IDs and the values are dictionaries
+        mapping fixture names to fixture data.
+
+    :returns: A tuple containing the list of test case IDs and a list of lists
+        representing the fixture data.
     :rtype: tuple[list[str], list[list[Any]]]
+
     """
     # this sets up a dict of dicts by case id, with the keys of each sub-dict being the
     # fixture names in alphabetical order
@@ -293,9 +315,10 @@ def _extract_fixture_data(fixture_raw_data_dict: dict[str, dict[str, Any]]) -> t
 def psf_responses(request: pytest.FixtureRequest) -> Generator[RequestsMock, None, None]:
     """Returns a responses.RequestsMock with scenario data loaded.
 
-    Used for integration with the Responses package. Each test scenario will get its
-    own active RequestsMock object. This object can then be updated at runtime
-    to override the responses loaded from files.
+    Used for integration with the Responses package. Each test scenario will get its own
+    active RequestsMock object. This object can then be updated at runtime to override
+    the responses loaded from files.
+
     """
     from responses import RequestsMock
 
@@ -313,9 +336,10 @@ def psf_responses(request: pytest.FixtureRequest) -> Generator[RequestsMock, Non
 def psf_respx_mock(request: pytest.FixtureRequest) -> Generator[MockRouter, None, None]:
     """Returns a respx.MockRouter with scenario data loaded.
 
-    Used for integration with the Respx package. Each test scenario will get its
-    own active MockRouter object. This object can then be updated at runtime
-    to override the responses loaded from files.
+    Used for integration with the Respx package. Each test scenario will get its own
+    active MockRouter object. This object can then be updated at runtime to override the
+    responses loaded from files.
+
     """
     from respx import mock
     from respx.models import MockResponse
@@ -349,20 +373,24 @@ def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManage
 
     Pytest has a pattern called Parameterized Conditional Raising (See:
     https://docs.pytest.org/en/8.3.x/example/parametrize.html#parametrizing-conditional-raising).
-    This fixture allows the user to specify either an expected exception (including
-    a match string or regexp) in the scenario file, or any other expected result value.
-    An exception gets wrapped in a pytest.raises() context manager, while any other
-    value gets wrapped in a nullcontext() context manager. The test function can then
-    use a call like::
+    This fixture allows the user to specify either an expected exception (including a
+    match string or regexp) in the scenario file, or any other expected result value. An
+    exception gets wrapped in a pytest.raises() context manager, while any other value
+    gets wrapped in a nullcontext() context manager. The test function can then use a
+    call like:
+
+    .. code-block::
 
         with psf_expected_result as expected_result:
             assert expected_result == function_being_tested()
 
-    :param request: The fixture request object containing the test parameters.
-    :type request: pytest.FixtureRequest
-    :return: A context manager that either catches the expected exception or
-        a nullcontext() context manager.
+    :param pytest.FixtureRequest request: The fixture request object containing the test
+        parameters.
+
+    :returns: A context manager that either catches the expected exception or a
+        nullcontext() context manager.
     :rtype: AbstractContextManager:
+
     """
     if isinstance(request.param, dict) and "expected_exception_name" in request.param:
         # expected result is an exception
@@ -392,8 +420,7 @@ def _extract_responses(
     fixture_data_dict: dict[str, dict[str, Any]],
     fixture_key: Literal["psf_responses_indirect", "psf_respx_mock_indirect"],
 ) -> None:
-    """
-    Extract responses data into a single list for the mock.
+    """Extract responses data into a single list for the mock.
 
     This list will be added to the fixture data dict for a fixture with either the name
     "psf_responses" or "psf_respx_mock", with indirect=True. The fixture will only be
@@ -402,10 +429,11 @@ def _extract_responses(
     "psf_respx_mock_indirect", which will then be processed later as an indirect
     fixture.
 
-    :param fixture_data_dict: dict containing all parameterization data
-    :type fixture_data_dict: dict[str, dict[str, Any]]
-    :param fixture_key: name of the fixture key that will be added
-    :type fixture_key: value must be "psf_responses_indirect" or "psf_respx_mock_indirect"
+    :param dict[str, dict[str, Any]] fixture_data_dict: dict containing all
+        parameterization data
+    :param value must be "psf_responses_indirect" or "psf_respx_mock_indirect" fixture_key: name
+        of the fixture key that will be added
+
     """
     # TODO: once we hit a minimum of Python 3.11, switch fixture_key to be a StrEnum
     # for each scenario
@@ -476,15 +504,16 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     1. Walk the directory tree looking for files that match the name of the test.
     2. Load test data from the files.
     3. Extract fixture names and check for consistency.
-    4. (Optional) Gather data from all fixtures with the suffixes ``_response``
-       or ``_responses`` into a single fixture for use with the Responses or
-       Respx integrations.
-    5. Get list of indirect fixtures and remove the suffix ``_indirect`` from
-       indirect fixture names.
+    4. (Optional) Gather data from all fixtures with the suffixes ``_response`` or
+       ``_responses`` into a single fixture for use with the Responses or Respx
+       integrations.
+    5. Get list of indirect fixtures and remove the suffix ``_indirect`` from indirect
+       fixture names.
     6. Reformat the data into lists for the parameterization call.
     7. Make the function call.
 
     :param metafunc: Pytest fixture used to create the parameterization
+
     """
     # load up files in same or lower dirs that start with the same
     # name as the test function prefixed by data_
