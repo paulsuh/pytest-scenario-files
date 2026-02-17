@@ -3,6 +3,8 @@
 #### 1.3.1 - 2026-02-16
 
 - Update tests to ensure compatibility with pytest 9.0 and CPython 3.14.
+- Skip pytest 8.2 and 8.3 checks.
+- Use built-in Hatch test environment since matrix now works properly.
 - Edit documentation to reflect the updated tests.
 
 #### 1.3.0 - 2025-09-02
