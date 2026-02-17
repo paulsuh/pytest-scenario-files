@@ -4,8 +4,9 @@
     You can adapt this file completely to your liking, but it should at least
     contain the root `toctree` directive.
 
-pytest-scenario-files
-=====================
+#######################
+ pytest-scenario-files
+#######################
 
 *Making Pytest Scenarios Easy and Scalable*
 
@@ -16,8 +17,9 @@ pytest-scenario-files
 ``pytest-scenario-files`` is a ``pytest`` plugin that runs unit test scenarios using
 data loaded from files.
 
-Features
---------
+**********
+ Features
+**********
 
 - Loads data for scenarios from files into fixtures
 - Data files are matched with tests by a naming convention
@@ -29,12 +31,13 @@ Features
 - Integration with Responses mocking package for Requests
 - NEW - Integration with the Respx mocking package for Httpx
 
-Compatibility
--------------
+***************
+ Compatibility
+***************
 
 This package is a plug-in for Pytest and works with Python 3.9 and up.
 
-- Tested with Pytest versions 7.4, 8.2, 8.3, 8.4, and 9.0
+- Tested with Pytest versions 7.4, 8.4, and 9.0
 - Tested with CPython 3.9–3.14 (including 3.14t)
 - Tested with Responses 0.25.8
 - Tested with Respx 0.22.0
@@ -53,17 +56,13 @@ This package is a plug-in for Pytest and works with Python 3.9 and up.
     contributing
     About <about>
 
-.. |Python versions badge|  image:: https://img.shields.io/pypi/pyversions/pytest-scenario-files.svg
-                            :alt: Compatible Python versions badge
+.. |Python versions badge| image:: https://img.shields.io/pypi/pyversions/pytest-scenario-files.svg
+    :alt: Compatible Python versions badge
 
-.. |Pytest Plug-in badge|   image:: https://img.shields.io/badge/Pytest-Plug--in-orange?logo=Pytest
-                            :alt: Pytest Plug-in badge
+.. |Pytest Plug-in badge| image:: https://img.shields.io/badge/Pytest-Plug--in-orange?logo=Pytest
 
-.. |Hatch badge|            image:: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
-                            :alt: Hatch badge
+.. |Hatch badge| image:: https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg
 
-.. |Ruff badge|             image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
-                            :alt: Ruff badge
+.. |Ruff badge| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 
-.. |Pre-commit badge|       image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
-                            :alt: Pre-commit badge
+.. |Pre-commit badge| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
