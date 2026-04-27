@@ -1,90 +1,61 @@
 # Respx Integration
 
-Load HTTP responses from data files into the
-[Respx](https://lundberg.github.io/respx/) package for mocking `httpx`
-requests.
+Mock HTTP requests using the `respx` package (for `httpx`) by loading
+data from scenario files.
 
 ## Differences from Responses
 
-- **Installation**: Use `pytest-scenario-files[respx]`.
-- **Fixture**: Use `psf_respx_mock` (returns a `respx.MockRouter`).
-- **Flags**: `--psf-load-respx`, `--psf-assert-all-called`,
-  `--psf-assert-all-mocked`.
-- **Response Keys**: Use `status_code` (not `status`) and `text` (not
-  `body`).
+- Use the fixture `psf_respx_mock`.
+- Activation flags: `--psf-load-respx`.
+- Some key names differ (e.g., `status_code` instead of `status`).
 
-## Basic Usage
+## Basic Steps
 
-1. **Enable**: Run pytest with `--psf-load-respx`.
-2. **Fixture**: Add `psf_respx_mock` to your test. It is pre-loaded with
-   scenario data.
-3. **Data Format**: Define mocks in fixtures ending with `_response` or
-   `_responses`.
+1. **Fixtures**: Use names ending in `_response` or `_responses`.
+2. **Parameter**: Pass `psf_respx_mock` to your test function.
+3. **Flags**: Activate via `--psf-load-respx`.
 
-### Single/Multiple Responses
+## Data Format
 
 ```yaml
 scenario_1:
-  api_response:
+  httpx_response:
     method: GET
-    url: https://api.example.com/data
+    url: https://api.example.com/v1/user
     status_code: 200
-    json: {key: value}
-    headers: {X-Test: foo}
-
-scenario_2:
-  multi_responses:
-    - method: GET
-      url: https://api.example.com/1
-      text: one
-    - method: GET
-      url: https://api.example.com/1
-      text: two    # Successive calls to same URL
+    text: Success
+    headers:
+      content_type: text/plain
 ```
 
-## Advanced Usage
+### Supported Keys
 
-### Overriding Responses
+- `method`: GET, POST, PUT, etc. (Required)
+- `url`: The endpoint to mock. (Required)
+- `status_code`: HTTP status code.
+- `text`: Text body (Mutually exclusive with `json`).
+- `json`: Dictionary for JSON body.
+- `headers`: Dictionary of headers (including `content_type`).
 
-Overwrite a loaded mock by setting a new route with the same method and
-URL.
+### Multiple Responses
+
+If you provide a list of responses for the same method and URL, the
+plugin will automatically configure Respx to return them sequentially
+using `side_effect`.
+
+## Command Line Options
+
+- `--psf-load-respx`: Enables the integration.
+- `--psf-assert-all-called`: Fails if any mock is not called.
+- `--psf-assert-all-mocked`: Fails if any non-mocked HTTP call is made.
+
+## Using `psf_respx_mock` in Tests
+
+Returns a `respx.MockRouter` object.
 
 ```python
-def test_api(psf_respx_mock):
-    # Override data file mock
-    psf_respx_mock.route(method="GET", url="https://api.example.com/data").respond(
-        status_code=401
-    )
-
-    with httpx.Client() as client:
-        resp = client.get("https://api.example.com/data")
-        assert resp.status_code == 401
+async def test_api(psf_respx_mock):
+    async with httpx.AsyncClient() as client:
+        response = await client.get("https://api.example.com/v1/user")
+        assert response.status_code == 200
 ```
-
-### With `psf_expected_result`
-
-Combine Respx mocks with `psf_expected_result_indirect`.
-
-```yaml
-failure_case:
-  api_response:
-    method: GET
-    url: https://api.example.com/data
-    status_code: 403
-  psf_expected_result_indirect:
-    expected_exception_name: httpx.HTTPStatusError
-```
-
-```python
-def test_api(psf_respx_mock, psf_expected_result):
-    with psf_expected_result:
-        with httpx.Client() as client:
-            resp = client.get("https://api.example.com/data")
-            resp.raise_for_status()
-```
-
-### Sequential Responses
-
-If multiple responses are defined for the same method/URL in a list,
-they are returned in sequence. Once exhausted, further calls raise
-`StopIteration`.

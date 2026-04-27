@@ -2,37 +2,37 @@
 
 ## Test Case Merging
 
-If the same test ID appears in multiple files, their fixtures are
+If multiple files contain the same test case ID, their fixtures are
 merged.
 
-- **Success**: `data_1.yaml` defines `fixture_a`, `data_2.yaml` defines
-  `fixture_b`. The test receives both.
-- **Conflict**: If both files define the same fixture name for the same
-  test ID, an exception is raised.
+- **Example**: `data_foo_1.yaml` defines `fixture_one`, and
+  `data_foo_2.yaml` defines `fixture_two` for `test_case_one`. The test
+  receives both.
+- **Conflict**: If the same fixture name is defined for the same test
+  case ID in multiple files, an exception is raised.
 
-## Loading by Reference
+## Loading Values by Reference
 
-Load a fixture value from another data file using the format:
-`__filename:test_id:fixture_name`.
+Load fixture data from another file using the `__` prefix:
+`fixture_name: __Filename:test_case_id:fixture_name`
+
+**Example**:
 
 ```yaml
-# data_check.yaml
-check_data:
+check_logic:
   input: 42
-  other_data: __data_foo.yaml:test_case_one:fixture_two
+  shared_config: __data_common.yaml:defaults:config
 ```
 
 ## Indirect Parameterization
 
-To use
-[indirect parameterization](https://docs.pytest.org/en/stable/example/parametrize.html#indirect-parametrization),
-append `_indirect` to the fixture name in the data file. The value is
-passed to a fixture function, and its return value is passed to the
-test.
+Append `_indirect` to a fixture name in the data file to pass the value
+to a fixture function instead of the test directly.
+
+**Example**:
 
 ```yaml
-# data_file.yaml
-test1:
+test_case_1:
   val_indirect: 3
 ```
 
@@ -46,36 +46,33 @@ def test_func(val):
     assert val == 30
 ```
 
-**Note:** If using `autouse` fixtures with indirect parameterization,
-every scenario must provide a value (even `null`) to avoid
-`request.param` errors.
-
 ## The `psf_expected_result` Fixture
 
-Supports
-[Parameterized Conditional Raising](https://docs.pytest.org/en/stable/how-to/parametrize.html#parametrizing-conditional-raising)
-by wrapping either an expected exception or a result value in a context
-manager.
+A convenience fixture for handling both expected return values and
+expected exceptions in the same test code.
+
+**Usage in Test**:
 
 ```python
-def test_some_function(psf_expected_result):
+def test_logic(psf_expected_result):
     with psf_expected_result as expected:
-        assert expected == some_function()
+        assert my_func() == expected
 ```
 
-In the data file, use `psf_expected_result_indirect`:
+**Scenario Configuration**:
 
-- **For Exceptions**: Use a dictionary with `expected_exception_name`
-  (full identifier) and optional `match` string/regex.
-- **For Values**: Use any other value (string, number, or dict without
-  `expected_exception_name`).
+- **Exception**:
+  ```yaml
+  failure_case:
+    psf_expected_result_indirect:
+      expected_exception_name: ValueError
+      match: Invalid input
+  ```
+- **Value**:
+  ```yaml
+  success_case:
+    psf_expected_result_indirect: Success
+  ```
 
-```yaml
-failure_scenario:
-  psf_expected_result_indirect:
-    expected_exception_name: requests.HTTPError
-    match: Authorization failure
-
-success_scenario:
-  psf_expected_result_indirect: expected result string
-```
+*Note: Full identifiers (e.g., `requests.HTTPError`) should be used for
+exceptions in modules.*
