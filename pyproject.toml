@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling", "hatch-vcs", "hatch-sbom[cdx]"]
 build-backend = "hatchling.build"
 
 [project]
@@ -85,6 +85,7 @@ installer = "uv"
 dependencies = [
     "hatchling",
     "hatch-vcs",
+    "hatch-sbom[cdx]",
     "coverage[toml]",
     "pytest",
     "ruff",
