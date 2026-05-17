@@ -1,0 +1,237 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "serialNumber": "urn:uuid:8f9a4623-978b-4dd3-8274-dc8b58e56f82",
+  "metadata": {
+    "timestamp": "2026-05-17T23:32:00.788165000Z",
+    "tools": [
+      {
+        "vendor": "Astral Software Inc.",
+        "name": "uv",
+        "version": "0.10.2"
+      }
+    ],
+    "component": {
+      "type": "library",
+      "bom-ref": "pytest-scenario-files-1",
+      "name": "pytest-scenario-files",
+      "properties": [
+        {
+          "name": "uv:package:is_project_root",
+          "value": "true"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "colorama-2@0.4.6",
+      "name": "colorama",
+      "version": "0.4.6",
+      "purl": "pkg:pypi/colorama@0.4.6",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "sys_platform == 'win32'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "exceptiongroup-3@1.3.1",
+      "name": "exceptiongroup",
+      "version": "1.3.1",
+      "purl": "pkg:pypi/exceptiongroup@1.3.1",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "python_full_version < '3.11'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "iniconfig-4@2.1.0",
+      "name": "iniconfig",
+      "version": "2.1.0",
+      "purl": "pkg:pypi/iniconfig@2.1.0",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "python_full_version < '3.10'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "iniconfig-5@2.3.0",
+      "name": "iniconfig",
+      "version": "2.3.0",
+      "purl": "pkg:pypi/iniconfig@2.3.0",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "python_full_version >= '3.10'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "packaging-6@26.2",
+      "name": "packaging",
+      "version": "26.2",
+      "purl": "pkg:pypi/packaging@26.2"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pluggy-7@1.6.0",
+      "name": "pluggy",
+      "version": "1.6.0",
+      "purl": "pkg:pypi/pluggy@1.6.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pygments-8@2.20.0",
+      "name": "pygments",
+      "version": "2.20.0",
+      "purl": "pkg:pypi/pygments@2.20.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pytest-9@8.4.2",
+      "name": "pytest",
+      "version": "8.4.2",
+      "purl": "pkg:pypi/pytest@8.4.2",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "python_full_version < '3.10'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pytest-10@9.0.3",
+      "name": "pytest",
+      "version": "9.0.3",
+      "purl": "pkg:pypi/pytest@9.0.3",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "python_full_version >= '3.10'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pyyaml-11@6.0.3",
+      "name": "pyyaml",
+      "version": "6.0.3",
+      "purl": "pkg:pypi/pyyaml@6.0.3"
+    },
+    {
+      "type": "library",
+      "bom-ref": "tomli-12@2.4.1",
+      "name": "tomli",
+      "version": "2.4.1",
+      "purl": "pkg:pypi/tomli@2.4.1",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "python_full_version < '3.11'"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "typing-extensions-13@4.15.0",
+      "name": "typing-extensions",
+      "version": "4.15.0",
+      "purl": "pkg:pypi/typing-extensions@4.15.0",
+      "properties": [
+        {
+          "name": "uv:package:marker",
+          "value": "python_full_version < '3.11'"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "colorama-2@0.4.6",
+      "dependsOn": []
+    },
+    {
+      "ref": "exceptiongroup-3@1.3.1",
+      "dependsOn": [
+        "typing-extensions-13@4.15.0"
+      ]
+    },
+    {
+      "ref": "iniconfig-4@2.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "iniconfig-5@2.3.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "packaging-6@26.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "pluggy-7@1.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pygments-8@2.20.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pytest-9@8.4.2",
+      "dependsOn": [
+        "colorama-2@0.4.6",
+        "exceptiongroup-3@1.3.1",
+        "iniconfig-4@2.1.0",
+        "packaging-6@26.2",
+        "pluggy-7@1.6.0",
+        "pygments-8@2.20.0",
+        "tomli-12@2.4.1"
+      ]
+    },
+    {
+      "ref": "pytest-10@9.0.3",
+      "dependsOn": [
+        "colorama-2@0.4.6",
+        "exceptiongroup-3@1.3.1",
+        "iniconfig-5@2.3.0",
+        "packaging-6@26.2",
+        "pluggy-7@1.6.0",
+        "pygments-8@2.20.0",
+        "tomli-12@2.4.1"
+      ]
+    },
+    {
+      "ref": "pytest-scenario-files-1",
+      "dependsOn": [
+        "pytest-10@9.0.3",
+        "pytest-9@8.4.2",
+        "pyyaml-11@6.0.3"
+      ]
+    },
+    {
+      "ref": "pyyaml-11@6.0.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "tomli-12@2.4.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "typing-extensions-13@4.15.0",
+      "dependsOn": []
+    }
+  ]
+}
