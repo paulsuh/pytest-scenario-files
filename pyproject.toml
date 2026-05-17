@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs", "hatch-sbom[cdx]"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -72,6 +72,7 @@ exclude = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pytest_scenario_files"]
+sbom-files = ["sbom.cdx.json"]
 
 [tool.hatch.version]
 source = "vcs"
@@ -85,7 +86,6 @@ installer = "uv"
 dependencies = [
     "hatchling",
     "hatch-vcs",
-    "hatch-sbom[cdx]",
     "coverage[toml]",
     "pytest",
     "ruff",
@@ -105,6 +105,10 @@ cov-report = [
 cov = [
   "test-cov",
   "cov-report",
+]
+sbom = [
+    "uv export --format cyclonedx1.5 > sbom.cdx.json",
+    "rm uv.lock"
 ]
 
 # static type-checking environment
