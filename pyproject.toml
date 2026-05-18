@@ -17,7 +17,6 @@ classifiers = [
     'Topic :: Software Development :: Testing',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
@@ -31,7 +30,7 @@ dependencies = [
     "pytest >= 7.4, < 10",
     "pyyaml < 7"
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -140,11 +139,6 @@ dependencies = [
     "pytest-xdist",
     "pytest-cov"
 ]
-
-[[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.9"]
-pytest = ["7.4", "8.4"]
-integrations = ["none", "responses", "respx"]
 
 [[tool.hatch.envs.hatch-test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.14t"]
