@@ -1,5 +1,11 @@
 # Change Log
 
+#### 1.3.2 - 2026-05-17
+
+- Add support for generating an SBOM file and add an SBOM file to the
+  package.
+- Remove testing and metadata for Python 3.9.
+
 #### 1.3.1 - 2026-02-16
 
 - Update tests to ensure compatibility with pytest 9.0 and CPython 3.14.
