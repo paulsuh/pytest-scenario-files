@@ -62,6 +62,10 @@ pytest_scenario_files = "pytest_scenario_files"
 # Hatch config               #
 #                            #
 ##############################
+[tool.hatch]
+# always lock environments
+lock-envs = true
+
 # Building
 [tool.hatch.build.targets.sdist]
 exclude = [
