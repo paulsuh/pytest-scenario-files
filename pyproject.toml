@@ -114,17 +114,6 @@ sbom = [
     "rm uv.lock"
 ]
 
-# static type-checking environment
-[tool.hatch.envs.types]
-dependencies = [
-    "mypy>=1.0.0",
-    "responses",
-    "respx"
-]
-
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files tests}"
-
 # documentation generation environment
 [tool.hatch.envs.docs]
 dependencies = [
@@ -135,6 +124,18 @@ dependencies = [
 
 [tool.hatch.envs.docs.scripts]
 generate = "sphinx-build --builder html --write-all --verbose docs/source docs/build"
+
+[tool.hatch.envs.hatch-check-types]
+dependencies = [
+    "coverage[toml]>=6.5",
+    "pytest~=9.0",
+    "pytest-xdist",
+    "pytest-cov",
+    "responses",
+    "respx",
+    "pyrefly",
+    "types-PyYAML"
+]
 
 [tool.hatch.envs.hatch-test]
 dependencies = [
@@ -282,3 +283,15 @@ docstring-code-format = true
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
+
+##############################
+#                            #
+# Pyrefly config             #
+#                            #
+##############################
+[tool.pyrefly]
+project-includes = ["/Users/plsuh/Projects/pytest-scenario-files/src/pytest_scenario_files"]
+search-path = ["/Users/plsuh/Projects/pytest-scenario-files/src"]
+preset = "strict"
+min-severity = "warn"
+disable-search-path-heuristics = true
