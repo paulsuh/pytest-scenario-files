@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Generator
-from contextlib import AbstractContextManager, nullcontext
+from contextlib import nullcontext
 from json import load
 from os.path import join
 from pathlib import Path
@@ -51,7 +51,7 @@ class BadTestCaseDataException(Exception):
     pass
 
 
-def pytest_addoption(parser: pytest.Parser, pluginmanager):
+def pytest_addoption(parser: pytest.Parser, pluginmanager: pytest.PytestPluginManager) -> None:
     """Pytest hook function that adds the command line options.
 
     Adds the command line options to automatically load http responses for the Responses
@@ -70,7 +70,7 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager):
         )
 
 
-def pytest_configure(config: pytest.Config):
+def pytest_configure(config: pytest.Config) -> None:
     """Get config data from command line flags
 
     Raises an exception if both `--psf-load-responses` and `--psf-load-respx` are both
@@ -351,7 +351,7 @@ def psf_respx_mock(request: pytest.FixtureRequest) -> Generator[MockRouter, None
         #   and transform them by sorting into a new dict of lists by route (method, url)
         routes_dict: dict[_RespxRouteKey, list[MockResponse]] = {}
         for one_response in request.param:
-            mock_response_kwargs = cast(dict, one_response.copy())
+            mock_response_kwargs = cast(dict[Any, Any], one_response.copy())
             route_match_dict = {k: mock_response_kwargs.pop(k) for k in ("method", "url")}
             route_match = _RespxRouteKey(**route_match_dict)
             routes_dict.setdefault(route_match, list()).append(MockResponse(**mock_response_kwargs))
@@ -368,7 +368,7 @@ def psf_respx_mock(request: pytest.FixtureRequest) -> Generator[MockRouter, None
 
 
 @pytest.fixture(scope="function")
-def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManager:
+def psf_expected_result(request: pytest.FixtureRequest) -> pytest.RaisesExc | nullcontext[Any]:
     """Convenience fixture for possible expected exceptions
 
     Pytest has a pattern called Parameterized Conditional Raising (See:
@@ -409,7 +409,7 @@ def psf_expected_result(request: pytest.FixtureRequest) -> AbstractContextManage
         # pytest.raises() has a deprecated legacy form where you pass in a callable
         # and it returns an ExceptionInfo object. Tell mypy to gnore this as we are
         # only using the form of the call that returns a context manager.
-        return pytest.raises(exception_class, **request.param)  # type:ignore[return-value]
+        return pytest.raises(exception_class, **request.param)
 
     else:
         # expected result not an exception
