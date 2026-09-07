@@ -64,7 +64,7 @@ pytest_scenario_files = "pytest_scenario_files"
 ##############################
 [tool.hatch]
 # always lock environments
-lock-envs = true
+#lock-envs = true
 
 # Building
 [tool.hatch.build.targets.sdist]
@@ -146,8 +146,8 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.14t"]
-pytest = ["7.4", "8.4", "9.0"]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.14t", "3.15"]
+pytest = ["7.4", "8.4", "9.1"]
 integrations = ["none", "responses", "respx"]
 
 [tool.hatch.envs.hatch-test.overrides]
