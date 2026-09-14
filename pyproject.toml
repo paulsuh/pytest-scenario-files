@@ -17,11 +17,11 @@ classifiers = [
     'Topic :: Software Development :: Testing',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3.14',
+    'Programming Language :: Python :: 3.15',
     'Programming Language :: Python :: 3 :: Only',
     'Programming Language :: Python :: Implementation :: CPython',
     'Operating System :: OS Independent',
@@ -30,7 +30,7 @@ dependencies = [
     "pytest >= 7.4, < 10",
     "pyyaml < 7"
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -62,6 +62,12 @@ pytest_scenario_files = "pytest_scenario_files"
 # Hatch config               #
 #                            #
 ##############################
+[tool.hatch]
+# There is a problem with Hatch where locking using uv doesn't do a development
+# mode install properly. See https://github.com/pypa/hatch/issues/2372
+# always lock environments
+#lock-envs = true
+
 # Building
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -110,17 +116,6 @@ sbom = [
     "rm uv.lock"
 ]
 
-# static type-checking environment
-[tool.hatch.envs.types]
-dependencies = [
-    "mypy>=1.0.0",
-    "responses",
-    "respx"
-]
-
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/pytest_scenario_files tests}"
-
 # documentation generation environment
 [tool.hatch.envs.docs]
 dependencies = [
@@ -132,6 +127,18 @@ dependencies = [
 [tool.hatch.envs.docs.scripts]
 generate = "sphinx-build --builder html --write-all --verbose docs/source docs/build"
 
+[tool.hatch.envs.hatch-check-types]
+dependencies = [
+    "coverage[toml]>=6.5",
+    "pytest~=9.0",
+    "pytest-xdist",
+    "pytest-cov",
+    "responses",
+    "respx",
+    "pyrefly",
+    "types-PyYAML"
+]
+
 [tool.hatch.envs.hatch-test]
 dependencies = [
     "coverage[toml]>=6.5",
@@ -141,8 +148,8 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13", "3.14", "3.14t"]
-pytest = ["7.4", "8.4", "9.0"]
+python = ["3.11", "3.12", "3.13", "3.14", "3.14t", "3.15", "3.15t"]
+pytest = ["7.4", "8.4", "9.1"]
 integrations = ["none", "responses", "respx"]
 
 [tool.hatch.envs.hatch-test.overrides]
@@ -278,3 +285,15 @@ docstring-code-format = true
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
+
+##############################
+#                            #
+# Pyrefly config             #
+#                            #
+##############################
+[tool.pyrefly]
+project-includes = ["/Users/plsuh/Projects/pytest-scenario-files/src/pytest_scenario_files"]
+search-path = ["/Users/plsuh/Projects/pytest-scenario-files/src"]
+preset = "strict"
+min-severity = "warn"
+disable-search-path-heuristics = true

@@ -29,7 +29,7 @@ data loaded from files.
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
 - Integration with Responses mocking package for Requests
-- NEW - Integration with the Respx mocking package for Httpx
+- Integration with the Respx mocking package for Httpx
 
 ***************
  Compatibility
@@ -37,10 +37,10 @@ data loaded from files.
 
 This package is a plug-in for Pytest and works with Python 3.9 and up.
 
-- Tested with Pytest versions 7.4, 8.4, and 9.0
-- Tested with CPython 3.9–3.14 (including 3.14t)
-- Tested with Responses 0.25.8
-- Tested with Respx 0.22.0
+- Tested with Pytest versions 7.4, 8.4, and 9.1
+- Tested with CPython 3.11–3.15 (including 3.14t and 3.15t)
+- Tested with Responses 0.26.3
+- Tested with Respx 0.23.1
 
 .. toctree::
     :maxdepth: 2
