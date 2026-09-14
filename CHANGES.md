@@ -1,5 +1,11 @@
 # Change Log
 
+#### 1.3.3 - 2026-09-XX (unreleased)
+
+- Remove support for Python 3.10, add support for Python 3.15.
+- Update tests to ensure compatibility with pytest 9.1.
+- Miscellaneous documentation updates.
+
 #### 1.3.2 - 2026-05-17
 
 - Add support for generating an SBOM file and add an SBOM file to the

@@ -1,30 +1,35 @@
-About Pytest-Scenario-Files
-===========================
+#############################
+ About Pytest-Scenario-Files
+#############################
 
-Reporting Issues
-----------------
+******************
+ Reporting Issues
+******************
 
 If you encounter any problems, please `file an issue`_ including a detailed description
 and (if possible) an example of the problem.
 
-License
--------
+*********
+ License
+*********
 
 Distributed under the terms of the MIT license, ``pytest-scenario-files`` is free and
 open source software.
 
-Future Directions
------------------
-- Support for additional matchers for both Responses and Respx (for matching
-  headers, query parameters, json body, etc.) is under consideration.
+*******************
+ Future Directions
+*******************
+
+- Support for additional matchers for both Responses and Respx (for matching headers,
+  query parameters, json body, etc.) is under consideration.
 - An automated method for specifying Responses or Respx overrides is under
   consideration.
-- I'm going to see if there is any traction for rolling the (relatively simple)
-  code to specify parameterization into ``pytest`` so that it becomes easier
-  for other people.
+- I'm going to see if there is any traction for rolling the (relatively simple) code to
+  specify parameterization into ``pytest`` so that it becomes easier for other people.
 
-Motivation
-----------
+************
+ Motivation
+************
 
 ``pytest`` has a feature called parameterization that allows you to run the same test
 function repeatedly using different inputs to test multiple scenarios. However, managing
@@ -47,9 +52,9 @@ many of them, and also which group of values corresponds to which test id. The f
 structure uses a dict to keep the test case id’s, fixture names, and data values
 together in a way that is easier on the human brain.
 
-Loading the native Responses save files wasn't too hard. The worst part was figuring
-out how to specify the file to be loaded, and fixing up the tests so that they covered
-the cases.
+Loading the native Responses save files wasn't too hard. The worst part was figuring out
+how to specify the file to be loaded, and fixing up the tests so that they covered the
+cases.
 
 ----
 

@@ -3,7 +3,7 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
       # Ruff version.
-    rev: v0.15.1
+    rev: v0.16.7
     hooks:
       # Run the linter.
       - id: ruff
@@ -37,8 +37,9 @@ repos:
           - mdformat-black
           - mdformat-config
   - repo: https://github.com/LilSpazJoekp/docstrfmt
-    rev: v2.0.2 # Replace by any tag/version: https://github.com/LilSpazJoekp/docstrfmt/tags
+    rev: v2.2.1 # Replace by any tag/version: https://github.com/LilSpazJoekp/docstrfmt/tags
     hooks:
       - id: docstrfmt
         language_version: python3
         types_or: [python, rst] # only needed if you want to include txt files.
+        args: [ -vvv ]
