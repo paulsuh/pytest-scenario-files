@@ -17,9 +17,9 @@
 ``pytest-scenario-files`` is a ``pytest`` plugin that runs unit test scenarios using
 data loaded from files.
 
-##########
+**********
  Features
-##########
+**********
 
 - Loads data for scenarios from files into fixtures
 - Data files are matched with tests by a naming convention
@@ -31,9 +31,9 @@ data loaded from files.
 - Integration with Responses mocking package for Requests
 - Integration with the Respx mocking package for Httpx
 
-###############
+***************
  Compatibility
-###############
+***************
 
 This package is a plug-in for Pytest and works with Python 3.9 and up.
 

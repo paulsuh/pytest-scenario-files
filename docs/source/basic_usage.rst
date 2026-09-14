@@ -1,5 +1,6 @@
-Basic Usage
-===========
+#############
+ Basic Usage
+#############
 
 There are two parts to using ``pytest-scenario-files``.
 
@@ -24,8 +25,9 @@ target function and a corresponding test function might be:
 The test function expects there to be three fixtures which may be defined as regular
 ``pytest`` fixtures or via a data file.
 
-Data File Structure
--------------------
+*********************
+ Data File Structure
+*********************
 
 Each data file may contain one or more sets of test data, in either yaml or json format.
 The top level is a dict whose keys are the test id’s. Each test id is a dict whose keys
@@ -52,12 +54,13 @@ including container types such as lists or dicts. An example data file might con
 This would parameterize into two test cases labeled ``test1`` and ``test2``, each with
 three fixtures, ``input_data_1``, ``input_data_2``, and ``expected_result``.
 
-Because of the nature of parameterization, *every scenario* **must** *have the same set of
-fixtures*, even if the fixture is unused in some circumstances. You can put in an empty
-string or null value if necessary.
+Because of the nature of parameterization, *every scenario* **must** *have the same set
+of fixtures*, even if the fixture is unused in some circumstances. You can put in an
+empty string or null value if necessary.
 
-Integrating With Regular Fixtures
----------------------------------
+***********************************
+ Integrating With Regular Fixtures
+***********************************
 
 If you want to use a standard fixture along side the scenarios, don't define a fixture
 value in the data file. Instead, create a fixture in your test file or ``conftest.py``.
@@ -89,8 +92,9 @@ For the example target and test functions above, you could define a regular fixt
         - abc
         - abc
 
-Data File Matching and Loading
-------------------------------
+********************************
+ Data File Matching and Loading
+********************************
 
 Data files must have a filename extension of ``.json``, ``.yaml``, or ``.yml``. They are
 matched to tests based on the name of the test. A data file will be loaded if it matches
