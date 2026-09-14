@@ -1,8 +1,10 @@
-Advanced Usage
-==============
+################
+ Advanced Usage
+################
 
-Test Case Merging and Conflicts
--------------------------------
+*********************************
+ Test Case Merging and Conflicts
+*********************************
 
 If the same test case id is present in two different files the fixtures from the two
 files will be merged as long as a fixture with the same name is not defined more than
@@ -27,8 +29,9 @@ a test case with ``id=test_case_one``.
 *However*, if the fixture names are the same there will be a conflict and the code that
 merges the test cases will raise an exception.
 
-Loading Values by Reference
----------------------------
+*****************************
+ Loading Values by Reference
+*****************************
 
 An additional powerful feature is the ability to load the value for a fixture from
 another data file. You can have fixture data loaded from another file by setting the
@@ -57,8 +60,9 @@ check_functionality``.
     There is nothing preventing an infinite self-referential loop although that is
     something that should be avoided.
 
-Indirect Parameterization
--------------------------
+***************************
+ Indirect Parameterization
+***************************
 
 Pytest has a feature called `indirect parameterization`_, where the parameter value is
 passed to a fixture function, and the return value of the fixture function is then
@@ -107,17 +111,18 @@ and the return value would be passed in as the ``variable_B`` parameter to
     ``request.param`` in the fixture function. If it does not exist, you can then either
     return a default value or handle the missing value some other way.
 
-The psf_expected_result Fixture
--------------------------------
+*********************************
+ The psf_expected_result Fixture
+*********************************
 
 Pytest has a pattern called `Parameterized Conditional Raising`_. This allows the user
-to specify either an expected result value **or** an expected Exception that will
-be raised. Either way, you can use the same code in the test function and it will
-just work. This fixture allows the user to have either an expected exception (including
-a match string or regexp) in the scenario file, or any other expected result value.
-An exception gets wrapped in a ``pytest.raises()`` context manager, while any other
-value gets wrapped in a ``nullcontext()`` context manager. The test function can then
-use a call like:
+to specify either an expected result value **or** an expected Exception that will be
+raised. Either way, you can use the same code in the test function and it will just
+work. This fixture allows the user to have either an expected exception (including a
+match string or regexp) in the scenario file, or any other expected result value. An
+exception gets wrapped in a ``pytest.raises()`` context manager, while any other value
+gets wrapped in a ``nullcontext()`` context manager. The test function can then use a
+call like:
 
 .. code-block:: python
 
@@ -128,16 +133,16 @@ use a call like:
 The scenario should define an indirectly parameterized fixture with the name
 ``psf_expected_result_indirect``.
 
-- If the value in the data file is a dictionary with the key ``expected_exception_type``,
-  the fixture will return a ``pytest.raises()`` context manager with the exception
-  pre-loaded. Exceptions that are defined in packages or modules should use their
-  full identifier. Any other keys in the dict are passed in to ``pytest.raises()``
-  as arguments. In particular, the ``match`` argument is used to match against the
-  message of the exception.
+- If the value in the data file is a dictionary with the key
+  ``expected_exception_type``, the fixture will return a ``pytest.raises()`` context
+  manager with the exception pre-loaded. Exceptions that are defined in packages or
+  modules should use their full identifier. Any other keys in the dict are passed in to
+  ``pytest.raises()`` as arguments. In particular, the ``match`` argument is used to
+  match against the message of the exception.
 - If the value in the data file is a dictionary that does not contain the key
-  ``expected_exception_type``, or if the value is not a dictionary, the value will
-  be returned wrapped in a ``nullcontext()`` context manager and your test function
-  can use it normally.
+  ``expected_exception_type``, or if the value is not a dictionary, the value will be
+  returned wrapped in a ``nullcontext()`` context manager and your test function can use
+  it normally.
 
 For a scenario where you expect to get an HTTP 403 error you might set up the expected
 result to look for a Requests HTTPError exception:
@@ -149,9 +154,8 @@ result to look for a Requests HTTPError exception:
             expected_exception_type: requests.HTTPError
             match: Authorization failure
 
-On the other hand, for a scenario where you expect a success and want to check
-the value returned against a string you set ``psf_expected_result_indirect``
-to that string value:
+On the other hand, for a scenario where you expect a success and want to check the value
+returned against a string you set ``psf_expected_result_indirect`` to that string value:
 
 .. code-block:: yaml
 
@@ -161,4 +165,5 @@ to that string value:
 This fixture is very useful in conjunction with the Responses and Respx integration.
 
 .. _indirect parameterization: https://docs.pytest.org/en/stable/example/parametrize.html#indirect-parametrization
-.. _Parameterized Conditional Raising: https://docs.pytest.org/en/8.3.x/example/parametrize.html#parametrizing-conditional-raising
+
+.. _parameterized conditional raising: https://docs.pytest.org/en/8.3.x/example/parametrize.html#parametrizing-conditional-raising
