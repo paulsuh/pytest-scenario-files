@@ -42,8 +42,8 @@ YAML format.
 
 This package is a plug-in for `pytest` and works with Python 3.9 and up.
 
-- Tested with `pytest` versions 7.4, 8.2, 8.3, 8.4, and 9.0.
-- Tested with CPython 3.9-3.14 (including 3.14t).
+- Tested with `pytest` versions 7.4, 8.4, and 9.1.
+- Tested with CPython 3.11-3.15 (including 3.14t and 3.15t).
 
 ### Documentation
 
