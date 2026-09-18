@@ -7,14 +7,15 @@ If you want to contribute a bug fix or new feature, please first create a test c
 demonstrates what your new code is supposed to do. Note that you need to set up tests
 using the pytester_ fixture, rather than testing directly.
 
-This project uses hatch_ for its environments and build system, as well as pre-commit_,
+This project uses hatch_ for its environments and build system, along with uv_ for
+creating virtual environments, file locking, and generating sbom's. It uses pre-commit_,
 ruff_, mdformat_, and docstrfmt_ for formatting and linting. Before you send in a pull
 request, please:
 
 - Set up ``pre-commit`` and use it to run ``ruff``, ``mdformat``, and ``docstrfmt`` with
   the settings included in the ``pyproject.toml`` and ``.pre-commit-config.yaml`` files
 - Run tests using the command ``hatch test --all``, which will run all of the tests
-  against CPython 3.9-3.14 and Pytest 7.4.x, 8.4.x, and 9.0.x.
+  against CPython 3.11-3.15 and Pytest 7.4.x, 8.4.x, and 9.1.x.
 - Check test coverage with ``hatch run cov``
 - Generate and proofread docs by running ``hatch run docs:generate``
 
@@ -34,3 +35,5 @@ Within the Github repo, Github Actions are set up so that:
 .. _pytester: https://docs.pytest.org/en/stable/how-to/writing_plugins.html#testing-plugins
 
 .. _ruff: https://github.com/astral-sh/ruff
+
+.. _uv: https://github.com/astral-sh/uv
