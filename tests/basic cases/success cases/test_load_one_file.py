@@ -1,7 +1,8 @@
 """The second most basic test.
 
-Load one test case from one file. If this doesn't work then nothing
-more advanced is likely to work either.
+Load one test case from one file. If this doesn't work then nothing more advanced is
+likely to work either.
+
 """
 
 

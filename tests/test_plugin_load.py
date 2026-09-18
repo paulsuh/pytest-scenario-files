@@ -1,6 +1,7 @@
 """The most basic test.
 
 See if the plug-in has loaded via the entrypoint.
+
 """
 
 

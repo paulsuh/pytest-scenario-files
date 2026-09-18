@@ -248,8 +248,9 @@ which will be caught by the context manager since the ``psf_expected_value`` fix
 will return a ``pytest.raises(requests.HTTPError)`` context manager object. Any other
 kind of error or exception will cause the test to fail.
 
-Detailed Example
-================
+******************
+ Detailed Example
+******************
 
 Putting all this together is easiest to see using a detailed example. One system I work
 with (the `NetBrain API`_) requires that you make four calls when you connect to it.

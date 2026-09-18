@@ -1,7 +1,7 @@
 """Load multiple test cases from multiple files.
 
-The files can be both JSON and YAML format and may contain more than one
-test case each.
+The files can be both JSON and YAML format and may contain more than one test case each.
+
 """
 
 
