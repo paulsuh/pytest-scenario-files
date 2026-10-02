@@ -496,19 +496,24 @@ more scenarios cover more cases, but each one costs upkeep — so both matter:
   running. Detect it by diffing test names against data-file stems, scoped to the
   whole directory tree (per "Where to put the data files" above, a file can be
   nested arbitrarily deep) and matching indented methods inside `class Test*:`
-  blocks as well as top-level functions:
+  blocks as well as top-level functions. This script is complete and
+  copy-pasteable — including the exclusion of `_common.yaml` files in
+  step 3, which don't match any test name and would otherwise be falsely
+  flagged as orphans:
   ```bash
   # 1. Collect test names (strip the test_ prefix), including class methods
   grep -roE "^[[:space:]]*def test_[a-zA-Z0-9_]+" tests/ \
     | sed -E 's/^.*def test_//' | sort -u > /tmp/test_names.txt
 
   # 2. Collect data file stems anywhere under the test directory tree
-  find tests/ -name 'data_*.yaml' -printf '%f\n' \
-    | sed 's/^data_//; s/\.yaml$//' | sort -u > /tmp/data_names.txt
+  find tests/ -name 'data_*.yaml' -exec basename {} \; \
+    | sed 's/^data_//; s/\.yaml$//' | sort -u > /tmp/data_names_raw.txt
 
-  # 3. Diff — right-only is an orphaned file with no test consuming it
-  #    (exclude any file loaded only via __file:case:fixture references
-  #    first — those aren't matched by test name at all)
+  # 3. Exclude *_common files — referenced via __file:case:fixture syntax,
+  #    not matched by test name, so they'd otherwise show as false orphans
+  grep -v '_common$' /tmp/data_names_raw.txt > /tmp/data_names.txt
+
+  # 4. Diff — right-only is a genuinely orphaned file with no test consuming it
   comm -3 /tmp/test_names.txt /tmp/data_names.txt
   ```
   A right-only result is the orphan — either delete the file if its scenarios are
