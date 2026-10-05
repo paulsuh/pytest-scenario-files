@@ -60,6 +60,60 @@ check_functionality``.
     There is nothing preventing an infinite self-referential loop although that is
     something that should be avoided.
 
+***************************************
+ Controlling the Reference Search Root
+***************************************
+
+By default, a reference is resolved by searching the referencing data file's own
+directory (and subdirectories) for a match, falling back to the current working
+directory if nothing is found there. For example, with the layout:
+
+.. code-block::
+
+    tests/
+      platform_a/
+        test_foo.py
+        data_foo.yaml           # references __data_shared.yaml:...
+        data_shared.yaml        # found here first
+      platform_b/
+        data_shared.yaml        # a different, same-named file - ignored
+
+resolving the reference from ``data_foo.yaml`` finds ``platform_a/data_shared.yaml``
+without any risk of colliding with the unrelated file under ``platform_b/``.
+
+That default search root can be pinned to a specific directory in either of two ways:
+
+- The ``--psf-reference-root`` command line/ini option, which applies to every reference
+  resolved during the test run:
+
+  .. code-block:: console
+
+      pytest --psf-reference-root=tests/shared_data
+
+- A ``psf_reference_root`` module-level variable in the test file, which applies to
+  every reference resolved while loading data for that file's tests:
+
+  .. code-block:: python
+      :caption: ``test_foo.py``
+
+      psf_reference_root = "tests/shared_data"
+
+
+      def test_foo(input_data_1, other_data): ...
+
+If both are set, ``--psf-reference-root`` takes priority. A configured root (from either
+source) is exclusive: if the reference cannot be resolved there, resolution fails with
+an error identifying the referencing file, the reference, and the root(s) searched,
+rather than falling back to the referencing file's directory or the current working
+directory.
+
+.. note::
+
+    ``psf_reference_root`` must be a plain static string literal. It is read directly
+    from the test module's namespace at collection time, before fixtures are
+    available, so its value cannot be computed from a fixture, a command line
+    argument, or any other runtime state.
+
 ***************************
  Indirect Parameterization
 ***************************
