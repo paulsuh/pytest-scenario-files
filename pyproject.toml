@@ -57,6 +57,9 @@ respx = [
 [project.entry-points.pytest11]
 pytest_scenario_files = "pytest_scenario_files"
 
+[project.scripts]
+pytest-scenario-files-install-skill = "pytest_scenario_files._skill_install:main"
+
 ##############################
 #                            #
 # Hatch config               #
@@ -78,6 +81,13 @@ exclude = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/pytest_scenario_files"]
 sbom-files = ["sbom.cdx.json"]
+
+# Ship the bundled Claude Code skill inside the installed package (under
+# pytest_scenario_files/_skill_data/) so pytest-scenario-files-install-skill
+# can locate it at runtime via files relative to this package, without
+# depending on the sdist/repo layout being present at install time.
+[tool.hatch.build.targets.wheel.force-include]
+"skills/pytest-scenario-files" = "pytest_scenario_files/_skill_data"
 
 [tool.hatch.version]
 source = "vcs"
