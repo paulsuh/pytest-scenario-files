@@ -134,13 +134,13 @@ The scenario should define an indirectly parameterized fixture with the name
 ``psf_expected_result_indirect``.
 
 - If the value in the data file is a dictionary with the key
-  ``expected_exception_type``, the fixture will return a ``pytest.raises()`` context
+  ``expected_exception_name``, the fixture will return a ``pytest.raises()`` context
   manager with the exception pre-loaded. Exceptions that are defined in packages or
   modules should use their full identifier. Any other keys in the dict are passed in to
   ``pytest.raises()`` as arguments. In particular, the ``match`` argument is used to
   match against the message of the exception.
 - If the value in the data file is a dictionary that does not contain the key
-  ``expected_exception_type``, or if the value is not a dictionary, the value will be
+  ``expected_exception_name``, or if the value is not a dictionary, the value will be
   returned wrapped in a ``nullcontext()`` context manager and your test function can use
   it normally.
 
@@ -151,7 +151,7 @@ result to look for a Requests HTTPError exception:
 
     failure_scenario_1:
         psf_expected_result_indirect:
-            expected_exception_type: requests.HTTPError
+            expected_exception_name: requests.HTTPError
             match: Authorization failure
 
 On the other hand, for a scenario where you expect a success and want to check the value
