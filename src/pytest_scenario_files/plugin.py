@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 from collections.abc import Generator
 from contextlib import nullcontext
 from json import load
@@ -392,9 +393,20 @@ def psf_expected_result(request: pytest.FixtureRequest) -> pytest.RaisesExc | nu
     :rtype: AbstractContextManager:
 
     """
-    if isinstance(request.param, dict) and "expected_exception_name" in request.param:
-        # expected result is an exception
-        expected_exception_name = request.param.pop("expected_exception_name")
+    if isinstance(request.param, dict):
+        # Accept both expected_exception_name (correct) and expected_exception_type (legacy)
+        if "expected_exception_type" in request.param:
+            expected_exception_name = request.param.pop("expected_exception_type")
+            warnings.warn(
+                "expected_exception_type is deprecated, use expected_exception_name instead",
+                DeprecationWarning,
+                stacklevel=2
+            )
+        elif "expected_exception_name" in request.param:
+            expected_exception_name = request.param.pop("expected_exception_name")
+        else:
+            return nullcontext(request.param)
+
         if "." in expected_exception_name:
             # expected exception is defined in a module or package
             import importlib
