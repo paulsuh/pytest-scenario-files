@@ -99,9 +99,9 @@ whichever one your project uses:
 - `references/respx-integration.md` — the `psf_respx_mock` fixture,
   `--psf-load-respx`, override patterns, and sequential/polling responses.
 
-If you're using both integrations in the same project (or evaluating a third,
-like Issue #43), read both files — they use parallel structure so differences
-between them stand out.
+If you're using both integrations in the same project (or evaluating a third),
+read both files — they use parallel structure so differences between them 
+stand out.
 
 ## Cross-file sharing: anchors vs. `__file:case:fixture` references
 
