@@ -35,9 +35,12 @@ different scopes:
 
   Reference resolution searches **from the current working directory** (i.e.
   wherever `pytest` was invoked), not from the referencing file's own directory —
-  so a reference can reach a file anywhere in the project, not just nearby. There is
-  no way to configure or restrict this search root in the current version of the
-  plugin. Nothing prevents an infinite self-referential loop, so avoid a reference
+  so a reference can reach a file anywhere in the project, not just nearby. This
+  is a different search root than auto-discovery's test-directory-downward walk
+  (see `references/data-file-mechanics.md`) — the two aren't in tension, they're
+  just two different lookups with two different roots. There is no way to
+  configure or restrict this search root in the current version of the plugin.
+  Nothing prevents an infinite self-referential loop, so avoid a reference
   chain that could cycle back on itself.
 
 Don't reference every field individually if you're pulling several values from a

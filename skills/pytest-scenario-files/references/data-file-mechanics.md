@@ -8,7 +8,10 @@ specifics behind "where does the plugin look" or "why did collection fail."
 The plugin finds a data file for `test_foo()` by walking the directory tree
 **starting at the test file's own directory and searching downward** — same
 directory, or any subdirectory beneath it. It will never find a file in a sibling
-or parent directory. Two conventions are both valid; which one fits depends on scale:
+or parent directory. (This is specifically the auto-discovery search root —
+`__file:case:fixture` cross-file references use a different root entirely; see
+`references/cross-file-sharing.md`.) Two conventions are both valid; which one
+fits depends on scale:
 
 - **Colocated** — the data file sits right next to the test `.py` file. Simplest,
   and what the plugin's own docs assume. Fine for a small test module with a handful
