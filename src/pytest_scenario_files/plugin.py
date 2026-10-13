@@ -23,7 +23,7 @@ class _PsfConfigTuple(NamedTuple):
     psf_load_respx: bool
     psf_assert_all_called: bool
     psf_assert_all_mocked: bool
-    psf_reference_root: str | None
+    psf_additional_data_root: list[str]
 
 
 _config_keys = (
@@ -34,13 +34,13 @@ _config_keys = (
     ("psf-assert-all-mocked", "Are all Httpx calls required to be mocked (for Respx)?"),
 )
 
-# Name of the optional module-level variable in a test file used to override the
-# search root used to resolve "__file:scenario:fixture" references made while loading
-# data for that test file's tests, e.g.:
+# Name of the optional module-level variable in a test file supplying extra roots to
+# search ahead of the default search when resolving "__file:scenario:fixture"
+# references, e.g.:
 #
-#     psf_reference_root = "tests/shared_data"
+#     psf_additional_data_root = ["tests/alt_data"]
 #
-_REFERENCE_ROOT_ATTR = "psf_reference_root"
+_ADDITIONAL_DATA_ROOT_ATTR = "psf_additional_data_root"
 
 
 _psf_configs: _PsfConfigTuple
@@ -78,16 +78,15 @@ def pytest_addoption(parser: pytest.Parser, pluginmanager: pytest.PytestPluginMa
             help=help_text,
         )
     option_group.addoption(
-        "--psf-reference-root",
-        action="store",
-        default=None,
-        dest="psf-reference-root",
+        "--psf-additional-data-root",
+        action="append",
+        default=[],
+        dest="psf-additional-data-root",
         help=(
-            "Directory to search from when resolving '__file:scenario:fixture' data "
-            "references, instead of searching the referencing file's own directory "
-            "(with a fallback to the current working directory). This root is "
-            "exclusive: if the reference isn't found here, resolution fails rather "
-            "than falling back."
+            "Additional directory to search, before the default search, when "
+            "resolving '__file:scenario:fixture' data references. Repeatable to "
+            "add several roots, tried in order; a miss falls through, a duplicate "
+            "match within one root still raises."
         ),
     )
 
@@ -109,19 +108,21 @@ def pytest_configure(config: pytest.Config) -> None:
     global _psf_configs
     _psf_configs = _PsfConfigTuple(
         **{opt.replace("-", "_"): config.getoption(opt) for opt, _ in _config_keys},
-        psf_reference_root=config.getoption("psf-reference-root"),
+        psf_additional_data_root=config.getoption("psf-additional-data-root"),
     )
     if _psf_configs.psf_load_responses and _psf_configs.psf_load_respx:
         raise pytest.UsageError("The --psf-load-resposes and --psf-load-respx options are mutually exclusive.")
 
 
-def _load_test_data_from_file(filepath: str, reference_root_override: str | None) -> dict[str, Any]:
+def _load_test_data_from_file(filepath: str, additional_data_roots: list[str]) -> dict[str, Any]:
     """Load test data from a file and return it as a dictionary.
 
     :param str filepath: The path of the file to load.
-    :param reference_root_override: An optional root, taken from the
-        ``psf_reference_root`` module-level variable of the test file that triggered
-        this load, used to resolve any references made from this data file.
+    :param additional_data_roots: Additional roots, taken from the
+        ``--psf-additional-data-root`` option and/or the ``psf_additional_data_root``
+        module-level variable in the test file that triggered this load, searched
+        before the default search when resolving any references made from this data
+        file.
 
     :returns: The loaded test data as a dictionary.
     :rtype: dict[str, Any]
@@ -145,7 +146,7 @@ def _load_test_data_from_file(filepath: str, reference_root_override: str | None
             if not isinstance(case_data, dict):
                 raise BadTestCaseDataException(f"From {filepath}: data for test case {case_name} is not a dict. ")
 
-        _load_referenced_data(test_data, filepath, reference_root_override)
+        _load_referenced_data(test_data, filepath, additional_data_roots)
 
         return test_data
 
@@ -153,31 +154,24 @@ def _load_test_data_from_file(filepath: str, reference_root_override: str | None
 def _load_referenced_data(
     base_data_dict: dict[str, dict[str, Any]],
     referencing_file_path: str,
-    reference_root_override: str | None = None,
+    additional_data_roots: list[str],
 ) -> None:
     """Load data for fixtures that refer to fixtures in other files.
 
-    The search root used to resolve a reference is chosen with the following priority:
-
-    1. The ``--psf-reference-root`` command line/ini option, if set.
-    2. ``reference_root_override``, taken from the ``psf_reference_root`` module-level
-       variable of the test file that triggered this load, if present.
-    3. The referencing file's own directory, searched downward. If no match is found
-       there, the current working directory is searched as a fallback, to preserve the
-       plugin's original behavior for references that intentionally point outside of the
-       referencing file's own subtree.
-
-    A configured root (from either #1 or #2 above) is exclusive: if the reference isn't
-    found there, this raises rather than falling back to the referencing file's
-    directory or cwd.
+    The search for a reference tries, in order, each root in ``additional_data_roots``,
+    then the referencing file's own directory, then the current working directory,
+    stopping at the first root where the reference is found. Finding the reference more
+    than once *within* a single root being searched is a collision and raises; a miss in
+    one root simply falls through to the next, so that trying an alternate root does not
+    risk tripping a collision against the default search.
 
     :param base_data_dict: A dictionary containing test cases and their fixtures.
     :param referencing_file_path: The path of the file that may hold references, used to
         derive the default search root and to name the file in error messages.
-    :param reference_root_override: An optional root, taken from the
-        ``psf_reference_root`` module-level variable of the test file that triggered
-        this load. Takes priority over the referencing file's own directory and cwd, but
-        yields to the ``--psf-reference-root`` command line/ini option.
+    :param additional_data_roots: Additional roots, taken from the
+        ``--psf-additional-data-root`` option and/or the ``psf_additional_data_root``
+        module-level variable in the test file that triggered this load. Searched, in
+        order, ahead of the default search.
 
     :returns: None
 
@@ -186,7 +180,7 @@ def _load_referenced_data(
 
     """
     referencing_file_dir = os.path.dirname(referencing_file_path)
-    configured_root = _psf_configs.psf_reference_root or reference_root_override
+    search_roots = [*_psf_configs.psf_additional_data_root, *additional_data_roots, referencing_file_dir, os.getcwd()]
 
     for one_test_case in base_data_dict.values():
         for one_fixture_name, one_fixture_value in one_test_case.items():
@@ -194,25 +188,16 @@ def _load_referenced_data(
                 if one_fixture_value.startswith("__"):
                     data_file_path = one_fixture_value.removeprefix("__")
                     ref_data_file_name, ref_test_case, ref_fixture = data_file_path.split(":")
-                    if configured_root is not None:
+
+                    referenced_data_file_contents: dict[str, dict[str, Any]] = {}
+                    roots_searched: list[str] = []
+                    for one_root in search_roots:
+                        roots_searched.append(one_root)
                         referenced_data_file_contents = _locate_and_load_data_files(
-                            ref_data_file_name, configured_root, reference_root_override
+                            ref_data_file_name, one_root, additional_data_roots
                         )
-                        roots_searched = [configured_root]
-                    else:
-                        referenced_data_file_contents = _locate_and_load_data_files(
-                            ref_data_file_name, referencing_file_dir, reference_root_override
-                        )
-                        roots_searched = [referencing_file_dir]
-                        if ref_test_case not in referenced_data_file_contents:
-                            # Not found searching locally from the referencing file's own
-                            # directory downward - fall back to searching from cwd, to
-                            # preserve behavior for references that intentionally point
-                            # outside of the referencing file's own subtree.
-                            referenced_data_file_contents = _locate_and_load_data_files(
-                                ref_data_file_name, os.getcwd(), reference_root_override
-                            )
-                            roots_searched.append(os.getcwd())
+                        if ref_test_case in referenced_data_file_contents:
+                            break
 
                     if ref_test_case not in referenced_data_file_contents:
                         raise BadTestCaseDataException(
@@ -232,27 +217,27 @@ def _load_referenced_data(
 def _locate_and_load_test_data(
     test_name: str,
     dir_name: str,
-    reference_root_override: str | None,
+    additional_data_roots: list[str],
 ) -> dict[str, dict[str, Any]]:
     """Locates and loads test data for the given test name.
 
     :param str test_name: The name of the test.
     :param str dir_name: path where to start the search for the data files
-    :param reference_root_override: An optional root, taken from the
-        ``psf_reference_root`` module-level variable of the test file, used to resolve
-        any references made while loading this test's data.
+    :param additional_data_roots: Additional roots, taken from the
+        ``psf_additional_data_root`` module-level variable of the test file, used to
+        resolve any references made while loading this test's data.
 
     :returns: A dictionary containing the loaded test data.
     :rtype: dict
 
     """
-    return _locate_and_load_data_files("data_" + test_name, dir_name, reference_root_override)
+    return _locate_and_load_data_files("data_" + test_name, dir_name, additional_data_roots)
 
 
 def _locate_and_load_data_files(
     filename_base: str,
     dir_name: str,
-    reference_root_override: str | None = None,
+    additional_data_roots: list[str],
 ) -> dict[str, dict[str, Any]]:
     """Locates and loads data for the given file name.
 
@@ -261,9 +246,9 @@ def _locate_and_load_data_files(
 
     :param str filename_base: The root name of the files to be loaded.
     :param str dir_name: path where to start the search for the data files
-    :param reference_root_override: An optional root, taken from the
-        ``psf_reference_root`` module-level variable of the test file, used to resolve
-        any references made while loading files found by this search.
+    :param additional_data_roots: Additional roots, taken from the
+        ``psf_additional_data_root`` module-level variable of the test file, used to
+        resolve any references made while loading files found by this search.
 
     :returns: A dictionary containing the loaded data.
     :rtype: dict
@@ -277,7 +262,7 @@ def _locate_and_load_data_files(
         test_data_filenames = [one_filename for one_filename in files if one_filename.startswith(filename_base)]
 
         for one_data_file in test_data_filenames:
-            test_data = _load_test_data_from_file(join(root, one_data_file), reference_root_override)
+            test_data = _load_test_data_from_file(join(root, one_data_file), additional_data_roots)
             _merge_new_test_data(result, test_data, one_data_file)
 
     return result
@@ -625,11 +610,12 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     test_name = metafunc.definition.name.removeprefix("test_")
     test_file_dir = str(metafunc.definition.path.parent)
 
-    # An optional module-level variable in the test file overriding the root used to
-    # resolve references made while loading this test's data.
-    reference_root_override = getattr(metafunc.module, _REFERENCE_ROOT_ATTR, None)
+    # An optional module-level variable in the test file supplying additional roots to
+    # search, ahead of the default search, for references made while loading this
+    # test's data.
+    additional_data_roots = list(getattr(metafunc.module, _ADDITIONAL_DATA_ROOT_ATTR, []))
 
-    fixture_raw_data_dict = _locate_and_load_test_data(test_name, test_file_dir, reference_root_override)
+    fixture_raw_data_dict = _locate_and_load_test_data(test_name, test_file_dir, additional_data_roots)
 
     if len(fixture_raw_data_dict) > 0:
         # do processing only if the search found cases

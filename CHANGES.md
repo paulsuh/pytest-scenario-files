@@ -5,13 +5,15 @@
 - Remove support for Python 3.10, add support for Python 3.15.
 - Update tests to ensure compatibility with pytest 9.1.
 - Miscellaneous documentation updates.
-- Add `--psf-reference-root` command line/ini option and a
-  `psf_reference_root` module-level variable in the test file to pin the
-  search root used to resolve `__file:scenario:fixture` data references.
-  The CLI option takes priority over the test-file variable. A
-  configured root is exclusive: if the reference isn't found there,
-  resolution fails with a clear error rather than silently falling back
-  elsewhere.
+- Add `--psf-additional-data-root` command line/ini option (repeatable) and a
+  `psf_additional_data_root` module-level list variable in the test file to
+  supply additional roots to search when resolving `__file:scenario:fixture`
+  data references. These are searched, in order, before the default search
+  (the referencing file's own directory, then the current working
+  directory), making it possible to try an alternate set of scenario files
+  without affecting the default search path. A reference found more than
+  once within a single root searched is a collision and raises; a miss in
+  one root simply falls through to the next without error.
 - Fix `_load_referenced_data()` to search the referencing file's own
   directory before falling back to the current working directory, so a
   stray duplicate of a referenced data file elsewhere under cwd no
