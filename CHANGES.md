@@ -5,6 +5,10 @@
 - Remove support for Python 3.10, add support for Python 3.15.
 - Update tests to ensure compatibility with pytest 9.1.
 - Miscellaneous documentation updates.
+- Add a bundled agent skill (`skills/pytest-scenario-files/`) teaching when
+  and how to use data files vs. inline fixtures, including a correction to the
+  docs' `expected_exception_type` typo (the real key is `expected_exception_name`),
+  and guidance on YAML anchors vs. cross-file references.
 
 #### 1.3.2 - 2026-05-17
 
