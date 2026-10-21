@@ -60,6 +60,69 @@ check_functionality``.
     There is nothing preventing an infinite self-referential loop although that is
     something that should be avoided.
 
+***************************************
+ Controlling the Reference Search Root
+***************************************
+
+By default, a reference is resolved by searching the referencing data file's own
+directory (and subdirectories) for a match, falling back to the current working
+directory if nothing is found there. For example, with the layout:
+
+.. code-block::
+
+    tests/
+      platform_a/
+        test_foo.py
+        data_foo.yaml           # references __data_shared.yaml:...
+        data_shared.yaml        # found here first
+      platform_b/
+        data_shared.yaml        # a different, same-named file - ignored
+
+resolving the reference from ``data_foo.yaml`` finds ``platform_a/data_shared.yaml``
+without any risk of colliding with the unrelated file under ``platform_b/``.
+
+Additional roots can be supplied to search *before* that default search, in either of
+two ways (which may be combined):
+
+- The ``--psf-additional-data-root`` command line/ini option, which applies to every
+  reference resolved during the test run. It may be passed multiple times to add
+  several roots, searched in the order given:
+
+  .. code-block:: console
+
+      pytest --psf-additional-data-root=tests/alt_data_1 --psf-additional-data-root=tests/alt_data_2
+
+- A ``psf_additional_data_root`` module-level list variable in the test file, which
+  applies to every reference resolved while loading data for that file's tests:
+
+  .. code-block:: python
+      :caption: ``test_foo.py``
+
+      psf_additional_data_root = ["tests/alt_data"]
+
+
+      def test_foo(input_data_1, other_data): ...
+
+The full search order is: each root from ``--psf-additional-data-root`` (in the order
+given), then each root from ``psf_additional_data_root`` (in the order given), then the
+referencing file's own directory, then the current working directory. The search stops
+at the first root where the reference resolves.
+
+This is designed to let you try an alternate set of scenario files - for example, during
+development of a new data file - without disturbing the default search: a reference
+missing from an additional root simply falls through to the next root, with no error.
+Finding the reference more than once *within a single root's own search* is still a
+collision and raises an error naming the referencing file, the reference, and every root
+that was searched.
+
+.. note::
+
+    ``psf_additional_data_root`` must be a plain static list literal of string
+    values. It is read directly from the test module's namespace at collection
+    time, before fixtures are available, so its value cannot be computed from a
+    fixture, a command line argument, or any other runtime state.
+
+
 ***************************
  Indirect Parameterization
 ***************************

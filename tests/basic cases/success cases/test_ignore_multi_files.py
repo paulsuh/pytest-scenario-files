@@ -1,7 +1,8 @@
 """Check that data files that don't match are ignored.
 
-This will only load and run the test cases from the first file, since the other two
-data files don't have a name that matches the test.
+This will only load and run the test cases from the first file, since the other two data
+files don't have a name that matches the test.
+
 """
 
 

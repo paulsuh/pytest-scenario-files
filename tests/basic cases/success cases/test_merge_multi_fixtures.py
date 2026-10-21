@@ -1,7 +1,8 @@
 """Merge fixtures from multiple files
 
-If the same test case is defined in two or more files, the fixtures will
-be merged together as long as there is no conflict.
+If the same test case is defined in two or more files, the fixtures will be merged
+together as long as there is no conflict.
+
 """
 
 

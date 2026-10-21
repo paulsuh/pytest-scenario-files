@@ -4,23 +4,20 @@ This shows how a test naming conflict can cause problems.
 
 In the first unit test there are two files:
 
-   data_load_one_tester_1.yaml
-   data_load_one_file_tester.json
+    data_load_one_tester_1.yaml data_load_one_file_tester.json
 
-The second data file contains two scenarios and is intended for
-test_load_one_file() but because the data file name also matches
-against the shorter test_load_one(), both data files get loaded.
-On top of that, both data files contain a test id "test_one", so
-one of those conflicts with the other and results in an error.
+The second data file contains two scenarios and is intended for test_load_one_file() but
+because the data file name also matches against the shorter test_load_one(), both data
+files get loaded. On top of that, both data files contain a test id "test_one", so one
+of those conflicts with the other and results in an error.
 
 In the second unit test there are also two files:
 
-   data_load_one_tester_1.json
-   data_load_one_file_tester.json
+    data_load_one_tester_1.json data_load_one_file_tester.json
 
-However, the test case id's do not conflict and instead the
-sets of test data are merged normally, resulting in two test
-cases being run instead of just one.
+However, the test case id's do not conflict and instead the sets of test data are merged
+normally, resulting in two test cases being run instead of just one.
+
 """
 
 

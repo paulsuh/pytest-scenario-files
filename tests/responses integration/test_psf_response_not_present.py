@@ -1,6 +1,4 @@
-"""Check for correct behavior when psf-load-responses flag is set
-but there is no '_responses' fixture specified in the data file.
-"""
+"""Check for correct behavior when psf-load-responses flag is set but there is no '_responses' fixture specified in the data file."""
 
 
 def test_psf_response_not_in_datafile(pytester):
