@@ -273,7 +273,7 @@ call should return a 403 error and catch a ``httpx.HTTPError`` exception:
         status_code: 403
         text: Access denied.
       psf_expected_result_indirect:
-        expected_exception_type: httpx.HTTPError
+        expected_exception_name: httpx.HTTPError
 
 The third file is the Python unit tests. It has a fixture ``response_override()`` that
 will set up an override specified by the scenario. If the scenario has no override then

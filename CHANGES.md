@@ -9,6 +9,9 @@
   and how to use data files vs. inline fixtures, including a correction to the
   docs' `expected_exception_type` typo (the real key is `expected_exception_name`),
   and guidance on YAML anchors vs. cross-file references.
+- Correct the documented scenario key to `expected_exception_name` (the docs
+  previously said `expected_exception_type`) and accept the legacy
+  `expected_exception_type` key with a `DeprecationWarning`.
 
 #### 1.3.2 - 2026-05-17
 
