@@ -30,6 +30,7 @@ data loaded from files.
 - Intuitive and sane data file structure
 - Integration with Responses mocking package for Requests
 - Integration with the Respx mocking package for Httpx
+- AI Skill available - published to skills.sh_ and skillMD_
 
 ***************
  Compatibility
@@ -66,3 +67,7 @@ This package is a plug-in for Pytest and works with Python 3.9 and up.
 .. |Ruff badge| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 
 .. |Pre-commit badge| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
+
+.. _skillmd: https://skillmd.com
+
+.. _skills.sh: https://skills.sh
