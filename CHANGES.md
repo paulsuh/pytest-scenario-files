@@ -1,17 +1,14 @@
 # Change Log
 
-#### 1.3.3 - 2026-09-XX (unreleased)
+#### 1.4 - 2026-10-24
 
 - Remove support for Python 3.10, add support for Python 3.15.
 - Update tests to ensure compatibility with pytest 9.1.
-- Miscellaneous documentation updates.
-- Add a bundled agent skill (`skills/pytest-scenario-files/`) teaching when
-  and how to use data files vs. inline fixtures, including a correction to the
-  docs' `expected_exception_type` typo (the real key is `expected_exception_name`),
-  and guidance on YAML anchors vs. cross-file references.
-- Correct the documented scenario key to `expected_exception_name` (the docs
-  previously said `expected_exception_type`) and accept the legacy
-  `expected_exception_type` key with a `DeprecationWarning`.
+- Documentation updates, especially correcting an incorrect key name for
+  catching expected exceptions. (Thanks to
+  [Jah-yee](https://github.com/Jah-yee).)
+- Add a bundled agent skill `skills/pytest-scenario-files/` (Thanks to
+  [mlympany](https://github.com/mlympany).)
 
 #### 1.3.2 - 2026-05-17
 

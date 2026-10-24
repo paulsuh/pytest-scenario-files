@@ -35,12 +35,15 @@ YAML format.
 - Can specify indirect parameterization
 - Intuitive and sane data file structure
 - Integration with [Responses][link08]
-- **NEW** - Can load native Responses files
+- Can load native Responses files
 - Integration with [Respx][link09]
+- **NEW** - AI Skill available - published to [skills.sh][link10] and
+  [skillMD][link11]
 
 ### Compatibility
 
-This package is a plug-in for `pytest` and works with Python 3.9 and up.
+This package is a plug-in for `pytest` and works with Python 3.11 and
+up.
 
 - Tested with `pytest` versions 7.4, 8.4, and 9.1.
 - Tested with CPython 3.11-3.15 (including 3.14t and 3.15t).
@@ -48,7 +51,7 @@ This package is a plug-in for `pytest` and works with Python 3.9 and up.
 ### Documentation
 
 For more information on advanced usages, read the
-[detailed documentation][link10].
+[detailed documentation][link12].
 
 ______________________________________________________________________
 
@@ -142,7 +145,7 @@ ______________________________________________________________________
 
 ## Reporting Issues
 
-If you encounter any problems, please [file an issue][link11] including
+If you encounter any problems, please [file an issue][link13] including
 a detailed description and (if possible) an example of the problem.
 
 ## License
@@ -159,5 +162,7 @@ Distributed under the terms of the `MIT` license,
 [link07]: https://docs.pytest.org/en/stable/index.html
 [link08]: https://github.com/getsentry/responses/tree/master
 [link09]: https://github.com/lundberg/respx/tree/master
-[link10]: https://pytest-scenario-files.mspex.net/
-[link11]: https://github.com/paulsuh/pytest-scenario-files/issues
+[link10]: https://skills.sh/
+[link11]: https://skillmd.com/
+[link12]: https://pytest-scenario-files.mspex.net/
+[link13]: https://github.com/paulsuh/pytest-scenario-files/issues
