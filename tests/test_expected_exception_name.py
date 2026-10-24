@@ -1,11 +1,10 @@
 """Tests for expected_exception_name key in psf_expected_result_indirect.
 
-Covers:
-- New expected_exception_name key (builtin exceptions)
-- New expected_exception_name key (module-level exceptions)
-- Legacy expected_exception_type key still works
-- Non-dict values still work (nullcontext path)
-- expected_exception_name with match argument
+Covers: - New expected_exception_name key (builtin exceptions) - New
+expected_exception_name key (module-level exceptions) - Legacy expected_exception_type
+key still works - Non-dict values still work (nullcontext path) -
+expected_exception_name with match argument
+
 """
 
 import textwrap
@@ -36,19 +35,19 @@ def test_expected_exception_name_module_level(pytester):
     """Test that expected_exception_name works with module-level exceptions."""
     pytester.makepyfile(
         test_http_error=textwrap.dedent("""
-            import requests
+            import pytest
 
-            def test_http_error(psf_expected_result):
+            def test_package_error(psf_expected_result):
                 with psf_expected_result:
-                    raise requests.HTTPError("403")
+                    raise pytest.UsageError()
         """)
     )
     pytester.makefile(
         ".yaml",
-        data_http_error=textwrap.dedent("""
-            test_http_error:
+        data_package_error=textwrap.dedent("""
+            test_package_error:
               psf_expected_result_indirect:
-                expected_exception_name: requests.HTTPError
+                expected_exception_name: pytest.UsageError
         """),
     )
     result = pytester.runpytest("-v")
