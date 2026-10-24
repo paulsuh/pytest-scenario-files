@@ -1,6 +1,23 @@
-______________________________________________________________________
-
-## name: pytest-scenario-files description: > Guidance for using the pytest-scenario-files plugin to drive pytest tests from YAML/JSON data files. Use this whenever writing or refactoring pytest tests that have multiple scenarios, involve test data files, mock HTTP calls with responses or respx, or need parameterization that scales past a handful of cases — even if the user doesn't mention "pytest-scenario-files" by name and just says things like "add more test cases," "this test file is getting unwieldy," "mock these API calls," or "turn this into a data-driven test." This is an addendum to general pytest/testing skills, not a replacement — defer to those for test design, mocking philosophy, and coverage strategy; this skill covers only what pytest-scenario-files specifically brings: data-file mechanics, the YAML-vs-inline judgment call, and this plugin's particular gotchas. license: MIT compatibility: Python 3.11+, Pytest 7.4+
+---
+name: pytest-scenario-files
+description: >
+  Guidance for using the pytest-scenario-files plugin to drive pytest
+  tests from YAML/JSON data files. Use this whenever writing or
+  refactoring pytest tests that have multiple scenarios, involve
+  test data files, mock HTTP calls with responses or respx, or need
+  parameterization that scales past a handful of cases — even if the
+  user doesn't mention "pytest-scenario-files" by name and just says
+  things like "add more test cases," "this test file is getting
+  unwieldy," "mock these API calls," or "turn this into a
+  data-driven test." This is an addendum to general pytest/testing
+  skills, not a replacement — defer to those for test design,
+  mocking philosophy, and coverage strategy; this skill covers only
+  what pytest-scenario-files specifically brings: data-file
+  mechanics, the YAML-vs-inline judgment call, and this plugin's
+  particular gotchas.
+  license: MIT
+  compatibility: Python 3.11+, Pytest 7.4+
+---
 
 # pytest-scenario-files
 
