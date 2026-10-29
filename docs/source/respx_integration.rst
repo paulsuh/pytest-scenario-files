@@ -108,10 +108,10 @@ particular test you can use it as you would any standard ``MockRouter``.
 
 .. code-block:: Python
 
-    def test_api_call(psf_httpx_mock):
+    def test_api_call(psf_respx_mock):
         with httpx.Client() as client:
             http_result = client.get("https://www.example.com/rest/endpoint")
-            assert http_result.status_code = 200
+            assert http_result.status_code == 200
 
 Command line flags
 ==================
@@ -170,13 +170,13 @@ responses for a test.
       api_responses:
       - method: GET
         url: https://www.example.com/rest/endpoint
-        body: Text body of the http response
+        text: Text body of the http response
       - method: GET
         url: https://www.example.com/rest/endpoint2
-        body: Text body of the http response2
+        text: Text body of the http response2
       - method: GET
         url: https://www.example.com/rest/endpoint3
-        body: Text body of the http response3
+        text: Text body of the http response3
 
 Multiple Responses for the Same URL
 ===================================
@@ -287,13 +287,13 @@ it will just return the ``psf_respx_mock`` fixture unchanged.
         if hasattr(request, "param") and isinstance(request.param, dict):
             response_params = request.param.copy()
             route_match = {k: response_params.pop(k) for k in ("method", "url")}
-            respx_mock.route(**route_match).respond(**response_params)
+            psf_respx_mock.route(**route_match).respond(**response_params)
         return psf_respx_mock
 
     def test_api_check(response_override, psf_expected_result):
         with psf_expected_result as expected_result:
             with httpx.Client() as client:
-                http_result = client.get("https://www.example.com/rest/endpoint3")
+                api_call_result = client.get("https://www.example.com/rest/endpoint3")
                 api_call_result.raise_for_status()
                 assert api_call_result.body == "The call was successful."
 

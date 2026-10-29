@@ -36,7 +36,7 @@ data loaded from files.
  Compatibility
 ***************
 
-This package is a plug-in for Pytest and works with Python 3.9 and up.
+This package is a plug-in for Pytest.
 
 - Tested with Pytest versions 7.4, 8.4, and 9.1
 - Tested with CPython 3.11–3.15 (including 3.14t and 3.15t)

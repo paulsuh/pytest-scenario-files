@@ -1,25 +1,21 @@
 ---
 name: pytest-scenario-files
 description: >
-  Guidance for using the pytest-scenario-files plugin to drive pytest
-  tests from YAML/JSON data files. Use this whenever writing or
-  refactoring pytest tests that have multiple scenarios, involve
-  test data files, mock HTTP calls with responses or respx, or need
-  parameterization that scales past a handful of cases — even if the
-  user doesn't mention "pytest-scenario-files" by name and just says
-  things like "add more test cases," "this test file is getting
-  unwieldy," "mock these API calls," or "turn this into a
-  data-driven test." This is an addendum to general pytest/testing
-  skills, not a replacement — defer to those for test design,
-  mocking philosophy, and coverage strategy; this skill covers only
-  what pytest-scenario-files specifically brings: data-file
-  mechanics, the YAML-vs-inline judgment call, and this plugin's
-  particular gotchas.
-  license: MIT
-  compatibility: Python 3.11+, Pytest 7.4+
+  Guidance for using the pytest-scenario-files plugin to drive
+  pytest tests from YAML/JSON data files. Use whenever writing or
+  refactoring tests with multiple scenarios, bulky data, or HTTP
+  mocking needs (responses/respx). Triggers on "add more test cases",
+  "test file is getting unwieldy", "mock these API calls", or
+  "create data-driven tests".
+license: MIT
+compatibility: Python 3.11+, Pytest 7.4+
 ---
 
 # pytest-scenario-files
+
+This skill is designed to work with version 1.4 of
+pytest-scenario-files or earlier. If you are using a newer version,
+check to see if an updated skill exists.
 
 ## What this plugin does and doesn't replace
 

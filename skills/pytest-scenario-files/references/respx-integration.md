@@ -63,7 +63,7 @@ failure_scenario:
     status_code: 403
     text: "access denied"
   psf_expected_result_indirect:
-    expected_exception_name: requests.exceptions.HTTPError
+    expected_exception_name: https.HTTPError
 ```
 
 ```python
@@ -78,7 +78,7 @@ def response_override(request, psf_respx_mock):
 
 def test_api_check(response_override, psf_expected_result):
     with psf_expected_result as expected_result:
-        result = requests.get("https://api.example.com/v1/endpoint")
+        result = httpx.get("https://api.example.com/v1/endpoint")
         result.raise_for_status()
         assert result.text == expected_result
 ```
